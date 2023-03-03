@@ -35,7 +35,7 @@ export default function Login() {
             <FormControl>
                 <FormLabel>Email address</FormLabel>
                 <Input type='email' />
-                <FormHelperText>We'll never share your email.</FormHelperText>
+                <FormHelperText>Well never share your email.</FormHelperText>
             </FormControl>
             </>
     )
