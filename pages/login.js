@@ -3,20 +3,13 @@ import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import { useState } from 'react'
 
-import {
-    FormControl,
-    FormLabel,
-    FormErrorMessage,
-    FormHelperText,
-    Stack,
-  } from '@chakra-ui/react'
-
 import { Input, Text, initialRef, Button, onClose, 
-    isError, input, handleInputChange, InputGroup, InputRightElement, Link } from '@chakra-ui/react'
+    isError, input, handleInputChange, InputGroup, 
+    InputRightElement, Link, NumberInput, NumberInputField,
+    NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper,
+    useToast, Card, CardHeader, CardBody, CardFooter, Heading, Highlight,
+    Box, FormControl,FormLabel, FormErrorMessage, FormHelperText, Stack, } from '@chakra-ui/react'
 
-import { Card, CardHeader, CardBody, CardFooter, Heading, Highlight, Box } from '@chakra-ui/react'
-
-import bg from '../public/BGCenmo.png'
 
 export default function Login() {
 
@@ -29,10 +22,11 @@ export default function Login() {
         const [show, setShow] = useState(false)
         const handleClick = () => setShow(!show)
 
-    return (
-        
-        <>
+        // Toast
+        const toast = useToast()
 
+    return (
+        <>
         <div className={styles.container}>
             <Head>
                 <title>Login</title>
@@ -40,7 +34,6 @@ export default function Login() {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
         </div>
-        
         <main className={styles.main} >
         <Heading pb={3} lineHeight='tall'>
             <Highlight
@@ -75,19 +68,23 @@ export default function Login() {
                         </InputRightElement>
                     </InputGroup>
                 </FormControl>
-                
                 <br/>
-                <Button colorScheme='blue' mr={3}>
+                <Button colorScheme='blue' mr={3}
+                onClick={() =>
+                    toast({
+                      title: 'You have successfully logged in.',
+                      description: "Let's discuss and find the item you want.",
+                      status: 'success',
+                      duration: 9000,
+                      isClosable: true,
+                    })
+                  }>
                     Log In
                 </Button>
                 <Button onClick={onClose}>Register</Button>
-                
             </CardBody>
         </Card>
         </main>
-
-            
-            </>
-    )
-                    
+        </>
+    )               
 }
