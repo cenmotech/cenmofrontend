@@ -15,10 +15,12 @@ export default function Login() {
 
         // Email
         const [input, setInput] = useState(false)
+        const [email, setEmail] = useState('');
         const handleInputChange = (e) => setInput(e.target.value)
         const isError = input === ''
 
         // Password
+        const [password, setPassword] = useState('');
         const [show, setShow] = useState(false)
         const handleClick = () => setShow(!show)
 
@@ -50,7 +52,7 @@ export default function Login() {
                 <FormControl>
                     <FormLabel>Email address</FormLabel>
                     <Input type='email' />
-                    <FormHelperText>We'll never share your email.</FormHelperText>
+                    <FormHelperText>We&aposll never share your email.</FormHelperText>
                 </FormControl>
                 <br/>
                 <FormControl>
