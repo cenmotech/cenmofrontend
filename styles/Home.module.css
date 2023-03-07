@@ -10,6 +10,8 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  background-image: url('../public/BGCenmo.png');
+  background-size: 100%;
 }
 
 .footer {
