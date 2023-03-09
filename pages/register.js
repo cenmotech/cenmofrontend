@@ -22,7 +22,7 @@ export default function Register() {
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
 
-  const router = useRouter()
+  //const router = useRouter()
 
   const {register} = useContext(AuthenticationContext)
 
