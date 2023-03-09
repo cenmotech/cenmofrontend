@@ -1,8 +1,8 @@
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
-import { useState } from 'react'
-
+import { useState, useContext } from 'react'
+import AuthenticationContext from '../context/AuthenticationContext'
 import { Input, Text, initialRef, Button, onClose, 
     isError, input, handleInputChange, InputGroup, 
     InputRightElement, Link, NumberInput, NumberInputField,
@@ -14,9 +14,12 @@ import { Input, Text, initialRef, Button, onClose,
 export default function Login() {
 
         // Email
+        const [email, setEmail] = useState('')
+        const [password, setPassword] = useState('')
         const [input, setInput] = useState(false)
-        const handleInputChange = (e) => setInput(e.target.value)
         const isError = input === ''
+        const {login} = useContext(AuthenticationContext)
+
 
         // Password
         const [show, setShow] = useState(false)
@@ -25,6 +28,10 @@ export default function Login() {
         // Toast
         const toast = useToast()
 
+        const submitHandler = e => {
+            e.preventDefault();
+            login({email, password})
+        }
     return (
         <>
         <div className={styles.container}>
@@ -47,41 +54,46 @@ export default function Login() {
         <br/>
         <Card>
             <CardBody>
-                <FormControl>
-                    <FormLabel>Email address</FormLabel>
-                    <Input type='email' />
-                    <FormHelperText>We'll never share your email.</FormHelperText>
-                </FormControl>
-                <br/>
-                <FormControl>
-                    <FormLabel>Password</FormLabel>
-                    <InputGroup size='md' pa={5}>
-                        <Input
-                            pr='4.5rem'
-                            type={show ? 'text' : 'password'}
-                            placeholder='Enter password'
-                        />
-                        <InputRightElement width='4.5rem'>
-                            <Button h='1.75rem' size='sm' onClick={handleClick}>
-                            {show ? 'Hide' : 'Show'}
-                            </Button>
-                        </InputRightElement>
-                    </InputGroup>
-                </FormControl>
-                <br/>
-                <Button colorScheme='blue' mr={3}
-                onClick={() =>
-                    toast({
-                      title: 'You have successfully logged in.',
-                      description: "Let's discuss and find the item you want.",
-                      status: 'success',
-                      duration: 9000,
-                      isClosable: true,
-                    })
-                  }>
-                    Log In
-                </Button>
-                <Button onClick={onClose}>Register</Button>
+                <form onSubmit={submitHandler}>
+                    <FormControl>
+                        <FormLabel>Email address</FormLabel>
+                        <Input type='email' onChange={e => setEmail(e.target.value)} value={email}/>
+                        <FormHelperText>We'll never share your email.</FormHelperText>
+                    </FormControl>
+                    <br/>
+                    <FormControl>
+                        <FormLabel>Password</FormLabel>
+                        <InputGroup size='md' pa={5}>
+                            <Input
+                                pr='4.5rem'
+                                type={show ? 'text' : 'password'}
+                                placeholder='Enter password'
+                                onChange={e => setPassword(e.target.value)} value={password}
+                            />
+                            <InputRightElement width='4.5rem'>
+                                <Button h='1.75rem' size='sm' onClick={handleClick}>
+                                {show ? 'Hide' : 'Show'}
+                                </Button>
+                            </InputRightElement>
+                        </InputGroup>
+                    </FormControl>
+                    <br/>
+                    <Button colorScheme='blue' mr={3}
+                    onClick={e =>
+                        {toast({
+                            title: 'You have successfully logged in.',
+                            description: "Let's discuss and find the item you want.",
+                            status: 'success',
+                            duration: 9000,
+                            isClosable: true,
+                            });
+                            submitHandler(e);
+                        }
+                    }>
+                        Log In
+                    </Button>
+                    <Button onClick={onClose}>Register</Button>
+                </form>
             </CardBody>
         </Card>
         </main>
