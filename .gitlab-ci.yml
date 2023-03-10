@@ -44,8 +44,6 @@ sonarqube_prod:
     paths:
       - .sonar/cache
   script:
-    - npm install
-    - npm run test
     - sonar-scanner -X -Dsonar.sources=. -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_TOKEN -Dsonar.projectKey=$SONAR_PROJECT_KEY
   allow_failure: true
 
