@@ -26,8 +26,5 @@
     "jest-environment-jsdom": "^29.5.0",
     "jest-sonar-reporter": "^2.0.0",
     "node-mocks-http": "^1.12.1"
-  },
-  "jest": {
-    "testResultsProcessor": "jest-sonar-reporter"
   }
 }
