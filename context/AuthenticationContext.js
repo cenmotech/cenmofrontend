@@ -9,7 +9,7 @@ export const AuthenticationProvider = ({children}) => {
 	const [accessToken, setAccessToken] = useState(null)
 	const [error, setError] = useState(null)
 
-	const router = useRouter()
+	// const router = useRouter()
 
     // Login
 	const login = async ({email, password}) => {

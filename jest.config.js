@@ -15,6 +15,7 @@ const customJestConfig = {
   testEnvironment: 'jest-environment-jsdom',
   coveragePathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/', '<rootDir>/pages/_app.js','<rootDir>/pages/api/'],
   collectCoverageFrom: ['pages/**/*.{js,jsx,ts,tsx}'],
+  testResultsProcessor: 'jest-sonar-reporter',
 }
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

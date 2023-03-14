@@ -3,6 +3,7 @@ default:
 
 stages:
 - deploy
+- test
 - sonarqube
 
 deploy_preview:
@@ -25,12 +26,19 @@ deploy_production:
     - vercel build --prod --token=$VERCEL_TOKEN
     - vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
 
+UnitTest:
+  stage: test
+  artifacts:
+    paths:
+      - coverage/
+      - test-report.xml
+    expire_in: 1 day
+  script:
+    - npm install
+    - npm run test
+
 sonarqube_prod:
   stage: sonarqube
-  only:
-    - staging
-    - merge_requests
-    - main
   image: 
     name: sonarsource/sonar-scanner-cli:latest
     entrypoint: [ "" ]
@@ -42,8 +50,6 @@ sonarqube_prod:
     paths:
       - .sonar/cache
   script:
-    - npm install
-    - npm run test
     - sonar-scanner -X -Dsonar.sources=. -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_TOKEN -Dsonar.projectKey=$SONAR_PROJECT_KEY
   allow_failure: true
 
