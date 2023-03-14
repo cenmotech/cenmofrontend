@@ -1,7 +1,3 @@
-.container {
-  padding: 0 2rem;
-}
-
 .main {
   min-height: 100vh;
   padding: 4rem 0;
@@ -128,4 +124,28 @@
   .logo img {
     filter: invert(1);
   }
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Set the container to take up the full height of the viewport */
+}
+
+.section1, .section2, .section3 {
+  flex: 1; /* Set each section to take up equal width */
+  padding: 20px; /* Add some padding to each section */
+  color: #fff; /* Set the text color to white for visibility */
+}
+
+.section1 {
+  background-color: #333; /* Set the background color of Section 1 */
+}
+
+.section2 {
+  background-color: #666; /* Set the background color of Section 2 */
+}
+
+.section3 {
+  background-color: #999; /* Set the background color of Section 3 */
 }
