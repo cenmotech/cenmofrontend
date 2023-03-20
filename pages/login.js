@@ -3,19 +3,43 @@ import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import { useState, useContext } from 'react'
 import AuthenticationContext from '../context/AuthenticationContext'
-import { Input, Text, initialRef, Button, onClose, 
-    isError, input, handleInputChange, InputGroup, 
-    InputRightElement, Link, NumberInput, NumberInputField,
-    NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper,
-    useToast, Card, CardHeader, CardBody, CardFooter, Heading, Highlight,
-    Box, FormControl,FormLabel, FormErrorMessage, FormHelperText, Stack, } from '@chakra-ui/react'
+import { Input, Text, Button, onClose, 
+    InputGroup, InputRightElement, useToast, Card, CardBody, Heading, Highlight,
+    FormControl,FormLabel, FormHelperText, FormErrorMessage} from '@chakra-ui/react'
 
 
 export default function Login() {
 
+        // Handle Error Email
+        const [email, setEmail] = useState("");
+        const [emailError, setEmailError] = useState("");
+
+        const handleEmailChange = (e) => {
+            setEmail(e.target.value);
+
+            if (!e.target.value.includes("@")) {
+            setEmailError("Email address must contain '@'");
+            } else {
+            setEmailError("");
+            }
+        };
+
+        // Handle Error Password
+        const [password, setPassword] = useState('');
+        const [passwordError, setPasswordError] = useState("");
+
+        const handlePasswordChange = (e) => {
+            setPassword(e.target.value);
+
+            if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,12}$/.test(e.target.value)) {
+            setPasswordError("Password must meet the criteria");
+            } else {
+            setPasswordError("");
+            }
+        };
+
+
         // Email
-        const [email, setEmail] = useState('')
-        const [password, setPassword] = useState('')
         const [input, setInput] = useState(false)
         const isError = input === ''
         const {login} = useContext(AuthenticationContext)
@@ -40,6 +64,7 @@ export default function Login() {
                 <meta name="description" content="Cenmo Login" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
+        </div>
         <main className={styles.main} >
         <Heading pb={3} lineHeight='tall'>
             <Highlight
@@ -54,27 +79,29 @@ export default function Login() {
         <Card>
             <CardBody>
                 <form onSubmit={submitHandler}>
-                    <FormControl>
+                    <FormControl isInvalid= {emailError}>
                         <FormLabel>Email address</FormLabel>
-                        <Input type='email' onChange={e => setEmail(e.target.value)} value={email}/>
-                        <FormHelperText>We'll never share your email.</FormHelperText>
+                        <Input type='email' onChange={handleEmailChange} value={email}/>
+                        <FormErrorMessage>{emailError}</FormErrorMessage>
                     </FormControl>
                     <br/>
-                    <FormControl>
+                    <FormControl isInvalid={passwordError}>
                         <FormLabel>Password</FormLabel>
                         <InputGroup size='md' pa={5}>
                             <Input
                                 pr='4.5rem'
                                 type={show ? 'text' : 'password'}
                                 placeholder='Enter password'
-                                onChange={e => setPassword(e.target.value)} value={password}
+                                onChange={handlePasswordChange} value={password}
                             />
                             <InputRightElement width='4.5rem'>
-                                <Button h='1.75rem' size='sm' onClick={handleClick}>
+                                <Button h='1.75rem' size='sm' onClick={handleClick} data-testid="toggle-password">
                                 {show ? 'Hide' : 'Show'}
                                 </Button>
                             </InputRightElement>
                         </InputGroup>
+                        <FormHelperText>• Password must be at least 8 digits<br/>• Password must contain a combination of<br/>	&nbsp;	&nbsp;uppercase letters, lowercase letters, and numbers</FormHelperText>
+                        <FormErrorMessage>{passwordError}</FormErrorMessage>
                     </FormControl>
                     <br/>
                     <Button colorScheme='blue' mr={3}
@@ -96,7 +123,6 @@ export default function Login() {
             </CardBody>
         </Card>
         </main>
-        </div>
         </>
     )               
 }
