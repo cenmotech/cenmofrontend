@@ -1,24 +1,22 @@
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
-import { Flex, Spacer, Center, Text, Square, Box } from '@chakra-ui/react'
+import {Grid, GridItem, Flex, Spacer, Center, Text, Square, Box } from '@chakra-ui/react'
 import Navbar from '../components/navbar'
 
 //change this to home page using our navbar from components
 export default function Home() {
   return (
-    <div>
-      <Flex color='white'>
-      <Box flex='0.7'>
+    <main className={styles.container}>
+      <Grid templateColumns='repeat(5, 1fr)' gap={0}>
+        <GridItem colSpan={1} w='100%' h="100vh" position="sticky" top="0" left="0" overflow="hidden" borderRight='1px' borderColor='gray.200'>
           <Navbar/>
-        </Box>
-        <Box flex='1' bg='blue'>
-          <Text>Box 3</Text>
-        </Box>
-        <Box flex='1' bg='tomato'>
-          <Text>Box 3</Text>
-        </Box>
-      </Flex>
-    </div>
+        </GridItem>
+        <GridItem colSpan={3}>
+        </GridItem>
+        <GridItem colSpan={1}>
+        </GridItem>
+      </Grid>
+    </main>
   )
 }

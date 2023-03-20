@@ -1,5 +1,5 @@
 //use Chakra UI components
-import { Flex, Spacer, Box, Heading, ButtonGroup,
+import { Grid, GridItem, Flex, Spacer, Box, Heading, ButtonGroup,
         Button, List, ListItem, InputLeftElement, 
         Input, InputGroup, SimpleGrid, Card, CardBody, 
         Stack, StackDivider, Accordion, AccordionItem,
@@ -9,7 +9,9 @@ import { SearchIcon, BellIcon } from '@chakra-ui/icons'
 
 export default function Navbar() {
     return (
-        <div>
+        <Box>
+            <Grid templateRows='repeat(6, 1fr)' gap={0}>
+            <GridItem rowSpan={2}>
             <Flex minWidth='max-content' alignItems='center' gap='2' pt='3'>
                 <Box p='2' pl='5'>
                     <Heading as='b' color= 'black' size='lg'>Cenmo</Heading>
@@ -20,24 +22,25 @@ export default function Navbar() {
                 </ButtonGroup>
             </Flex>
 
-            <List spacing={3} pl='5' pt='3' >
+            <List spacing={3} pl='5' pt='3' pr='3'>
             <ListItem>
-                <Button leftIcon={<BellIcon />} justifyContent='left' width='330px' borderRadius='30' colorScheme='blue'>Home</Button>
+                <Button leftIcon={<BellIcon />} justifyContent='left' width='100%' borderRadius='30' colorScheme='blue'>Home</Button>
             </ListItem>
             <ListItem>
-                <Button leftIcon={<BellIcon />} justifyContent='left' width='330px' borderRadius='30' colorScheme='blue'>Chats</Button>
+                <Button leftIcon={<BellIcon />} justifyContent='left' width='100%' borderRadius='30' colorScheme='blue'>Chats</Button>
             </ListItem>
             <ListItem>
-                <Button leftIcon={<BellIcon />} justifyContent='left' width='330px' borderRadius='30' colorScheme='blue'>Baskets</Button>
+                <Button leftIcon={<BellIcon />} justifyContent='left' width='100%' borderRadius='30' colorScheme='blue'>Baskets</Button>
             </ListItem>
             <ListItem>
-                <Button leftIcon={<BellIcon />} justifyContent='left' width='330px' borderRadius='30' colorScheme='blue'>Transaction</Button>
+                <Button leftIcon={<BellIcon />} justifyContent='left' width='100%' borderRadius='30' colorScheme='blue'>Transaction</Button>
             </ListItem>
             <ListItem>
-                <Button leftIcon={<BellIcon />} justifyContent='left' width='330px' borderRadius='30' colorScheme='blue'>Seller Portal</Button>
+                <Button leftIcon={<BellIcon />} justifyContent='left' width='100%' borderRadius='30' colorScheme='blue'>Seller Portal</Button>
             </ListItem>
             </List>
-
+            </GridItem>
+            <GridItem rowSpan={3}>
             <Heading pl='5' pt='7' color= 'black' size='md'>Categories</Heading>
 
             <InputGroup pl='5' pr='5' pt='3'>
@@ -48,9 +51,9 @@ export default function Navbar() {
                 />
             <Input pl='10' type='tel' placeholder='Search' borderRadius='30' />
             </InputGroup>
-
+            <Box maxH='370px' overflowY='auto'>
             <Card variant='unstyled' pl='5' pr='5' pt='3' pb='3'>
-                <CardBody>
+                <CardBody >
                 <Accordion allowToggle>
                     <AccordionItem>
                         <h2>
@@ -63,6 +66,12 @@ export default function Navbar() {
                         </h2>
                         <AccordionPanel pb={4}>
                         <Button justifyContent='left' colorScheme='blue' variant='ghost'>Keyboard</Button>
+                        </AccordionPanel>
+                        <AccordionPanel pb={4}>
+                        <Button justifyContent='left' colorScheme='blue' variant='ghost'>PC</Button>
+                        </AccordionPanel>
+                        <AccordionPanel pb={4}>
+                        <Button justifyContent='left' colorScheme='blue' variant='ghost'>PC</Button>
                         </AccordionPanel>
                         <AccordionPanel pb={4}>
                         <Button justifyContent='left' colorScheme='blue' variant='ghost'>PC</Button>
@@ -120,6 +129,8 @@ export default function Navbar() {
                     <Button justifyContent='left' colorScheme='blue' variant='ghost'>Request Category</Button>
                 </CardBody>
             </Card>
+            </Box>
+            </GridItem>
             
             
             <Stack direction='row' pl='5' pt='5'>
@@ -131,7 +142,10 @@ export default function Navbar() {
                     </Link>
                 </Stack>
             </Stack>
-                
-        </div>
+            <text>
+
+            </text>
+            </Grid>
+        </Box>
     )
 }

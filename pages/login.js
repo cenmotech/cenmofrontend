@@ -40,7 +40,6 @@ export default function Login() {
                 <meta name="description" content="Cenmo Login" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-        </div>
         <main className={styles.main} >
         <Heading pb={3} lineHeight='tall'>
             <Highlight
@@ -97,6 +96,7 @@ export default function Login() {
             </CardBody>
         </Card>
         </main>
+        </div>
         </>
     )               
 }
