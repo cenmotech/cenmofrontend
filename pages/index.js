@@ -10,7 +10,7 @@ export default function Home() {
     <main className={styles.container}>
       <Grid templateColumns='repeat(5, 1fr)' gap={0}>
         <GridItem colSpan={1} w='100%' h="100vh" position="sticky" top="0" left="0" overflow="hidden" borderRight='1px' borderColor='gray.200'>
-          <Navbar/>
+          <Navbar data-testid="navbar"/>
         </GridItem>
         <GridItem colSpan={3}>
         </GridItem>

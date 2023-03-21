@@ -2,16 +2,10 @@ import { render, screen } from '@testing-library/react';
 import Home from '../pages/index';
 import '@testing-library/jest-dom';
 
-
-//homepage test
 describe('Home', () => {
-  it('renders a heading', () => {
-    render(<Home />)
-
-    const heading = screen.getByRole('heading', {
-      name: /welcome to next\.js!/i,
-    })
-
-    expect(heading).toBeInTheDocument()
-  })
+  it('renders navbar', () => {
+    const { getByTestId } = render(<Home/>);
+    const navbar = getByTestId('navbar');
+    expect(navbar).toBeInTheDocument();
+  });
 });

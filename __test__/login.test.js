@@ -4,6 +4,7 @@ import { AuthenticationProvider } from '../context/AuthenticationContext';
 import Login from '../pages/login';
 import '@testing-library/jest-dom';
 describe('Login', () => {
+    
     it('renders a login page', () => {
         const mockLogin = jest.fn();
         render(

@@ -14,7 +14,7 @@ const customJestConfig = {
   moduleDirectories: ['node_modules', '<rootDir>/'],
   testEnvironment: 'jest-environment-jsdom',
   coveragePathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/', '<rootDir>/pages/_app.js','<rootDir>/pages/api/'],
-  collectCoverageFrom: ['pages/**/*.{js,jsx,ts,tsx}'],
+  collectCoverageFrom: ['pages/**/*.{js,jsx,ts,tsx}', 'components/**/*.{js,jsx,ts,tsx}'],
   testResultsProcessor: 'jest-sonar-reporter',
 }
 
