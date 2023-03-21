@@ -6,10 +6,50 @@ import { Grid, GridItem, Flex, Spacer, Box, Heading, ButtonGroup,
     AccordionButton, AccordionIcon, AccordionPanel,
     Avatar, Link } from '@chakra-ui/react'
 import { SearchIcon, BellIcon } from '@chakra-ui/icons'
+import { useEffect, useState, useContext } from 'react'
+import axios from "axios";
+
 
 export default function Navbar() {
+const [categories, setCategories] = useState([])
+const [categoriesFilter, setCategoriesFilter] = useState(null)
+const [filter, setFilter] = useState('')
+
+const accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjgxOTc0NzY1LCJpYXQiOjE2NzkzODI3NjUsImp0aSI6IjRkZjI0YjUzMGNkOTQ2Nzc5NmI2ZTMyODQ3NDdjNDY0IiwidXNlcl9pZCI6InRlc3RpbmdAZ21haWwuY29tIn0.7-PWbbaz4W9Z74MPazp84VBq912vpcbSMHXiNGDT8sg"
+
+useEffect (() => {
+    const fetchCategories = async () => {
+        if(filter === '') {
+            const response = await axios.get(`http://localhost:8000/group/get_all_categories`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            })
+            setCategories(response.data.category_groups)
+            setCategoriesFilter(response.data.category_groups)
+        }
+        else{
+            const response = await axios.get(`http://localhost:8000/group/get_all_categories_contains/${filter}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            })
+            setCategories(response.data.category_groups)
+            setCategoriesFilter(response.data.category_groups)
+        }
+        }
+    fetchCategories()
+}, [filter])
+
+const handleSearch = (e) => {
+    setFilter(e)
+}
 return (
-    <Box data-testid="navbar">
+    <Box>
         <Grid templateRows='repeat(6, 1fr)' gap={0}>
         <GridItem rowSpan={2}>
         <Flex minWidth='max-content' alignItems='center' gap='2' pt='3'>
@@ -49,86 +89,50 @@ return (
             pointerEvents='none'
             children={<SearchIcon color='gray.300' />}
             />
-        <Input pl='10' type='tel' placeholder='Search' borderRadius='30' />
+        <Input pl='10' type='tel' placeholder='Search' borderRadius='30' onChange={e => handleSearch(e.target.value)}/>
         </InputGroup>
         <Box maxH='370px' overflowY='auto'>
         <Card variant='unstyled' pl='5' pr='5' pt='3' pb='3'>
             <CardBody >
             <Accordion allowToggle>
-                <AccordionItem>
-                    <h2>
-                    <AccordionButton>
-                        <Box as="span" flex='1' textAlign='left'>
-                        Electronics
-                        </Box>
-                        <AccordionIcon />
-                    </AccordionButton>
-                    </h2>
-                    <AccordionPanel pb={4}>
-                    <Button justifyContent='left' colorScheme='blue' variant='ghost'>Keyboard</Button>
-                    </AccordionPanel>
-                    <AccordionPanel pb={4}>
-                    <Button justifyContent='left' colorScheme='blue' variant='ghost'>PC</Button>
-                    </AccordionPanel>
-                    <AccordionPanel pb={4}>
-                    <Button justifyContent='left' colorScheme='blue' variant='ghost'>PC</Button>
-                    </AccordionPanel>
-                    <AccordionPanel pb={4}>
-                    <Button justifyContent='left' colorScheme='blue' variant='ghost'>PC</Button>
-                    </AccordionPanel>
-                </AccordionItem>
+                { Object.entries(categories).map(([key, value]) => (
+                    <AccordionItem>
+                        <h2>
+                        <AccordionButton>
+                            <Box as="span" flex='1' textAlign='left'>
+                            {key}
+                            </Box>
+                            <AccordionIcon />
+                        </AccordionButton>
+                        </h2>
+                        {value.map((group, index) => (
+                            <AccordionPanel pb={4}>
+                                <Link href={'/group/'+group.group_id} style={{ textDecoration: 'none' }}><Button justifyContent='left' colorScheme='blue' variant='ghost'>{group.group_name} </Button></Link>
+                            </AccordionPanel>
+                        ))}
+                    </AccordionItem>
+                ))}
+                    </Accordion>
+                    <Button justifyContent='left' colorScheme='blue' variant='ghost'>Request Category</Button>
+                </CardBody>
+            </Card>
+            </Box>
+            </GridItem>
+            
+            
+            <Stack direction='row' pl='5' pt='5'>
+                <Avatar size='md' name='Dan Abrahmov' src='https://bit.ly/dan-abramov' />
+                <Stack direction='column' color='black' m='10' pl='3'>
+                    <p>Zeta Prawira Syah</p>
+                    <Link color='teal.500' href='#'>
+                        Settings
+                    </Link>
+                </Stack>
+            </Stack>
+            <text>
 
-                <AccordionItem>
-                    <h2>
-                    <AccordionButton>
-                        <Box as="span" flex='1' textAlign='left'>
-                        Part Vehicle
-                        </Box>
-                        <AccordionIcon />
-                    </AccordionButton>
-                    </h2>
-                    <AccordionPanel pb={4}>
-                    <Button justifyContent='left' colorScheme='blue' variant='ghost'>Wheel</Button>
-                    </AccordionPanel>
-                </AccordionItem>
-
-                <AccordionItem>
-                    <h2>
-                    <AccordionButton>
-                        <Box as="span" flex='1' textAlign='left'>
-                        Clothes
-                        </Box>
-                        <AccordionIcon />
-                    </AccordionButton>
-                    </h2>
-                    <AccordionPanel pb={4}>
-                    <Button justifyContent='left' colorScheme='blue' variant='ghost'>Pants</Button>
-                    </AccordionPanel>
-                    <AccordionPanel pb={4}>
-                    <Button justifyContent='left' colorScheme='blue' variant='ghost'>Shirt</Button>
-                    </AccordionPanel>
-                </AccordionItem>
-
-                <AccordionItem>
-                    <h2>
-                    <AccordionButton>
-                        <Box as="span" flex='1' textAlign='left'>
-                        Sports Equipment
-                        </Box>
-                        <AccordionIcon />
-                    </AccordionButton>
-                    </h2>
-                    <AccordionPanel pb={4}>
-                    <Button justifyContent='left' colorScheme='blue' variant='ghost'>Baseball</Button>
-                    </AccordionPanel>
-                    <AccordionPanel pb={4}>
-                    <Button justifyContent='left' colorScheme='blue' variant='ghost'>Racket</Button>
-                    </AccordionPanel>
-                </AccordionItem>
-                </Accordion>
-                <Button justifyContent='left' colorScheme='blue' variant='ghost'>Request Category</Button>
-            </CardBody>
-        </Card>
+            </text>
+            </Grid>
         </Box>
         </GridItem>
         
