@@ -26,20 +26,21 @@ export const AuthenticationProvider = ({children}) => {
 		}
 
 		try {
-			const { data:access } = await axios.post('http://localhost:3001/api/login', body, config)
-			if(access && access.user){
-				setUser(access.user)
+			const { data:access } = await axios.post('http://localhost:3000/api/login', body, config)
+			if(access && access.user.email){
+				setUser(access.user.email)
+				localStorage.setItem('user', access.user.email)
 			}
 
-			if(access && access.token){
-				setAccessToken(access.token)
+			if(access && access.accessToken){
+				setAccessToken(access.accessToken)
+				localStorage.setItem('accessToken', access.accessToken)
 			}
-
-			router.push('/')
 
 		} catch(error){
+			console.log(error)
 			if (error.response & error.response.data) {
-				setError(error.response.data.message)
+				setError(error.response)
 				return      
 			} else if (error.request) {
 			  setError('Something went wrong')

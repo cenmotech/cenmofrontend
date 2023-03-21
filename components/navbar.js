@@ -8,14 +8,13 @@ import { Grid, GridItem, Flex, Spacer, Box, Heading, ButtonGroup,
 import { SearchIcon, BellIcon } from '@chakra-ui/icons'
 import { useEffect, useState, useContext } from 'react'
 import axios from "axios";
+import AuthenticationContext from '../context/AuthenticationContext'
 
 
 export default function Navbar() {
 const [categories, setCategories] = useState([])
 const [categoriesFilter, setCategoriesFilter] = useState(null)
 const [filter, setFilter] = useState('')
-
-const accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjgxOTc0NzY1LCJpYXQiOjE2NzkzODI3NjUsImp0aSI6IjRkZjI0YjUzMGNkOTQ2Nzc5NmI2ZTMyODQ3NDdjNDY0IiwidXNlcl9pZCI6InRlc3RpbmdAZ21haWwuY29tIn0.7-PWbbaz4W9Z74MPazp84VBq912vpcbSMHXiNGDT8sg"
 
 useEffect (() => {
     const fetchCategories = async () => {
@@ -24,7 +23,7 @@ useEffect (() => {
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
-                    'Authorization': `Bearer ${accessToken}`
+                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
                 }
             })
             setCategories(response.data.category_groups)
@@ -35,7 +34,7 @@ useEffect (() => {
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
-                    'Authorization': `Bearer ${accessToken}`
+                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
                 }
             })
             setCategories(response.data.category_groups)
@@ -118,26 +117,7 @@ return (
             </Card>
             </Box>
             </GridItem>
-            
-            
             <Stack direction='row' pl='5' pt='5'>
-                <Avatar size='md' name='Dan Abrahmov' src='https://bit.ly/dan-abramov' />
-                <Stack direction='column' color='black' m='10' pl='3'>
-                    <p>Zeta Prawira Syah</p>
-                    <Link color='teal.500' href='#'>
-                        Settings
-                    </Link>
-                </Stack>
-            </Stack>
-            <text>
-
-            </text>
-            </Grid>
-        </Box>
-        </GridItem>
-        
-        
-        <Stack direction='row' pl='5' pt='5'>
             <Avatar size='md' name='Dan Abrahmov' src='https://bit.ly/dan-abramov' />
             <Stack direction='column' color='black' m='10' pl='3'>
                 <p>Zeta Prawira Syah</p>
@@ -148,5 +128,5 @@ return (
         </Stack>
         </Grid>
     </Box>
-)
+    )
 }

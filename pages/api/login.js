@@ -5,6 +5,7 @@ import cookie from "cookie";
 export default async (req, res) => {
     let accessToken = null;
 
+
     if (req.method === 'POST') {
         const {email, password} = req.body
         const config = {
@@ -20,12 +21,23 @@ export default async (req, res) => {
         }
 
         try{
-            const {data} = await axios.post('http://localhost:8000/authuser/login', body, config) 
-            accessToken = data.token
+            const {data} = await axios.post('http://127.0.0.1:8000/authuser/login', body, config) 
+            accessToken = data.accessToken
+            if(accessToken){
+              const userConfig ={
+                  headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                  }
+              }
+              const {data: user} = await axios.get('http://127.0.0.1:8000/authuser/get-user-session', userConfig)
+              console.log(user)
+              res.status(200).json({user, accessToken})
+          }
         } catch(error){
             if (error.response) {
               // The request was made and the server responded with a status code
               // that falls out of the range of 2xx
+              console.log(error)
               console.error(error.response.data);
               console.error(error.response.status);
               console.error(error.response.headers);
@@ -43,17 +55,6 @@ export default async (req, res) => {
       
             return res.status(500).json({message: 'Something went wrong'})
           }
-        
-
-        if(accessToken){
-            const userConfig ={
-                headers: {
-                  'Authorization': `Bearer ${accessToken}`
-                }
-            }
-            const {data: user} = await axios.get('http://localhost:8000/authuser/get-user-session', userConfig)
-            res.status(200).json({user, accessToken})
-        }
         
     }else{
         res.setHeader('Allow', ['POST'])
