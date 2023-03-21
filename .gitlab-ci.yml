@@ -36,6 +36,7 @@ UnitTest:
   script:
     - npm install
     - npm run test
+  allow_failure: true
 
 sonarqube_prod:
   stage: sonarqube

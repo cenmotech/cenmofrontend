@@ -9,7 +9,7 @@ import { SearchIcon, BellIcon } from '@chakra-ui/icons'
 
 export default function Navbar() {
 return (
-    <Box>
+    <Box data-testid="navbar">
         <Grid templateRows='repeat(6, 1fr)' gap={0}>
         <GridItem rowSpan={2}>
         <Flex minWidth='max-content' alignItems='center' gap='2' pt='3'>
@@ -142,9 +142,6 @@ return (
                 </Link>
             </Stack>
         </Stack>
-        <text>
-
-        </text>
         </Grid>
     </Box>
 )

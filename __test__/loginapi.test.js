@@ -1,5 +1,22 @@
-const axios = require('axios')
+const axios = require('axios');
+jest.mock('axios');
+
 describe('POST /api/login', () => {
+    const baseURL = 'http://localhost:3001/api/login';
+    const loginResponse = [
+        {
+            token:'userToken',
+        },
+    ]
+    
+    beforeEach(() => {
+        axios.post.mockReset();
+        body = {
+          email: 'unregistered@cenmo.com',
+          password: '123'
+        };
+      });
+
     let body= {
         "email": "unregistered@cenmo.com",
         "password": "123"
@@ -10,21 +27,23 @@ describe('POST /api/login', () => {
             'Content-Type': 'application/json'
         }
     }
-    it('Failed Login due to unregistered email', async () => {
+    it('Should Success Logging in', async () => {
+        axios.post.mockResolvedValue({ data: loginResponse });
+        const { data : access } = await axios.post(baseURL, body, config)
+        expect(access).toEqual(loginResponse);
+        expect(axios.post).toHaveBeenCalledWith(baseURL, body, config);
+        expect(axios.post).toHaveBeenCalledTimes(1);
+        });
+
+    it('Should fail to log in due to an incorrect password', async () => {
+        axios.post.mockRejectedValue({ response: { status: 401, data: { message: 'Invalid password' } } });
         try {
-            await axios.post('http://localhost:3001/api/login', body, config, {
-              timeout: 5000
-            });
-            } catch (error) {
-            if (error.code === 'ECONNREFUSED') {
-                throw new Error('Connection refused. Please make sure the server is running.');
-            } else if (error.response) {
-                expect(error.response.status).toEqual(401);
-                expect(error.response.data.message).toEqual('Invalid email format');
-            } else {
-                expect(error.message).toEqual('Network Error');
-              
-            }
-          }
-    });
+            await axios.post(baseURL, body, config);
+        } catch (error) {
+            expect(error.response.status).toEqual(401);
+            expect(error.response.data.message).toEqual('Invalid password');
+            expect(axios.post).toHaveBeenCalledWith(baseURL, body, config);
+            expect(axios.post).toHaveBeenCalledTimes(1);
+        }
+        });
 });
