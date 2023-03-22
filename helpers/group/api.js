@@ -1,5 +1,5 @@
 import axios from "axios";
-const baseUrl = 'http://127.0.0.1/group';
+const baseUrl = 'http://127.0.0.1:8000/group';
 let accessToken = null;
 const getConfig = () => {
     return {
