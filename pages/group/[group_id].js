@@ -10,7 +10,7 @@ import { BsThreeDotsVertical, GrLinkPrevious, BsCardImage } from 'react-icons/bs
 import { SearchIcon, BellIcon, AddIcon, ArrowBackIcon, ArrowForwardIcon } from '@chakra-ui/icons'
 import '@splidejs/react-splide/css';
 import axios from "axios";
-import { createListing } from '../../helpers/group/api';
+import { createListing, createPost } from '../../helpers/group/api';
 import { getStorage, ref, uploadBytes } from "firebase/storage";
 import { storage } from '../../firebaseConfig';
 import { v4 } from 'uuid';
@@ -42,14 +42,6 @@ export default function Group() {
     }
     fetchProvinceList()
   }, [])
-
-  // useEffect(() => {
-  //   const fetchCityList = async () => {
-  //     const response = await axios.get(`https://www.emsifa.com/api-wilayah-indonesia/api/regencies/11.json`)  
-  //     setCityList(response.data)
-  //   }
-  //   fetchCityList()
-  // }, [])
         
   useEffect(() => {
     if (province != null) {
@@ -80,7 +72,8 @@ export default function Group() {
     setCurrentIndex((prev) => prev === images.length - 1 ? 0 : prev + 1);
   };
 
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { isOpen: isListOpen , onOpen: onListOpen, onClose: onListClose } = useDisclosure()
+  const { isOpen: isPostOpen , onOpen: onPostOpen, onClose: onPostClose } = useDisclosure()
   const btnRef = useRef(null)
 
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -133,11 +126,8 @@ export default function Group() {
   const handleRemoveAll = () => {
     setSelectedFiles([]);
     setPreviewUrls([]);
-  };
-
-  const handleCloseAndRemoveAll = () => {
-    onClose();
-    handleRemoveAll();
+    onListClose();
+    onPostClose();
   };
 
   // HANDLE POST LISTING
@@ -172,15 +162,15 @@ export default function Group() {
         const x = document.getElementById("progressImage");
         x.style.display = "block"
         const image = await uploadImage("listing")
-        await uploadOther(image) 
+        await uploadListingInfo(image) 
         await router.reload()
       } else {
-        await uploadOther(image)
+        await uploadListingInfo(image)
         await router.reload()
       }
     };
 
-  const uploadOther = (image) => {
+  const uploadListingInfo = (image) => {
       const region = `${city.name},${province.name}`
       const group = groupId;
       const data = {name, price, desc, image, region, group};
@@ -196,6 +186,39 @@ export default function Group() {
       console.error(error);
     }
   };
+
+  // Handle Post
+  const [postDesc, setPostDesc] = useState("");
+
+  async function uploadPost() { 
+    if (selectedFiles.length !== 0) {
+      const image = await uploadImage("post")
+      await uploadPostInfo(image) 
+      await router.reload()
+    } else {
+      const image = ""
+      await uploadPostInfo(image)
+      await router.reload()
+    }
+  };
+
+  const uploadPostInfo = (image) => {
+      const group = groupId;
+      const desc = postDesc;
+      const data = {desc, image, group};
+      postCreatePost(data)
+      return "success"
+  };
+
+  async function postCreatePost(data) {
+    try {
+      const response = await createPost(localStorage.getItem("accessToken"), data)
+      console.log(response)
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
 
     return (
     <main className={styles.container}>
@@ -214,6 +237,65 @@ export default function Group() {
               {/* </Stack> */}
               </CardBody>
             </Card>
+            <Card w={[700]} borderRadius='15' mt='10'>
+              <CardBody>
+                <Stack direction='row' alignItems="center">
+                  <Avatar size='md' name='Dan Abrahmov' src='https://bit.ly/dan-abramov' />
+                  <Stack spacing={0} direction='column'>
+                    <Text fontSize="xl">Zeta Prawira Syah</Text>
+                  </Stack>
+                </Stack>
+                <Box mt={5} w='100%' p={4} boxShadow="0px 1px 4px rgba(0, 0, 0, 0.25)" borderRadius="10px" cursor={'pointer'} onClick={onPostOpen} >
+                  What's on your mind?
+                </Box>
+              </CardBody>
+            </Card>
+            <Modal isOpen={isPostOpen} onClose={onPostClose} size="xl" closeOnOverlayClick={false}>
+              <ModalOverlay />
+              <ModalContent>
+                <ModalHeader>Create Post</ModalHeader>
+                <ModalCloseButton onClick={handleRemoveAll} mt="2" mr="1" />
+                <ModalBody>
+                  <Stack direction='row' alignItems="center">
+                    <Avatar size='md' name='Dan Abrahmov' src='https://bit.ly/dan-abramov' />
+                    <Stack spacing={0} direction='column'>
+                      <Text fontSize="xl">Zeta Prawira Syah</Text>
+                    </Stack>
+                  </Stack>
+                  <Textarea
+                    mt={4}
+                    mb={6}
+                    placeholder="What's on your mind?"
+                    h="200"
+                    onChange={(e) => setPostDesc(e.target.value)}
+                  />
+                  <Stack direction="row" flexWrap="wrap" >
+                    {renderImages()}
+                    <Box mr={2} mb={2}>
+                      <Flex direction="column">
+                        <label htmlFor="file-input">
+                          <Input
+                            id="file-input"
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileSelect}
+                            display="none"
+                            multiple
+                          />
+                          <Button rightIcon={<BsCardImage/>} width={100} height={100} cursor="pointer" as="span"></Button>
+                        </label>
+                      </Flex>
+                    </Box>
+                  </Stack>
+                </ModalBody>
+                <ModalFooter>
+                  <Button colorScheme="blue" mr={3} onClick={uploadPost}>
+                    Post
+                  </Button>
+                  <Button onClick={handleRemoveAll}>Cancel</Button>
+                </ModalFooter>
+              </ModalContent>
+            </Modal>
             </div>
               <Card w={[700]} borderRadius='15'>
                 <CardHeader>
@@ -270,12 +352,12 @@ export default function Group() {
         <Flex minWidth='max-content' alignItems='center' gap='2'px='5' pt='7' >
           <Heading color= 'black' size='md'>Store</Heading>
           <Spacer />
-          <IconButton icon={<AddIcon/>} size="sm" ref={btnRef} onClick={onOpen}/>
+          <IconButton icon={<AddIcon/>} size="sm" ref={btnRef} onClick={onListOpen}/>
         </Flex>
         <Modal
-          onClose={onClose}
+          onClose={onListClose}
           finalFocusRef={btnRef}
-          isOpen={isOpen}
+          isOpen={isListOpen}
           scrollBehavior={"inside"}
           size="xl"
           closeOnOverlayClick={false}
@@ -283,7 +365,7 @@ export default function Group() {
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Add Listing</ModalHeader>
-          <ModalCloseButton onClick={handleCloseAndRemoveAll} mt="2" mr="1" />
+          <ModalCloseButton onClick={handleRemoveAll} mt="2" mr="1" />
           <ModalBody>
           <form>
             <FormControl>

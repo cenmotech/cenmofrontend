@@ -95,7 +95,7 @@ return (
             <CardBody >
             <Accordion allowToggle>
                 { Object.entries(categories).map(([key, value]) => (
-                    <AccordionItem>
+                    <AccordionItem key={key}>
                         <h2>
                         <AccordionButton>
                             <Box as="span" flex='1' textAlign='left'>
@@ -105,8 +105,8 @@ return (
                         </AccordionButton>
                         </h2>
                         {value.map((group, index) => (
-                            <AccordionPanel pb={4}>
-                                <Link href={'/group/'+group.group_id} style={{ textDecoration: 'none' }}><Button justifyContent='left' colorScheme='blue' variant='ghost'>{group.group_name} </Button></Link>
+                            <AccordionPanel pb={4} key={index}>
+                                <Link href={'/group/'+group.group_id} key={index} style={{ textDecoration: 'none' }}><Button justifyContent='left' colorScheme='blue' variant='ghost'>{group.group_name} </Button></Link>
                             </AccordionPanel>
                         ))}
                     </AccordionItem>
