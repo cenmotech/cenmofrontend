@@ -30,7 +30,6 @@ export default async (req, res) => {
                   }
               }
               const {data: user} = await axios.get('http://127.0.0.1:8000/authuser/get-user-session', userConfig)
-              console.log(user)
               res.status(200).json({user, accessToken})
           }
         } catch(error){
