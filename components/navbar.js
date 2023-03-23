@@ -9,7 +9,7 @@ import { SearchIcon, BellIcon } from '@chakra-ui/icons'
 import { useEffect, useState, useContext } from 'react'
 import axios from "axios";
 import AuthenticationContext from '../context/AuthenticationContext'
-
+import { useRouter } from 'next/router'
 
 export default function Navbar() {
 const [categories, setCategories] = useState([])
@@ -17,6 +17,8 @@ const [categoriesFilter, setCategoriesFilter] = useState(null)
 const [filter, setFilter] = useState('')
 const {user} = useContext(AuthenticationContext);
 const {accessToken} = useContext(AuthenticationContext);
+const {logout} = useContext(AuthenticationContext);
+const router = useRouter();
 useEffect (() => {
     const fetchCategories = async () => {
         if(filter === '') {
@@ -48,6 +50,16 @@ useEffect (() => {
 const handleSearch = (e) => {
     setFilter(e)
 }
+
+const handleLogout = () => {
+    logout().then((success) => {
+        /* istanbul ignore next */
+        if(success){
+            router.push('/login')
+        }
+    })
+}
+
 return (
     <Box data-testid="navbar">
         <Grid templateRows='repeat(6, 1fr)' gap={0}>
@@ -58,7 +70,7 @@ return (
             </Box>
             <Spacer />
             <ButtonGroup gap='2' p='2' pr='5' borderRadius='30'>
-                <Button borderRadius='15' color='black'>Log Out</Button>
+                <Button borderRadius='15' color='black' onClick={handleLogout}>Log Out</Button>
             </ButtonGroup>
         </Flex>
 

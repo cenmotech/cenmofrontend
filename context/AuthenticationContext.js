@@ -83,9 +83,20 @@ export const AuthenticationProvider = ({children}) => {
 	      return false
 		}
     }
+	//Logout
+	const logout = async () => {
+		try{
+			setUser("")
+			setAccessToken("")
+			return true
+		}catch(error){
+			setError(error.response)
+			return false
+		}
+	}
 
 	return (
-		<AuthenticationContext.Provider value={{ user, accessToken, error, login, register}}>
+		<AuthenticationContext.Provider value={{ user, accessToken, error, login, register, logout}}>
 			{children}
 		</AuthenticationContext.Provider>
 	)
