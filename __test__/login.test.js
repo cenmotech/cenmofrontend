@@ -3,6 +3,8 @@ import { ChakraProvider } from '@chakra-ui/react'
 import { AuthenticationProvider } from '../context/AuthenticationContext';
 import Login from '../pages/login';
 import '@testing-library/jest-dom';
+import mockRouter from 'next-router-mock';
+jest.mock('next/router', () => require('next-router-mock'));
 describe('Login', () => {
     
     it('renders a login page', () => {
@@ -51,4 +53,43 @@ describe('Login', () => {
         expect(passwordInput.type).toBe('password');
         
     })
+    it('displays email validation error message', () => {
+        const mockLogin = jest.fn();
+        render(
+            <AuthenticationProvider>
+                <ChakraProvider>
+                    <Login login={mockLogin}/>
+                </ChakraProvider>
+            </AuthenticationProvider>
+        )
+        const emailInput = screen.getByLabelText('Email address');
+        fireEvent.change(emailInput, { target: { value: 'invalid-email' } });
+        expect(screen.getByText('Email address must contain \'@\'')).toBeInTheDocument();
+      });
+    it('displays password validation error message', () => {
+        const mockLogin = jest.fn();
+        render(
+            <AuthenticationProvider>
+                <ChakraProvider>
+                    <Login login={mockLogin}/>
+                </ChakraProvider>
+            </AuthenticationProvider>
+        )
+        const passwordInput = screen.getByLabelText('Password');
+        fireEvent.change(passwordInput, { target: { value: 'invalid-password' } });
+        expect(screen.getByText('Password must meet the criteria')).toBeInTheDocument();
+    });
+    it('does not display password validation error message when password meets criteria', () => {
+        const mockLogin = jest.fn();
+        render(
+          <AuthenticationProvider>
+            <ChakraProvider>
+              <Login login={mockLogin}/>
+            </ChakraProvider>
+          </AuthenticationProvider>
+        );
+        const passwordInput = screen.getByLabelText('Password');
+        fireEvent.change(passwordInput, { target: { value: 'ValidPassword123' } });
+        expect(screen.queryByText('Password must meet the criteria')).toBeNull();
+      });
 });

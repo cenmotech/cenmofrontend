@@ -6,14 +6,14 @@ import AuthenticationContext from '../context/AuthenticationContext'
 import { Input, Text, Button, onClose, 
     InputGroup, InputRightElement, useToast, Card, CardBody, Heading, Highlight,
     FormControl,FormLabel, FormHelperText, FormErrorMessage} from '@chakra-ui/react'
-
+import { useRouter } from 'next/router'
 
 export default function Login() {
 
         // Handle Error Email
         const [email, setEmail] = useState("");
         const [emailError, setEmailError] = useState("");
-
+        const router = useRouter();
         const handleEmailChange = (e) => {
             setEmail(e.target.value);
 
@@ -31,7 +31,7 @@ export default function Login() {
         const handlePasswordChange = (e) => {
             setPassword(e.target.value);
 
-            if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,12}$/.test(e.target.value)) {
+            if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/.test(e.target.value)) {
             setPasswordError("Password must meet the criteria");
             } else {
             setPasswordError("");
@@ -43,7 +43,8 @@ export default function Login() {
         const [input, setInput] = useState(false)
         const isError = input === ''
         const {login} = useContext(AuthenticationContext)
-
+        const {user} = useContext(AuthenticationContext);
+        const {accessToken} = useContext(AuthenticationContext);
 
         // Password
         const [show, setShow] = useState(false)
@@ -52,9 +53,13 @@ export default function Login() {
         // Toast
         const toast = useToast()
 
-        const submitHandler = e => {
+        function submitHandler (e) {
             e.preventDefault();
-            login({email, password})
+            login({email, password}).then((success) => {
+                if(success){
+                    router.push('/')
+                }
+            })
         }
     return (
         <>
@@ -104,18 +109,7 @@ export default function Login() {
                         <FormErrorMessage>{passwordError}</FormErrorMessage>
                     </FormControl>
                     <br/>
-                    <Button colorScheme='blue' mr={3}
-                    onClick={e =>
-                        {toast({
-                            title: 'You have successfully logged in.',
-                            description: "Let's discuss and find the item you want.",
-                            status: 'success',
-                            duration: 9000,
-                            isClosable: true,
-                            });
-                            submitHandler(e);
-                        }
-                    }>
+                    <Button colorScheme='blue' mr={3} onClick={e =>submitHandler(e)}>
                         Log In
                     </Button>
                     <Button onClick={onClose}>Register</Button>

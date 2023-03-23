@@ -7,7 +7,7 @@ searchListingByName, searchListingOnGroup, joinGroup, searchGroup,
 seeGroup, getAllCategoriesContains } from '../helpers/group/api';
 
 jest.mock('axios'); // mock the axios module
-const baseUrl = 'http://127.0.0.1/group';
+const baseUrl = 'http://127.0.0.1:8000/group';
 const accessToken = 'ranodomaosmdhalwe';
 describe('createGroup', () => {
   afterEach(() => {

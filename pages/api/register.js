@@ -22,7 +22,7 @@ export default async (req, res) => {
     }
 
     try {
-      await axios.post('http://localhost:8000/authuser/register', body, config)
+      await axios.post('http://127.0.0.1:8000/authuser/register', body, config)
     } catch(error) {
       if (error.response) {
         console.error(error.response.data);
