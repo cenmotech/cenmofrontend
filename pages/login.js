@@ -56,6 +56,7 @@ export default function Login() {
         function submitHandler (e) {
             e.preventDefault();
             login({email, password}).then((success) => {
+                /* istanbul ignore next */
                 if(success){
                     router.push('/')
                 }

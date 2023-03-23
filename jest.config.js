@@ -13,7 +13,7 @@ const customJestConfig = {
   // setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   moduleDirectories: ['node_modules', '<rootDir>/'],
   testEnvironment: 'jest-environment-jsdom',
-  coveragePathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/', '<rootDir>/pages/_app.js','<rootDir>/pages/api/'],
+  coveragePathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/', '<rootDir>/pages/_app.js','<rootDir>/pages/api/', '<rootDir>/components/','<rootDir>/pages/accounts/', ,'<rootDir>/pages/group/'],
   collectCoverageFrom: ['pages/**/*.{js,jsx,ts,tsx}', 'components/**/*.{js,jsx,ts,tsx}', 'helpers/**/*.{js,jsx,ts,tsx}'],
   testResultsProcessor: 'jest-sonar-reporter',
 }

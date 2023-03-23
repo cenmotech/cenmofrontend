@@ -49,7 +49,7 @@ const handleSearch = (e) => {
     setFilter(e)
 }
 return (
-    <Box>
+    <Box data-testid="navbar">
         <Grid templateRows='repeat(6, 1fr)' gap={0}>
         <GridItem rowSpan={2}>
         <Flex minWidth='max-content' alignItems='center' gap='2' pt='3'>
