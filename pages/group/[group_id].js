@@ -5,10 +5,13 @@ import {ReactNode, useState, useContext, useRef, useEffect } from 'react'
 import { useController } from "react-hook-form";
 import AuthenticationContext from '../../context/AuthenticationContext'
 import Navbar from '../../components/navbar'
-import { Progress, Image, InputLeftAddon, FormErrorMessage, Textarea, Grid, Select, GridItem, Input, FormControl, FormLabel, InputGroup, InputLeftElement, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, ButtonGroup, Button, Flex, Card, CardHeader, Box, Heading, Avatar, Stack, Text, Center, CardBody, IconButton, CardFooter, Divider, Spacer, AspectRatio, position, useDisclosure, NumberInput, NumberInputField, FormHelperText} from '@chakra-ui/react'
+import {Textarea, Progress, Image, InputLeftAddon, FormErrorMessage, Grid, Select, GridItem, Input, FormControl, FormLabel, InputGroup, InputLeftElement, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, ButtonGroup, Button, Flex, Card, CardHeader, Box, Heading, Avatar, Stack, Text, Center, CardBody, IconButton, CardFooter, Divider, Spacer, AspectRatio, position, useDisclosure, NumberInput, NumberInputField, FormHelperText} from '@chakra-ui/react'
 import { BsThreeDotsVertical, GrLinkPrevious, BsCardImage } from 'react-icons/bs'
 import { SearchIcon, BellIcon, AddIcon, ArrowBackIcon, ArrowForwardIcon } from '@chakra-ui/icons'
+import { getPostOnGroup, getListingOnGroup, searchPostByDesc, seeGroup} from '../../helpers/group/api'
 import '@splidejs/react-splide/css';
+import moment from "moment"
+import { useClickable } from "@chakra-ui/clickable"
 import axios from "axios";
 import { createListing, createPost } from '../../helpers/group/api';
 import { getStorage, ref, uploadBytes } from "firebase/storage";
@@ -72,9 +75,80 @@ export default function Group() {
     setCurrentIndex((prev) => prev === images.length - 1 ? 0 : prev + 1);
   };
 
+  const { isOpen: isDetailsListOpen , onOpen: onDetailsListOpen, onClose: onDetailsListClose } = useDisclosure()
+  const { isOpen: isReadMoreOpen , onOpen: onReadMoreOpen, onClose: onReadMoreClose } = useDisclosure()
   const { isOpen: isListOpen , onOpen: onListOpen, onClose: onListClose } = useDisclosure()
   const { isOpen: isPostOpen , onOpen: onPostOpen, onClose: onPostClose } = useDisclosure()
   const btnRef = useRef(null)
+
+  const [postList, setPostList] = useState([])  
+    const [listingList, setListingList] = useState([])  
+    const [groupMethod, setGroupMethod] = useState({})  
+    const [fullDesc, setFullDesc] = useState("")  
+    useEffect (() => {
+      if(!router.isReady) return;
+      const fetchPost = async () => {
+        if (groupId !==  0) {
+          getPostFromApi() 
+          getListingFromApi()
+          seeGroupFromApi()
+        }
+      }
+      fetchPost()
+      },[groupId])
+
+    async function getPostFromApi() {
+    try {
+        const response = await getPostOnGroup(localStorage.getItem('accessToken'), groupId);
+        setPostList(response.response)
+      } catch (error) {
+        // handle the error
+        console.error(error);
+      }
+    }
+
+    async function getListingFromApi() {
+      try {
+          const response = await getListingOnGroup(localStorage.getItem('accessToken'), groupId);
+          setListingList(response.response)
+        } catch (error) {
+          // handle the error
+          console.error(error);
+        }
+      }
+    let originalDescription = ""; 
+    async function seeGroupFromApi() {
+        try {
+            const response = await seeGroup(localStorage.getItem('accessToken'), groupId);
+            setGroupMethod(response.response)
+            setFullDesc(response.response.group_desc);
+            const description = response.response.group_desc;
+            var words=description.split(" ");
+            if(words.length>30){
+              response.response.group_desc = words.splice(0,30).join(" ")+"...   ";
+            }
+          } catch (error) {
+            // handle the error
+            console.error(error);
+          }
+        }
+
+
+
+    const [listingName, setListingName] = useState("")
+    const [listingPrice, setListingPrice] = useState(0)
+    const [listingDesc, setListingDesc] = useState("")
+    const [listingImage, setListingImage] = useState("")
+    const [listingRegion, setListingRegion] = useState("")
+    const [listingSellerName, setListingSellerName] = useState("")
+    const setModalValue = (listingData) => {
+      setListingName(listingData.goods_name)
+      setListingPrice(listingData.goods_price)
+      setListingDesc(listingData.goods_description)
+      setListingImage(listingData.goods_image_link)
+      setListingRegion(listingData.goods_region)
+      setListingSellerName(listingData.seller_name)
+    }
 
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]);
@@ -181,7 +255,6 @@ export default function Group() {
   async function postCreateListing(data) {
     try {
       const response = await createListing(localStorage.getItem("accessToken"), data)
-      console.log(response)
     } catch (error) {
       console.error(error);
     }
@@ -213,7 +286,6 @@ export default function Group() {
   async function postCreatePost(data) {
     try {
       const response = await createPost(localStorage.getItem("accessToken"), data)
-      console.log(response)
     } catch (error) {
       console.error(error);
     }
@@ -230,10 +302,41 @@ export default function Group() {
           <Center>
             <Stack direction='column' spacing={8}>
             <div style={{}}>
-            <Card w={[700]} borderRadius='15'>
-              <CardBody>
+            <Card w={[700]} h={[200]} mt="5" borderRadius='15'>
+              <CardBody>                    
+                <Box position="relative" width="100%" height="500px">
+                <Grid h='170px' templateRows='repeat(5, 1fr)' templateColumns='repeat(9, 1fr)' gap={4}>
+                <GridItem rowSpan={6} colSpan={1} >
+                <Center w='100px' h='150px' >
+                <Avatar size='xl' name='Dan Abrahmov' src='https://bit.ly/dan-abramov' />
+                </Center>
+                </GridItem>
+
+                <GridItem rowSpan={2} colSpan={7} >
+
+                <Text mb="5" fontSize='40px' as='b'>{groupMethod.group_name}</Text>
+                </GridItem>
+                
+                <GridItem rowSpan={3} colSpan={6}>
+                <Text mb="5" fontSize='16px'>{groupMethod.group_desc}
+                {/* <a color='blue' onClick={onReadMoreOpen} cursor='pointer'>read more</a> */}
+                </Text>
+                </GridItem>
+
+                <GridItem rowSpan={3} colSpan={2} >
+                <Flex color='white'>
+                <Center w='200px' h='86px' justifyContent='center' >
+                <Button justifyContent='center' width='90%' borderRadius='30' colorScheme='blue'>Join</Button>
+                </Center>
+                </Flex>
+                </GridItem>
+
+                </Grid>
+              </Box>
               {/* <Stack direction='row' spacing={0}> */}
-                <Text mb="5" fontSize='3xl'>Jual Beli Kamera</Text>
+              
+              
+                
               {/* </Stack> */}
               </CardBody>
             </Card>
@@ -250,6 +353,7 @@ export default function Group() {
                 </Box>
               </CardBody>
             </Card>
+            
             <Modal isOpen={isPostOpen} onClose={onPostClose} size="xl" closeOnOverlayClick={false}>
               <ModalOverlay />
               <ModalContent>
@@ -269,6 +373,7 @@ export default function Group() {
                     h="200"
                     onChange={(e) => setPostDesc(e.target.value)}
                   />
+                  
                   <Stack direction="row" flexWrap="wrap" >
                     {renderImages()}
                     <Box mr={2} mb={2}>
@@ -297,13 +402,14 @@ export default function Group() {
               </ModalContent>
             </Modal>
             </div>
+            {postList.map((post, index) => (
               <Card w={[700]} borderRadius='15'>
                 <CardHeader>
                   <Stack direction='row'>
                     <Avatar size='md' name='Dan Abrahmov' src='https://bit.ly/dan-abramov' />
                     <Stack spacing={0} direction='column'>
-                      <Text fontSize="xl">Zeta Prawira Syah</Text>
-                      <Text fontSize="sm" mt="0">Posted on 10/10/2021</Text>
+                      <Text fontSize="xl">{post.post_user_name}</Text>
+                      <Text fontSize="sm" mt="0">Posted on {moment(post.post_date).format("MMMM Do YYYY, h:mm:ss a")}</Text>
                     </Stack>
                     <Spacer />
                     <IconButton
@@ -315,7 +421,7 @@ export default function Group() {
                   </Stack>
                 </CardHeader>
                 <CardBody pt='0'>
-                  <Text mb="5" fontSize='xl'>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."</Text>                   
+                  <Text mb="5" fontSize='xl'>{post.post_desc}</Text>                   
                   <Flex alignItems="center">
                   <Button bg="transparent" leftIcon={<ArrowBackIcon cursor="pointer" />} onClick={handleClickPrev} ></Button>
                     <Box position="relative" width="100%" height="300px">
@@ -345,6 +451,7 @@ export default function Group() {
                   </div>
                 </CardFooter>
               </Card>
+            ))}
             </Stack>
           </Center>
         </GridItem>
@@ -355,13 +462,12 @@ export default function Group() {
           <IconButton icon={<AddIcon/>} size="sm" ref={btnRef} onClick={onListOpen}/>
         </Flex>
         <Modal
-          onClose={onListClose}
-          finalFocusRef={btnRef}
-          isOpen={isListOpen}
-          scrollBehavior={"inside"}
-          size="xl"
-          closeOnOverlayClick={false}
-        >
+        onClose={onListClose}
+        finalFocusRef={btnRef}
+        isOpen={isListOpen}
+        scrollBehavior={"inside"}
+        size="xl"
+      >
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Add Listing</ModalHeader>
@@ -434,17 +540,138 @@ export default function Group() {
           </ModalFooter>
         </ModalContent>
       </Modal>
-        
         <InputGroup pl='5' pr='5' pt='5'>
           <InputLeftElement
           pl='9' pt='10'
           pointerEvents='none'
           children={<SearchIcon color='gray.300' />}
           />
-          <Input pl='10' type='tel' placeholder='Search' borderRadius='full' />
+          <Input pl='10' type='tel' placeholder='Search' borderRadius='30' onChange={e => handleSearchPost(e.target.value)}/>
         </InputGroup>
-        
-        <Card overflow="hidden" height="145" m="5" borderRadius='15'>
+        <Modal isOpen={isDetailsListOpen} onClose={onDetailsListClose} size="xl">
+              <ModalOverlay />
+              <ModalContent>
+                <ModalHeader>
+                  <ModalCloseButton onClick={handleRemoveAll} mt="2" mr="1" />
+                  </ModalHeader>
+                
+                  
+                  <ModalBody>
+                  <Grid
+                    h='700px'
+                    templateRows='repeat(15, 1fr)'
+                    templateColumns='repeat(6, 1fr)'
+                    gap={2}
+                  >
+                    <GridItem rowSpan={8} colSpan={6}>
+
+                    <Flex color='white'>
+                    <Center w='600px' >
+                    <Button bg="transparent" leftIcon={<ArrowBackIcon cursor="pointer" />} onClick={handleClickPrev} color='black'></Button>
+                    <Box position="relative" width="100%" height="350px">
+                    {images.map((image, index) => (
+                      <Image
+                        key={image.id}
+                        src={image.src}
+                        alt={`Image ${index + 1}`}
+                        position="absolute"
+                        top={0}
+                        left={0}
+                        width="100%"
+                        height="100%"
+                        opacity={index === currentIndex ? 1 : 0}
+                        transition="opacity 0.5s ease-in-out"
+                        objectFit="contain"
+                      />
+                    ))}
+                  </Box>
+                  <Button bg="transparent" rightIcon={<ArrowForwardIcon cursor="pointer" />} onClick={handleClickNext} color='black'></Button>
+                    </Center>
+                    </Flex>
+
+
+                    </GridItem>
+                    <GridItem>
+
+                    </GridItem>
+                    <GridItem rowSpan={1} colSpan={6}>
+                    <Flex justifyContent='center'>
+                    <Center height='23px' width='500px' justifyContent='left'>
+                    <Text fontSize='30px'>
+                    <b>{listingName}</b> 
+                    </Text>
+                    </Center>
+                    </Flex>
+                    </GridItem>
+                    <GridItem rowSpan={1} colSpan={6}>
+                    <Flex justifyContent='center'>
+                    <Center height='23px' width='500px' justifyContent='left'>
+                    <Text fontSize='18px'>
+                    <b>Rp{listingPrice}</b> 
+                    </Text>
+                    </Center>
+                    </Flex>
+                    </GridItem>
+                    <GridItem rowSpan={2} colSpan={6} borderBottom='2px' borderColor='gray.200'>
+                      <Box box='1' height='auto' justifyItems='center' marginX='15px'>
+                      <Text mb="5" fontSize='16px'>{listingDesc}
+                      </Text>
+                      </Box>
+
+                    </GridItem>
+                    <GridItem rowSpan={1} colSpan={6}>
+
+</GridItem>
+<GridItem rowSpan={2} colSpan={1}>
+<Center w='100px' h='70px'>
+                <Avatar size='lg' name='Dan Abrahmov' src='https://bit.ly/dan-abramov' />
+                </Center>
+</GridItem>
+
+                    <GridItem rowSpan={1} colSpan={5}>
+                    <Flex justifyContent='center'>
+                    <Center height='23px' width='500px' justifyContent='left'>
+                    <Text fontSize='20px'>
+                    <b>{listingSellerName}</b> 
+                    </Text>
+                    </Center>
+                    </Flex>
+                    </GridItem>
+                    <GridItem rowSpan={1} colSpan={5} >
+                    <Flex justifyContent='center'>
+                    <Center height='23px' width='500px'justifyContent='left'>
+                    <Text fontSize='18px'>
+                    {listingRegion}
+                    </Text>
+                    </Center>
+                    </Flex>
+                    </GridItem>
+                    
+                  </Grid>
+
+
+                 </ModalBody>
+                <ModalFooter>
+                  <Button onClick={onDetailsListClose}>Close</Button>
+                </ModalFooter>
+              </ModalContent>
+            </Modal>
+
+            <Modal isOpen={isReadMoreOpen} onClose={onReadMoreClose} size="xl" closeOnOverlayClick={false}>
+              <ModalOverlay />
+              <ModalContent>
+                <ModalHeader>{groupMethod.group_name}'s Description</ModalHeader>
+                <ModalCloseButton onClick={handleRemoveAll} mt="2" mr="1" />
+                <ModalBody>
+                  <Textarea rows="10">{fullDesc}</Textarea>
+                  
+                </ModalBody>
+                <ModalFooter>
+                </ModalFooter>
+              </ModalContent>
+            </Modal>
+        {listingList.map((list, index) => (
+        <Card overflow="hidden" height="145" m="5" borderRadius='15' className='listingCard' onClick={() => {setModalValue(list); onDetailsListOpen()}} cursor='pointer' key={index}>
           <CardBody>
             <Stack direction='row' align='stretch' spacing={3}>
             <Box flex="1">
@@ -456,10 +683,10 @@ export default function Group() {
                     overflow: 'hidden'
                   }}
                 >
-                  Pizza Margherita Comment section coming soon!Comment section coming soon!Comment section coming soon!Comment section coming soon!Comment section coming soon!
+                  {list.goods_name}
                 </Box>
                 <Box fontSize="sm" display="block" marginTop="auto" mt='10px'>
-                  Rp. 100.000
+                Rp{list.goods_price}
                 </Box>
               </Box>
               <Stack alignItems="center" justifyContent="center">
@@ -468,6 +695,7 @@ export default function Group() {
             </Stack>
           </CardBody>
         </Card>
+        ))}
         </GridItem>
       </Grid>
     </main>
