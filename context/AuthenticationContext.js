@@ -5,10 +5,10 @@ import { useRouter } from 'next/router'
 const AuthenticationContext = createContext()
 
 export const AuthenticationProvider = ({children}) => {
-    const [user, setUser] = useState(null)
-	const [accessToken, setAccessToken] = useState(null)
-	const [error, setError] = useState(null)
-
+    const [user, setUser] = useState("")
+	const [accessToken, setAccessToken] = useState("")
+	const [error, setError] = useState("")
+	const baseUrl = 'http://localhost:3001/api'
 	// const router = useRouter()
 
     // Login
@@ -26,35 +26,26 @@ export const AuthenticationProvider = ({children}) => {
 		}
 
 		try {
-			const { data:access } = await axios.post('http://localhost:3000/api/login', body, config)
-			if(access && access.user.email){
-				setUser(access.user.email)
-				localStorage.setItem('user', access.user.email)
-			}
-
-			if(access && access.accessToken){
-				setAccessToken(access.accessToken)
-				localStorage.setItem('accessToken', access.accessToken)
-			}
-
+			let access = await axios.post(`${baseUrl}/login`, body, config)
+			setUser(access.data.user.email)
+			setAccessToken(access.data.accessToken)
+			return true;
 		} catch(error){
-			console.log(error)
-			if (error.response & error.response.data) {
+			if (error) {
 				setError(error.response)
-				return      
+				return false
 			} else if (error.request) {
 			  setError('Something went wrong')
-			  return  
+			  return false
 			} else {
 			  setError('Something went wrong')
-			  return
+			  return false
 			}
 			console.error('Error', error.message);
 			setError('Something went wrong')
-			return
+			return false
 		}
 
-		
 	}
     // Register
     const register = async ({name, email, password, phone}) => {
@@ -74,22 +65,22 @@ export const AuthenticationProvider = ({children}) => {
 
         try {
 			// call nextjs api function to create a user
-			await axios.post('http://localhost:3001/api/register', body, config)
-			login({ email, password })
+			await axios.post(`${baseUrl}/register`, body, config)
+			return true
 		} catch(error) {
-		  if (error.response & error.response.data) {
-		  	setError(error.response.data.message)
-		  	return      
+		  if (error) {
+		  	setError(error.response)
+		  	return false     
 	      } else if (error.request) {
 		    setError('Something went wrong')
-		    return  
+		    return false 
 	      } else {
 			setError('Something went wrong')
-			return
+			return false
 	      }
 	      console.error('Error', error.message);
 	      setError('Something went wrong')
-	      return
+	      return false
 		}
     }
 
