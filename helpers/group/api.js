@@ -213,3 +213,13 @@ export const deletePost = async (Token, groupId, postId) => {
         throw new Error(error.response.data.error);
     }
 }
+
+export const isMember = async (Token, groupId) => {
+    accessToken = Token;
+    try{
+        const response  = await axios.get(`${baseUrl}/is_joined/${groupId}`, getConfig());
+        return response.data;
+    }catch(error){
+        throw new Error(error.response.data.error);
+    }
+}
