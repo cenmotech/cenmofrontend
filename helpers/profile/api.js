@@ -6,7 +6,7 @@ const getConfig = () => {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`
+        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
       }
     }
   }
@@ -15,6 +15,7 @@ export const getUserProfile = async (Token) => {
     accessToken = Token;
     try {
         const response = await axios.get(`${baseUrl}/get-user-profile`, getConfig());
+        console.log(response.data);
         return response.data;
     } catch (error) {
         throw new Error(error.response.data.error);
@@ -37,6 +38,16 @@ export const addAddress = async (Token, Body) => {
         const response  = await axios.post(`${baseUrl}/add-address`, Body, getConfig());
         return response.data;
     }catch(error){
+        throw new Error(error.response.data.error);
+    }
+}
+
+export const getUserInfo = async (Token) => {
+    accessToken = Token;
+    try {
+        const response = await axios.get(`${baseUrl}/get-user-session`, getConfig());
+        return response.data;
+    } catch (error) {
         throw new Error(error.response.data.error);
     }
 }

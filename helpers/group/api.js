@@ -6,7 +6,7 @@ const getConfig = () => {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`
+        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
       }
     }
   }
@@ -198,6 +198,16 @@ export const seeGroup = async (Token, groupId) => {
     accessToken = Token;
     try{
         const response  = await axios.get(`${baseUrl}/see_group/${groupId}`, getConfig());
+        return response.data;
+    }catch(error){
+        throw new Error(error.response.data.error);
+    }
+}
+
+export const deletePost = async (Token, groupId, postId) => {
+    accessToken = Token;
+    try{
+        const response  = await axios.get(`${baseUrl}/delete_post/${groupId}/${postId}`, getConfig());
         return response.data;
     }catch(error){
         throw new Error(error.response.data.error);

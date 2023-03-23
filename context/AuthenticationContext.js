@@ -8,7 +8,7 @@ export const AuthenticationProvider = ({children}) => {
     const [user, setUser] = useState("")
 	const [accessToken, setAccessToken] = useState("")
 	const [error, setError] = useState("")
-	const baseUrl = 'http://localhost:3001/api'
+	const baseUrl = 'http://localhost:3000/api'
 	// const router = useRouter()
 
     // Login
@@ -29,6 +29,8 @@ export const AuthenticationProvider = ({children}) => {
 			let access = await axios.post(`${baseUrl}/login`, body, config)
 			setUser(access.data.user.email)
 			setAccessToken(access.data.accessToken)
+			localStorage.setItem('accessToken', access.data.accessToken)
+			localStorage.setItem('user', access.data.user.email)
 			return true;
 		} catch(error){
 			if (error) {
@@ -88,6 +90,8 @@ export const AuthenticationProvider = ({children}) => {
 		try{
 			setUser("")
 			setAccessToken("")
+			localStorage.removeItem('accessToken')
+			localStorage.removeItem('user')
 			return true
 		}catch(error){
 			setError(error.response)

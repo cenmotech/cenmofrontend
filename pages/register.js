@@ -141,7 +141,7 @@ export default function Register() {
                   <FormErrorMessage>{passwordError}</FormErrorMessage>
               </FormControl>
               <br/>
-              <Button onClick={onClose} mr={3}>
+              <Button onClick={() => router.push("/login")} mr={3}>
                   Back to Log In
               </Button>
               <Button colorScheme='green' onClick={e => handelSubmit(e)}>
