@@ -8,7 +8,7 @@ import Navbar from '../../components/navbar'
 import {Textarea, Progress, Image, InputLeftAddon, FormErrorMessage, Grid, Select, GridItem, Input, FormControl, FormLabel, InputGroup, InputLeftElement, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, ButtonGroup, Button, Flex, Card, CardHeader, Box, Heading, Avatar, Stack, Text, Center, CardBody, IconButton, CardFooter, Divider, Spacer, AspectRatio, position, useDisclosure, NumberInput, NumberInputField, FormHelperText} from '@chakra-ui/react'
 import { BsThreeDotsVertical, GrLinkPrevious, BsCardImage } from 'react-icons/bs'
 import { SearchIcon, BellIcon, AddIcon, ArrowBackIcon, ArrowForwardIcon } from '@chakra-ui/icons'
-import { getPostOnGroup, getListingOnGroup, searchPostByDesc, seeGroup, searchPostOnGroup} from '../../helpers/group/api'
+import { getPostOnGroup, getListingOnGroup, searchPostByDesc, seeGroup, searchPostOnGroup, searchListingOnGroup} from '../../helpers/group/api'
 import '@splidejs/react-splide/css';
 import moment from "moment"
 import { useClickable } from "@chakra-ui/clickable"
@@ -86,6 +86,8 @@ export default function Group() {
     const [groupMethod, setGroupMethod] = useState({})  
     const [fullDesc, setFullDesc] = useState("")  
     const [filter, setFilter] = useState("")
+    const [filterList, setFilterList] = useState("")
+
     useEffect (() => {
       if(!router.isReady) return;
       const fetchPost = async () => {
@@ -133,16 +135,6 @@ export default function Group() {
         console.error(error);
       }
     }
-
-    async function getListingFromApi() {
-      try {
-          const response = await getListingOnGroup(localStorage.getItem('accessToken'), groupId);
-          setListingList(response.response)
-        } catch (error) {
-          // handle the error
-          console.error(error);
-        }
-      }
     let originalDescription = ""; 
     async function seeGroupFromApi() {
         try {
@@ -324,6 +316,41 @@ export default function Group() {
     }
   }
 
+  useEffect (() => {
+    if(!router.isReady) return;
+    const searchList = async () => {
+      if(filterList === "") {
+        const response = await getListingOnGroup(localStorage.getItem('accessToken'), groupId);
+        setListingList(response.response)
+      }
+      else {
+        const response = await searchListingOnGroup(localStorage.getItem('accessToken'), groupId, filterList);
+        setListingList(response.response)
+      }
+    }
+    searchList()
+  }, [filterList])
+
+  async function getListingFromApi() {
+      try {
+        if(filter === ''){
+          const response = await getListingOnGroup(localStorage.getItem('accessToken'), groupId);
+          setListingList(response.response)
+        } else {
+          const response = await searchListingOnGroup(localStorage.getItem('accessToken'), groupId, filterList);
+          setListingList(response.response)
+        }
+      } catch (error) {
+        // handle the error
+        console.error(error);
+      }
+    }
+
+  const handleSearchListing = (e) => {
+      if(e.key === 'Enter'){
+        setFilterList(e.target.value)
+    }
+  }
 
     return (
     <main className={styles.container}>
@@ -585,7 +612,7 @@ export default function Group() {
           pointerEvents='none'
           children={<SearchIcon color='gray.300' />}
           />
-          <Input pl='10' type='tel' placeholder='Search' borderRadius='30' onChange={e => handleSearchPost(e.target.value)}/>
+          <Input pl='10' type='tel' placeholder='Search' borderRadius='30' onKeyDown={handleSearchListing}/>
         </InputGroup>
         <Modal isOpen={isDetailsListOpen} onClose={onDetailsListClose} size="xl">
               <ModalOverlay />
