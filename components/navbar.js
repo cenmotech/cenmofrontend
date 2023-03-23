@@ -10,23 +10,23 @@ import { useEffect, useState, useContext } from 'react'
 import axios from "axios";
 import AuthenticationContext from '../context/AuthenticationContext'
 import { useRouter } from 'next/router'
+import { getUserInfo } from '../helpers/profile/api';
 
 export default function Navbar() {
 const [categories, setCategories] = useState([])
 const [categoriesFilter, setCategoriesFilter] = useState(null)
 const [filter, setFilter] = useState('')
-const {user} = useContext(AuthenticationContext);
-const {accessToken} = useContext(AuthenticationContext);
 const {logout} = useContext(AuthenticationContext);
 const router = useRouter();
 useEffect (() => {
     const fetchCategories = async () => {
+        console.log(localStorage.getItem('accessToken'))
         if(filter === '') {
             const response = await axios.get(`http://localhost:8000/group/get_all_categories`, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
-                    'Authorization': `Bearer ${accessToken}`
+                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
                 }
             })
             setCategories(response.data.category_groups)
@@ -37,7 +37,7 @@ useEffect (() => {
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
-                    'Authorization': `Bearer ${accessToken}`
+                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
                 }
             })
             setCategories(response.data.category_groups)
@@ -60,6 +60,15 @@ const handleLogout = () => {
     })
 }
 
+const [userName, setUserName] = useState("")
+useEffect(() => {
+  const getUser = async () => {
+    const response = await getUserInfo(localStorage.getItem('accessToken'));
+    setUserName(response.name)
+  }
+  getUser()
+}, [])
+
 return (
     <Box data-testid="navbar">
         <Grid templateRows='repeat(6, 1fr)' gap={0}>
@@ -76,7 +85,7 @@ return (
 
         <List spacing={3} pl='5' pt='3' pr='3'>
         <ListItem>
-            <Button leftIcon={<BellIcon />} justifyContent='left' width='100%' borderRadius='30' colorScheme='blue'>Home</Button>
+            <Button leftIcon={<BellIcon />} justifyContent='left' onClick={() => router.push("/")} cursor="pointer" width='100%' borderRadius='30' colorScheme='blue'>Home</Button>
         </ListItem>
         <ListItem>
             <Button leftIcon={<BellIcon />} justifyContent='left' width='100%' borderRadius='30' colorScheme='blue'>Chats</Button>
@@ -130,15 +139,14 @@ return (
             </Card>
             </Box>
             </GridItem>
-            <Stack direction='row' pl='5' pt='5'>
-            <Avatar size='md' name='Dan Abrahmov' src='https://bit.ly/dan-abramov' />
-            <Stack direction='column' color='black' m='10' pl='3'>
-                <p>Zeta Prawira Syah</p>
-                <Link color='teal.500' href='#'>
-                    Settings
-                </Link>
-            </Stack>
-        </Stack>
+            <GridItem rowSpan={1}>
+                <Stack  onClick={() => router.push('/accounts/profile')} cursor="pointer" direction='row' pl='5' pt='5'>
+                <Avatar size='md' name={userName} />
+                <Stack direction='row' alignItems={"center"} color='black' m='5' pl='3'>
+                    <p>{userName}</p>
+                </Stack>
+                </Stack>
+            </GridItem>
         </Grid>
     </Box>
     )

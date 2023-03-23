@@ -5,15 +5,16 @@ import {ReactNode, useState, useContext, useRef, useEffect } from 'react'
 import { useController } from "react-hook-form";
 import AuthenticationContext from '../../context/AuthenticationContext'
 import Navbar from '../../components/navbar'
-import {Textarea, Progress, Image, InputLeftAddon, FormErrorMessage, Grid, Select, GridItem, Input, FormControl, FormLabel, InputGroup, InputLeftElement, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, ButtonGroup, Button, Flex, Card, CardHeader, Box, Heading, Avatar, Stack, Text, Center, CardBody, IconButton, CardFooter, Divider, Spacer, AspectRatio, position, useDisclosure, NumberInput, NumberInputField, FormHelperText} from '@chakra-ui/react'
+import {Textarea, Progress, Menu, MenuButton, MenuItem, MenuList, Image, InputLeftAddon, FormErrorMessage, Grid, Select, GridItem, Input, FormControl, FormLabel, InputGroup, InputLeftElement, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, ButtonGroup, Button, Flex, Card, CardHeader, Box, Heading, Avatar, Stack, Text, Center, CardBody, IconButton, CardFooter, Divider, Spacer, AspectRatio, position, useDisclosure, NumberInput, NumberInputField, FormHelperText} from '@chakra-ui/react'
 import { BsThreeDotsVertical, GrLinkPrevious, BsCardImage } from 'react-icons/bs'
 import { SearchIcon, BellIcon, AddIcon, ArrowBackIcon, ArrowForwardIcon } from '@chakra-ui/icons'
-import { getPostOnGroup, getListingOnGroup, searchPostByDesc, seeGroup, searchPostOnGroup, searchListingOnGroup} from '../../helpers/group/api'
+import { getPostOnGroup, getListingOnGroup, searchPostByDesc, seeGroup, searchPostOnGroup, searchListingOnGroup, deletePost} from '../../helpers/group/api'
 import '@splidejs/react-splide/css';
 import moment from "moment"
 import { useClickable } from "@chakra-ui/clickable"
 import axios from "axios";
 import { createListing, createPost } from '../../helpers/group/api';
+import { getUserInfo } from '../../helpers/profile/api';
 import { getStorage, ref, uploadBytes } from "firebase/storage";
 import { storage } from '../../firebaseConfig';
 import { v4 } from 'uuid';
@@ -352,6 +353,28 @@ export default function Group() {
     }
   }
 
+  //Set User name on Group
+  const [userName, setUserName] = useState("")
+  useEffect(() => {
+    const getUser = async () => {
+      const response = await getUserInfo(localStorage.getItem('accessToken'));
+      setUserName(response.name)
+    }
+    getUser()
+  }, [])
+
+
+  const handleDeleteClick = async (postId) => {
+    console.log(postId)
+    console.log(groupId)
+    try {
+      const response = await deletePost(localStorage.getItem("accessToken"), groupId,postId)
+      await router.reload()
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
     return (
     <main className={styles.container}>
       <Grid templateColumns='repeat(5, 1fr)' gap={0}>
@@ -368,7 +391,7 @@ export default function Group() {
                 <Grid h='170px' templateRows='repeat(5, 1fr)' templateColumns='repeat(9, 1fr)' gap={4}>
                 <GridItem rowSpan={6} colSpan={1} >
                 <Center w='100px' h='150px' >
-                <Avatar size='xl' name='Dan Abrahmov' src='https://bit.ly/dan-abramov' />
+                <Avatar size='xl' name={groupMethod.group_name} />
                 </Center>
                 </GridItem>
 
@@ -409,9 +432,9 @@ export default function Group() {
             <Card w={[700]} borderRadius='15' mt='10'>
               <CardBody>
                 <Stack direction='row' alignItems="center">
-                  <Avatar size='md' name='Dan Abrahmov' src='https://bit.ly/dan-abramov' />
+                  <Avatar size='md' name={userName} />
                   <Stack spacing={0} direction='column'>
-                    <Text fontSize="xl">Zeta Prawira Syah</Text>
+                    <Text fontSize="xl">{userName}</Text>
                   </Stack>
                 </Stack>
                 <Box mt={5} w='100%' p={4} boxShadow="0px 1px 4px rgba(0, 0, 0, 0.25)" borderRadius="10px" cursor={'pointer'} onClick={onPostOpen} >
@@ -427,9 +450,9 @@ export default function Group() {
                 <ModalCloseButton onClick={handleRemoveAll} mt="2" mr="1" />
                 <ModalBody>
                   <Stack direction='row' alignItems="center">
-                    <Avatar size='md' name='Dan Abrahmov' src='https://bit.ly/dan-abramov' />
+                  <Avatar size='md' name={userName} />
                     <Stack spacing={0} direction='column'>
-                      <Text fontSize="xl">Zeta Prawira Syah</Text>
+                      <Text fontSize="xl">{userName}</Text>
                     </Stack>
                   </Stack>
                   <Textarea
@@ -472,18 +495,24 @@ export default function Group() {
               <Card w={[700]} borderRadius='15'>
                 <CardHeader>
                   <Stack direction='row'>
-                    <Avatar size='md' name='Dan Abrahmov' src='https://bit.ly/dan-abramov' />
+                    <Avatar size='md' name={post.post_user_name}/>
                     <Stack spacing={0} direction='column'>
                       <Text fontSize="xl">{post.post_user_name}</Text>
                       <Text fontSize="sm" mt="0">Posted on {moment(post.post_date).format("MMMM Do YYYY, h:mm:ss a")}</Text>
                     </Stack>
                     <Spacer />
-                    <IconButton
-                      variant='ghost'
-                      colorScheme='gray'
-                      aria-label='See menu'
-                      icon={<BsThreeDotsVertical />}
-                    />
+                      <Menu>
+                      <MenuButton
+                        as={IconButton}
+                        variant='ghost'
+                        colorScheme='gray'
+                        aria-label='See menu'
+                        icon={<BsThreeDotsVertical />}
+                      />
+                      <MenuList>
+                        <MenuItem onClick={() => handleDeleteClick(post.post_id)} >Delete</MenuItem>
+                      </MenuList>
+                    </Menu>
                   </Stack>
                 </CardHeader>
                 <CardBody pt='0'>

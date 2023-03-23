@@ -113,7 +113,7 @@ export default function Login() {
                     <Button colorScheme='blue' mr={3} onClick={e =>submitHandler(e)}>
                         Log In
                     </Button>
-                    <Button onClick={onClose}>Register</Button>
+                    <Button onClick={() => router.push("/register")}>Register</Button>
                 </form>
             </CardBody>
         </Card>
