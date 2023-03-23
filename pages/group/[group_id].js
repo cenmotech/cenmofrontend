@@ -5,19 +5,21 @@ import {ReactNode, useState, useContext, useRef, useEffect } from 'react'
 import { useController } from "react-hook-form";
 import AuthenticationContext from '../../context/AuthenticationContext'
 import Navbar from '../../components/navbar'
-import {Textarea, Progress, Menu, MenuButton, MenuItem, MenuList, Image, InputLeftAddon, FormErrorMessage, Grid, Select, GridItem, Input, FormControl, FormLabel, InputGroup, InputLeftElement, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, ButtonGroup, Button, Flex, Card, CardHeader, Box, Heading, Avatar, Stack, Text, Center, CardBody, IconButton, CardFooter, Divider, Spacer, AspectRatio, position, useDisclosure, NumberInput, NumberInputField, FormHelperText} from '@chakra-ui/react'
+import {useToast, Textarea, Progress, Menu, MenuButton, MenuItem, MenuList, Image, InputLeftAddon, FormErrorMessage, Grid, Select, GridItem, Input, FormControl, FormLabel, InputGroup, InputLeftElement, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, ButtonGroup, Button, Flex, Card, CardHeader, Box, Heading, Avatar, Stack, Text, Center, CardBody, IconButton, CardFooter, Divider, Spacer, AspectRatio, position, useDisclosure, NumberInput, NumberInputField, FormHelperText} from '@chakra-ui/react'
 import { BsThreeDotsVertical, GrLinkPrevious, BsCardImage } from 'react-icons/bs'
 import { SearchIcon, BellIcon, AddIcon, ArrowBackIcon, ArrowForwardIcon } from '@chakra-ui/icons'
-import { getPostOnGroup, getListingOnGroup, searchPostByDesc, seeGroup, searchPostOnGroup, searchListingOnGroup, deletePost} from '../../helpers/group/api'
+import { isMember, getPostOnGroup, getListingOnGroup, searchPostByDesc, seeGroup, joinGroup, createListing, createPost, searchPostOnGroup, searchListingOnGroup, deletePost} from '../../helpers/group/api'
 import '@splidejs/react-splide/css';
 import moment from "moment"
 import { useClickable } from "@chakra-ui/clickable"
 import axios from "axios";
-import { createListing, createPost } from '../../helpers/group/api';
 import { getUserInfo } from '../../helpers/profile/api';
 import { getStorage, ref, uploadBytes } from "firebase/storage";
 import { storage } from '../../firebaseConfig';
 import { v4 } from 'uuid';
+import { grid } from '@chakra-ui/styled-system';
+import PostImage from '../../components/postImage';
+import MainImage from '../../components/mainImage';
 
 
 export default function Group() {
@@ -82,6 +84,7 @@ export default function Group() {
   const { isOpen: isPostOpen , onOpen: onPostOpen, onClose: onPostClose } = useDisclosure()
   const btnRef = useRef(null)
 
+  const [isJoined, setIsJoined] = useState(false)
   const [postList, setPostList] = useState([])  
     const [listingList, setListingList] = useState([])  
     const [groupMethod, setGroupMethod] = useState({})  
@@ -91,16 +94,25 @@ export default function Group() {
 
     useEffect (() => {
       if(!router.isReady) return;
-      const fetchPost = async () => {
+      const fetchGroupInfo = async () => {
         if (groupId !==  0) {
           getPostFromApi() 
           getListingFromApi()
           seeGroupFromApi()
+          checkIsMember()
         }
       }
-      fetchPost()
+      fetchGroupInfo()
       },[groupId])
 
+    async function checkIsMember() {
+      try {
+        const response = await isMember(localStorage.getItem('accessToken'), groupId);
+        setIsJoined(response.isMember)
+      } catch (error) {
+        console.error(error)
+      }
+    }  
     useEffect (() => {
       if(!router.isReady) return;
       const searchPost = async () => {
@@ -154,7 +166,6 @@ export default function Group() {
         }
 
 
-
     const [listingName, setListingName] = useState("")
     const [listingPrice, setListingPrice] = useState(0)
     const [listingDesc, setListingDesc] = useState("")
@@ -165,7 +176,7 @@ export default function Group() {
       setListingName(listingData.goods_name)
       setListingPrice(listingData.goods_price)
       setListingDesc(listingData.goods_description)
-      setListingImage(listingData.goods_image_link)
+      setListingImage({"post_image_link":listingData.goods_image_link})
       setListingRegion(listingData.goods_region)
       setListingSellerName(listingData.seller_name)
     }
@@ -311,6 +322,21 @@ export default function Group() {
     }
   };
 
+  const toast = useToast()
+  async function join() { 
+    const id = groupId;
+    const data = {id};
+    groupJoined(data)
+    await router.reload()
+  };
+
+  async function groupJoined(data) {
+    try {
+      const response = await joinGroup(localStorage.getItem("accessToken"), data)
+    } catch (error) {
+      console.error(error);
+    }
+  };
   const handleSearch = (e) => {
     if(e.key === 'Enter'){
       setFilter(e.target.value)
@@ -409,7 +435,18 @@ export default function Group() {
                 <GridItem rowSpan={3} colSpan={2} >
                 <Flex color='white'>
                 <Center w='200px' h='86px' justifyContent='center' >
-                <Button justifyContent='center' width='90%' borderRadius='30' colorScheme='blue'>Join</Button>
+                { isJoined === true ? 
+                <Button isDisabled justifyContent='center' width='90%' borderRadius='30' colorScheme='blue'>Joined</Button>
+                : <Button  justifyContent='center' width='90%' borderRadius='30' colorScheme='blue' onClick={e =>{toast({
+                  title: 'Success',
+                  description: "You have joined",
+                  status: 'success',
+                  duration: 9000,
+                  isClosable: true,
+                  });
+                  join();
+              }}>Join</Button>
+                }
                 </Center>
                 </Flex>
                 </GridItem>
@@ -516,28 +553,8 @@ export default function Group() {
                   </Stack>
                 </CardHeader>
                 <CardBody pt='0'>
-                  <Text mb="5" fontSize='xl'>{post.post_desc}</Text>                   
-                  <Flex alignItems="center">
-                  <Button bg="transparent" leftIcon={<ArrowBackIcon cursor="pointer" />} onClick={handleClickPrev} ></Button>
-                    <Box position="relative" width="100%" height="300px">
-                    {images.map((image, index) => (
-                      <Image
-                        key={image.id}
-                        src={image.src}
-                        alt={`Image ${index + 1}`}
-                        position="absolute"
-                        top={0}
-                        left={0}
-                        width="100%"
-                        height="100%"
-                        opacity={index === currentIndex ? 1 : 0}
-                        transition="opacity 0.5s ease-in-out"
-                        objectFit="contain"
-                      />
-                    ))}
-                  </Box>
-                  <Button bg="transparent" rightIcon={<ArrowForwardIcon cursor="pointer" />} onClick={handleClickNext} ></Button>
-                  </Flex>
+                  <Text mb="5" fontSize='xl'>{post.post_desc}</Text>
+                  <PostImage post={post}></PostImage>                  
                 </CardBody>
                 <Divider />
                 <CardFooter p="2" ml="3">
@@ -659,32 +676,7 @@ export default function Group() {
                     gap={2}
                   >
                     <GridItem rowSpan={8} colSpan={6}>
-
-                    <Flex color='white'>
-                    <Center w='600px' >
-                    <Button bg="transparent" leftIcon={<ArrowBackIcon cursor="pointer" />} onClick={handleClickPrev} color='black'></Button>
-                    <Box position="relative" width="100%" height="350px">
-                    {images.map((image, index) => (
-                      <Image
-                        key={image.id}
-                        src={image.src}
-                        alt={`Image ${index + 1}`}
-                        position="absolute"
-                        top={0}
-                        left={0}
-                        width="100%"
-                        height="100%"
-                        opacity={index === currentIndex ? 1 : 0}
-                        transition="opacity 0.5s ease-in-out"
-                        objectFit="contain"
-                      />
-                    ))}
-                  </Box>
-                  <Button bg="transparent" rightIcon={<ArrowForwardIcon cursor="pointer" />} onClick={handleClickNext} color='black'></Button>
-                    </Center>
-                    </Flex>
-
-
+                    <PostImage post={listingImage}></PostImage>  
                     </GridItem>
                     <GridItem>
 
@@ -785,7 +777,7 @@ export default function Group() {
                 </Box>
               </Box>
               <Stack alignItems="center" justifyContent="center">
-                <Image boxSize='100px' src='https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Eq_it-na_pizza-margherita_sep2005_sml.jpg/800px-Eq_it-na_pizza-margherita_sep2005_sml.jpg' alt='Dan Abramov' />
+                <MainImage listingList={list}></MainImage>
               </Stack>
             </Stack>
           </CardBody>

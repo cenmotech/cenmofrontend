@@ -29,8 +29,10 @@ useEffect (() => {
                     'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
                 }
             })
-            setCategories(response.data.category_groups)
-            setCategoriesFilter(response.data.category_groups)
+            if (response && response.data && response.data.category_groups) {
+                setCategories(response.data.category_groups)
+                setCategoriesFilter(response.data.category_groups)
+              }
         }
         else{
             const response = await axios.get(`http://localhost:8000/group/get_all_categories_contains/${filter}`, {
@@ -40,8 +42,10 @@ useEffect (() => {
                     'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
                 }
             })
-            setCategories(response.data.category_groups)
-            setCategoriesFilter(response.data.category_groups)
+            if (response && response.data && response.data.category_groups) {
+                setCategories(response.data.category_groups)
+                setCategoriesFilter(response.data.category_groups)
+              }
         }
         }
     fetchCategories()
