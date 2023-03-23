@@ -15,7 +15,8 @@ export default function Navbar() {
 const [categories, setCategories] = useState([])
 const [categoriesFilter, setCategoriesFilter] = useState(null)
 const [filter, setFilter] = useState('')
-
+const {user} = useContext(AuthenticationContext);
+const {accessToken} = useContext(AuthenticationContext);
 useEffect (() => {
     const fetchCategories = async () => {
         if(filter === '') {
@@ -23,7 +24,7 @@ useEffect (() => {
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                    'Authorization': `Bearer ${accessToken}`
                 }
             })
             setCategories(response.data.category_groups)
@@ -34,7 +35,7 @@ useEffect (() => {
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                    'Authorization': `Bearer ${accessToken}`
                 }
             })
             setCategories(response.data.category_groups)
@@ -48,7 +49,7 @@ const handleSearch = (e) => {
     setFilter(e)
 }
 return (
-    <Box>
+    <Box data-testid="navbar">
         <Grid templateRows='repeat(6, 1fr)' gap={0}>
         <GridItem rowSpan={2}>
         <Flex minWidth='max-content' alignItems='center' gap='2' pt='3'>

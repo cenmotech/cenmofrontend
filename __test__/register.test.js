@@ -3,6 +3,7 @@ import { render, fireEvent, screen, markElement } from '@testing-library/react';
 import Register from '../pages/register.js';
 import AuthenticationContext from '../context/AuthenticationContext';
 
+jest.mock('next/router', () => require('next-router-mock'));
 test('should not show error message if password meets criteria', () => {
   const setPasswordError = jest.fn();
   render(
