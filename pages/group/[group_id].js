@@ -8,7 +8,7 @@ import Navbar from '../../components/navbar'
 import {Textarea, Progress, Image, InputLeftAddon, FormErrorMessage, Grid, Select, GridItem, Input, FormControl, FormLabel, InputGroup, InputLeftElement, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, ButtonGroup, Button, Flex, Card, CardHeader, Box, Heading, Avatar, Stack, Text, Center, CardBody, IconButton, CardFooter, Divider, Spacer, AspectRatio, position, useDisclosure, NumberInput, NumberInputField, FormHelperText} from '@chakra-ui/react'
 import { BsThreeDotsVertical, GrLinkPrevious, BsCardImage } from 'react-icons/bs'
 import { SearchIcon, BellIcon, AddIcon, ArrowBackIcon, ArrowForwardIcon } from '@chakra-ui/icons'
-import { getPostOnGroup, getListingOnGroup, searchPostByDesc, seeGroup} from '../../helpers/group/api'
+import { getPostOnGroup, getListingOnGroup, searchPostByDesc, seeGroup, searchPostOnGroup} from '../../helpers/group/api'
 import '@splidejs/react-splide/css';
 import moment from "moment"
 import { useClickable } from "@chakra-ui/clickable"
@@ -85,6 +85,7 @@ export default function Group() {
     const [listingList, setListingList] = useState([])  
     const [groupMethod, setGroupMethod] = useState({})  
     const [fullDesc, setFullDesc] = useState("")  
+    const [filter, setFilter] = useState("")
     useEffect (() => {
       if(!router.isReady) return;
       const fetchPost = async () => {
@@ -97,10 +98,36 @@ export default function Group() {
       fetchPost()
       },[groupId])
 
+    useEffect (() => {
+      if(!router.isReady) return;
+      const searchPost = async () => {
+        if(filter === "") {
+          const response = await getPostOnGroup(localStorage.getItem('accessToken'), groupId);
+          setPostList(response.response)
+          console.log("IF")
+          console.log(response.response)
+        }
+        else {
+          const response = await searchPostOnGroup(localStorage.getItem('accessToken'), groupId, filter);
+          setPostList(response.response)
+          console.log("ELSE")
+          console.log(filter)
+          console.log(response.response)
+        }
+      }
+      searchPost()
+    }, [filter])
+
+
     async function getPostFromApi() {
     try {
-        const response = await getPostOnGroup(localStorage.getItem('accessToken'), groupId);
-        setPostList(response.response)
+        if(filter === ''){
+          const response = await getPostOnGroup(localStorage.getItem('accessToken'), groupId);
+          setPostList(response.response)
+        } else {
+          const response = await searchPostByDesc(localStorage.getItem('accessToken'), groupId, filter);
+          setPostList(response.response)
+        }
       } catch (error) {
         // handle the error
         console.error(error);
@@ -291,6 +318,12 @@ export default function Group() {
     }
   };
 
+  const handleSearch = (e) => {
+    if(e.key === 'Enter'){
+      setFilter(e.target.value)
+    }
+  }
+
 
     return (
     <main className={styles.container}>
@@ -334,12 +367,18 @@ export default function Group() {
                 </Grid>
               </Box>
               {/* <Stack direction='row' spacing={0}> */}
-              
-              
-                
+                              
               {/* </Stack> */}
               </CardBody>
             </Card>
+            <InputGroup pl='5' pr='5' pt='3'>
+        <InputLeftElement
+            pl='9' pt='6'
+            pointerEvents='none'
+            children={<SearchIcon color='gray.300' />}
+            />
+        <Input pl='10' type='tel' placeholder='Search' borderRadius='30' onKeyDown={handleSearch}/>
+        </InputGroup>
             <Card w={[700]} borderRadius='15' mt='10'>
               <CardBody>
                 <Stack direction='row' alignItems="center">
