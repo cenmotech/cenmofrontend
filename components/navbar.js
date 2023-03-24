@@ -13,7 +13,6 @@ import { useRouter } from 'next/router'
 import { getUserInfo } from '../helpers/profile/api';
 
 export default function Navbar() {
-const [userName, setUserName] = useState("")
 const [categories, setCategories] = useState([])
 const [categoriesFilter, setCategoriesFilter] = useState(null)
 const [filter, setFilter] = useState('')
@@ -85,14 +84,16 @@ const handleLogout = () => {
     })
 }
 
-// const [userName, setUserName] = useState("")
-// useEffect(() => {
-//   const getUser = async () => {
-//     const response = await getUserInfo(localStorage.getItem('accessToken'));
-//     setUserName(response.name)
-//   }
-//   getUser()
-// }, [])
+const [userName, setUserName] = useState("")
+useEffect(() => {
+  const getUser = async () => {
+    console.log("AMBIL USER")
+    const response = await getUserInfo(localStorage.getItem('accessToken'));
+    setUserName(response.name)
+  }
+  getUser()
+}, [])
+
 
 return (
     <Box data-testid="navbar">
