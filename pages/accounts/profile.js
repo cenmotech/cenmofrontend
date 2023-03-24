@@ -19,7 +19,7 @@ const [emailError, setEmailError] = useState("");
 const [phone, setUserPhone] = useState("");
 const [phoneError, setPhoneError] = useState("");
 const toast = useToast()
-const baseUrl = "https://cenmo-staging.herokuapp.com"
+const baseUrl = "https://cenmo-pro-zain231.vercel.app"
 
 
 useEffect (() => {

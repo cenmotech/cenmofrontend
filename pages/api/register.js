@@ -3,7 +3,7 @@ import axios from 'axios'
 
 export default async (req, res) => {
   let accessToken = null;
-  const baseUrl = "https://cenmo-staging.herokuapp.com"
+  const baseUrl = "https://cenmo-pro-zain231.vercel.app"
 
   if (req.method === 'POST') {
     const {name, email, password, phone} = req.body

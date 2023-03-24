@@ -1,5 +1,5 @@
 import axios from "axios";
-const baseUrl = 'https://cenmo-staging.herokuapp.com/authuser';
+const baseUrl = 'https://cenmo-pro-zain231.vercel.app/authuser';
 let accessToken = null;
 const getConfig = () => {
     return {
