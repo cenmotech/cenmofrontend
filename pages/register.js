@@ -62,7 +62,7 @@ export default function Register() {
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
 
-    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,12}$/.test(e.target.value)) {
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/.test(e.target.value)) {
       setPasswordError("Password must meet the criteria");
     } else {
         setPasswordError("");

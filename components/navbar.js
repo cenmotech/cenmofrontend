@@ -13,16 +13,37 @@ import { useRouter } from 'next/router'
 import { getUserInfo } from '../helpers/profile/api';
 
 export default function Navbar() {
+const [userName, setUserName] = useState("")
 const [categories, setCategories] = useState([])
 const [categoriesFilter, setCategoriesFilter] = useState(null)
 const [filter, setFilter] = useState('')
 const {logout} = useContext(AuthenticationContext);
+const baseUrl = "https://cenmo-staging.herokuapp.com"
 const router = useRouter();
+
+useEffect(() => {
+    if (localStorage.getItem("accessToken") == null) {
+      router.push("/login")
+    } else {
+        getUserFromApi();
+    }
+
+  }, [])
+
+async function getUserFromApi() {
+try{
+    const response = await getUserInfo(localStorage.getItem('accessToken'));
+    setUserName(response.name)
+} catch (error) {
+    console.error(error)
+}
+}
+
 useEffect (() => {
     const fetchCategories = async () => {
         console.log(localStorage.getItem('accessToken'))
         if(filter === '') {
-            const response = await axios.get(`http://localhost:8000/group/get_all_categories`, {
+            const response = await axios.get(`${baseUrl}/group/get_all_categories`, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
@@ -35,7 +56,7 @@ useEffect (() => {
               }
         }
         else{
-            const response = await axios.get(`http://localhost:8000/group/get_all_categories_contains/${filter}`, {
+            const response = await axios.get(`${baseUrl}/group/get_all_categories_contains/${filter}`, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
@@ -64,14 +85,14 @@ const handleLogout = () => {
     })
 }
 
-const [userName, setUserName] = useState("")
-useEffect(() => {
-  const getUser = async () => {
-    const response = await getUserInfo(localStorage.getItem('accessToken'));
-    setUserName(response.name)
-  }
-  getUser()
-}, [])
+// const [userName, setUserName] = useState("")
+// useEffect(() => {
+//   const getUser = async () => {
+//     const response = await getUserInfo(localStorage.getItem('accessToken'));
+//     setUserName(response.name)
+//   }
+//   getUser()
+// }, [])
 
 return (
     <Box data-testid="navbar">
