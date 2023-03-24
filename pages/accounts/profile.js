@@ -19,6 +19,7 @@ const [emailError, setEmailError] = useState("");
 const [phone, setUserPhone] = useState("");
 const [phoneError, setPhoneError] = useState("");
 const toast = useToast()
+const baseUrl = "https://cenmo-staging.herokuapp.com"
 
 
 useEffect (() => {
@@ -75,7 +76,7 @@ const handleSubmit = async (e) => {
     }
     try{
         //Async function to send data to backend
-        const {data} = await axios.post('http://localhost:8000/authuser/edit-profile', body, config) 
+        const {data} = await axios.post(`${baseUrl}/authuser/edit-profile`, body, config) 
         await router.reload()
     } catch (error) {
         console.log(error)

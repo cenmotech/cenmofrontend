@@ -33,6 +33,12 @@ export default function Group() {
 
   }, [router.isReady]);
 
+  useEffect(() => {
+    if (localStorage.getItem("accessToken") == null) {
+      router.push("/login")
+    }
+  }, [])
+
 
   // HANDLE API REGION
   const [provinceList, setProvinceList] = useState([]);
@@ -61,14 +67,6 @@ export default function Group() {
     }
   }, [province])
 
-  const images = [
-    { id: 1, src: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Eq_it-na_pizza-margherita_sep2005_sml.jpg/800px-Eq_it-na_pizza-margherita_sep2005_sml.jpg" },
-    { id: 2, src: "https://www.recipetineats.com/wp-content/uploads/2020/05/Pepperoni-Pizza_5-SQjpg.jpg" },
-    { id: 3, src: "https://asset.kompas.com/crops/teG8bxBeC9NzNi6opEf38UDC74Q=/0x0:1000x667/750x500/data/photo/2020/09/22/5f69e601777db.jpg" },
-    { id: 4, src: "https://awsimages.detik.net.id/community/media/visual/2021/07/06/perbedaan-pizza-italia-dan-pizza-amerika-2.jpeg" },
-    { id: 5, src: "https://www.kingarthurbaking.com/sites/default/files/styles/featured_image/public/2022-03/Easiest-Pizza_22-2_11.jpg" },
-  ];
-
   // HANDLE IMAGE UPLOAD
   const [currentIndex, setCurrentIndex] = useState(0);
   const handleClickPrev = () => {
@@ -84,6 +82,8 @@ export default function Group() {
   const { isOpen: isPostOpen, onOpen: onPostOpen, onClose: onPostClose } = useDisclosure()
   const btnRef = useRef(null)
 
+  const [userName, setUserName] = useState("")
+  const [userKey, setUserKey] = useState("")
   const [isJoined, setIsJoined] = useState(false)
   const [postList, setPostList] = useState([])
   const [listingList, setListingList] = useState([])
@@ -100,6 +100,7 @@ export default function Group() {
         getListingFromApi()
         seeGroupFromApi()
         checkIsMember()
+        getUserFromApi()
       }
     }
     fetchGroupInfo()
@@ -148,6 +149,18 @@ export default function Group() {
       console.error(error);
     }
   }
+  
+
+  async function getUserFromApi() {
+    try{
+      const response = await getUserInfo(localStorage.getItem('accessToken'));
+      setUserName(response.name)
+      setUserKey(response.email)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   let originalDescription = "";
   async function seeGroupFromApi() {
     try {
@@ -386,19 +399,6 @@ export default function Group() {
     }
   }
 
-  //Set User name on Group
-  const [userName, setUserName] = useState("")
-  const [userKey, setUserKey] = useState("")
-  useEffect(() => {
-    const getUser = async () => {
-      const response = await getUserInfo(localStorage.getItem('accessToken'));
-      setUserName(response.name)
-      setUserKey(response.email)
-    }
-    getUser()
-  }, [])
-
-
   const handleDeleteClick = async (postId) => {
     console.log(postId)
     console.log(groupId)
@@ -476,6 +476,8 @@ export default function Group() {
                   />
                   <Input pl='10' type='tel' placeholder='Search' borderRadius='30' onKeyDown={handleSearch} />
                 </InputGroup>
+
+                {isJoined === true && (
                 <Card w={[700]} borderRadius='15' mt='10'>
                   <CardBody>
                     <Stack direction='row' alignItems="center">
@@ -488,7 +490,7 @@ export default function Group() {
                       What's on your mind?
                     </Box>
                   </CardBody>
-                </Card>
+                </Card>)}
 
                 <Modal isOpen={isPostOpen} onClose={onPostClose} size="xl" closeOnOverlayClick={false}>
                   <ModalOverlay />
@@ -539,7 +541,7 @@ export default function Group() {
                 </Modal>
               </div>
               {postList.map((post, index) => (
-                <Card w={[700]} borderRadius='15'>
+                <Card key={index} w={[700]} borderRadius='15'>
                   <CardHeader>
                     <Stack direction='row'>
                       <Avatar size='md' name={post.post_user_name} />
@@ -579,7 +581,9 @@ export default function Group() {
           <Flex minWidth='max-content' alignItems='center' gap='2' px='5' pt='7' >
             <Heading color='black' size='md'>Store</Heading>
             <Spacer />
+            {isJoined === true && (
             <IconButton icon={<AddIcon />} size="sm" ref={btnRef} onClick={onListOpen} />
+            )}
           </Flex>
           <Modal
             onClose={onListClose}
@@ -594,26 +598,14 @@ export default function Group() {
               <ModalCloseButton onClick={handleRemoveAll} mt="2" mr="1" />
               <ModalBody>
                 <form>
-                  <FormControl isInvalid={isErrorName}>
+                  <FormControl>
                     <FormLabel>Product Title</FormLabel>
-                    <Input type='text' value={name} onChange={(e) => setName(e.target.value)} maxLength={50} />
-                    {!isErrorName ? (
-                      <FormHelperText>
-                      </FormHelperText>
-                    ) : (
-                      <FormErrorMessage>Product Title is required.</FormErrorMessage>
-                    )}
+                    <Input onChange={(e) => setName(e.target.value)} maxLength={50} type='text' />
                   </FormControl>
                   <br />
-                  <FormControl isInvalid={isErrorDesc}>
+                  <FormControl>
                     <FormLabel>Description</FormLabel>
-                    <Textarea type='text' value={desc} onChange={(e) => setDesc(e.target.value)} maxLength={400} h="180" />
-                    {!isErrorDesc ? (
-                      <FormHelperText>
-                      </FormHelperText>
-                    ) : (
-                      <FormErrorMessage>Description is required.</FormErrorMessage>
-                    )}
+                    <Textarea onChange={(e) => setDesc(e.target.value)} maxLength={400} h="180" />
                   </FormControl>
                   <br />
                   <FormControl>
@@ -634,22 +626,15 @@ export default function Group() {
                     </Stack>
                   </FormControl>
                   <br />
-                  <FormControl isInvalid={isErrorPrice}>
+                  <FormControl>
                     <FormLabel>Price</FormLabel>
                     <InputGroup>
                       <InputLeftAddon children='Rp.' />
-                      <NumberInput value={price} onChange={(e) => setPrice(e)} min={100}>
+                      <NumberInput onChange={(e) => setPrice(e)} min={100}>
                         <NumberInputField />
                       </NumberInput>
                     </InputGroup>
-                    {!isErrorPrice ? (
-                      <FormHelperText>
-                      </FormHelperText>
-                    ) : (
-                      <FormErrorMessage>Price is required.</FormErrorMessage>
-                    )}
                   </FormControl>
-
                   <br />
                   <FormControl>
                     <FormLabel>Region</FormLabel>

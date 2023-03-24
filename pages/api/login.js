@@ -4,7 +4,7 @@ import cookie from "cookie";
 
 export default async (req, res) => {
     let accessToken = null;
-
+    const baseUrl = "https://cenmo-staging.herokuapp.com"
 
     if (req.method === 'POST') {
         const {email, password} = req.body
@@ -21,7 +21,7 @@ export default async (req, res) => {
         }
 
         try{
-            const {data} = await axios.post('http://127.0.0.1:8000/authuser/login', body, config) 
+            const {data} = await axios.post(`${baseUrl}/authuser/login`, body, config) 
             accessToken = data.accessToken
             if(accessToken){
               const userConfig ={
@@ -29,7 +29,7 @@ export default async (req, res) => {
                     'Authorization': `Bearer ${accessToken}`
                   }
               }
-              const {data: user} = await axios.get('http://127.0.0.1:8000/authuser/get-user-session', userConfig)
+              const {data: user} = await axios.get(`${baseUrl}/authuser/get-user-session`, userConfig)
               res.status(200).json({user, accessToken})
           }
         } catch(error){
