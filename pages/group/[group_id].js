@@ -348,11 +348,11 @@ export default function Group() {
   async function join() {
     const id = groupId;
     const data = { id };
-    groupJoined(data)
-    await router.reload()
+    groupJoined(data).then(() => {router.reload()})
   };
 
   async function groupJoined(data) {
+    console.log("groupJoined")
     try {
       const response = await joinGroup(localStorage.getItem("accessToken"), data)
     } catch (error) {
@@ -449,6 +449,7 @@ export default function Group() {
                               {isJoined === true ?
                                 <Button isDisabled justifyContent='center' width='90%' borderRadius='30' colorScheme='blue'>Joined</Button>
                                 : <Button justifyContent='center' width='90%' borderRadius='30' colorScheme='blue' onClick={e => {
+                                  join();
                                   toast({
                                     title: 'Success',
                                     description: "You have joined",
@@ -456,7 +457,6 @@ export default function Group() {
                                     duration: 9000,
                                     isClosable: true,
                                   });
-                                  join();
                                 }}>Join</Button>
                               }
                             </Center>

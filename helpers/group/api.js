@@ -174,11 +174,13 @@ export const searchListingOnGroup = async (Token,groupId, urlbody) => {
     }
 }
 
+
 export const joinGroup = async (Token, body) => {
     accessToken = Token;
     try{
-        const response  = await axios.post(`${baseUrl}/join_group`, body, getConfig());
-        return response.data;
+        await axios.post(`${baseUrl}/join_group`, body, getConfig()).then(res => {
+            return res.data;
+        })
     }catch(error){
         throw new Error(error.response.data.error);
     }
