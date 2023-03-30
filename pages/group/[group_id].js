@@ -283,8 +283,7 @@ export default function Group() {
       const x = document.getElementById("progressImage");
       x.style.display = "block"
       const image = await uploadImage("listing")
-      await uploadListingInfo(image)
-      await router.reload()
+      uploadListingInfo(image).then((res) => {router.reload()})
     } else {
       toast({
         title: "Please Fill all the required form",
@@ -295,12 +294,11 @@ export default function Group() {
     }
   };
 
-  const uploadListingInfo = (image) => {
+  function uploadListingInfo(image){
     const region = `${city.name},${province.name}`
     const group = groupId;
     const data = { name, price, desc, image, region, group };
-    postCreateListing(data)
-    return "success"
+    return postCreateListing(data)
   };
 
   async function postCreateListing(data) {
