@@ -317,21 +317,23 @@ export default function Group() {
   async function uploadPost() {
     if (selectedFiles.length !== 0) {
       const image = await uploadImage("post")
-      await uploadPostInfo(image)
-      await router.reload()
+      uploadPostInfo(image).then(() => {router.reload()})
     } else {
       const image = ""
-      await uploadPostInfo(image)
-      await router.reload()
+      uploadPostInfo(image).then(() => {router.reload()})
     }
   };
 
-  const uploadPostInfo = (image) => {
+  function sleep(ms) {
+    console.log("sleep")
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  function uploadPostInfo(image){
     const group = groupId;
     const desc = postDesc;
     const data = { desc, image, group };
-    postCreatePost(data)
-    return "success"
+    return postCreatePost(data)
   };
 
   async function postCreatePost(data) {
