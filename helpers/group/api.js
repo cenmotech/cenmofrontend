@@ -1,5 +1,5 @@
 import axios from "axios";
-const baseUrl = "https://cenmo-pro-zain231.vercel.app/group"
+const baseUrl = "https://cenmo-pro.vercel.app/group"
 let accessToken = null;
 const getConfig = () => {
     return {
