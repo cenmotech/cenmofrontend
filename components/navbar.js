@@ -17,7 +17,7 @@ const [categories, setCategories] = useState([])
 const [categoriesFilter, setCategoriesFilter] = useState(null)
 const [filter, setFilter] = useState('')
 const {logout} = useContext(AuthenticationContext);
-const baseUrl = "https://cenmo-pro.vercel.app"
+const baseUrl = "http://127.0.0.1:8000"
 const router = useRouter();
 
 useEffect(() => {

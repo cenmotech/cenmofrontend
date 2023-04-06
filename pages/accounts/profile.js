@@ -2,13 +2,19 @@ import { Flex, Text, Box, Image, Heading, Editable,
     EditableInput, EditableTextarea, EditablePreview,
     Input, useEditableControls, IconButton, EditIcon, 
     ButtonGroup, Spacer, Button,Grid, GridItem,
-    Stack, FormControl, FormLabel, Badge, Divider, Link, FormErrorMessage, useToast, Center, Avatar} from '@chakra-ui/react'
-import { CheckIcon, CloseIcon } from '@chakra-ui/icons'
+    Stack, FormControl, FormLabel, Badge, Divider, 
+    Link, FormErrorMessage, useToast, Center, Avatar,
+    Menu, MenuButton, MenuList, MenuItem, MenuItemOption, MenuGroup, 
+    MenuOptionGroup, MenuDivider, Modal, ModalOverlay, 
+    ModalContent, ModalHeader, ModalFooter, ModalBody,
+    ModalCloseButton, useDisclosure} from '@chakra-ui/react'
+import { CheckIcon, CloseIcon, ChevronDownIcon } from '@chakra-ui/icons'
 import { useEffect, useState, useContext } from 'react'
 import Navbar from '../../components/navbar'
 import axios from "axios";
 import { getUserProfile } from '../../helpers/profile/api';
 import {useRouter} from 'next/router'
+import React from 'react';
 
 export default function Profile() {
 const router = useRouter();
@@ -19,7 +25,7 @@ const [emailError, setEmailError] = useState("");
 const [phone, setUserPhone] = useState("");
 const [phoneError, setPhoneError] = useState("");
 const toast = useToast()
-const baseUrl = "https://cenmo-pro.vercel.app"
+const baseUrl = "http://127.0.0.1:8000"
 
 
 useEffect (() => {
@@ -57,6 +63,11 @@ const handlePhoneChange = (e) => {
         setPhoneError("");
     }
 };
+
+// Modal Tambah Alamat
+const { isOpen, onOpen, onClose } = useDisclosure()
+const initialRef = React.useRef(null)
+const finalRef = React.useRef(null)
 
 //Make function to get all the input file and send it to the backend
 const handleSubmit = async (e) => {
@@ -120,12 +131,74 @@ return (
                     <Input focusBorderColor="brand.blue" onChange={handlePhoneChange} type='number' value={phone} />
                     <FormErrorMessage>{phoneError}</FormErrorMessage>
                 </FormControl>
-                <Stack direction='row' pl='5' pt='7'>
-                    <Heading as='h4' size='md'>
-                        Alamat (Utama)
-                    </Heading>
+                <Stack direction='row' pl='5' pt='9'>
+                    <Text pr='5' pt='1' as='b' fontSize='xl'>Alamat</Text>
+                    <Menu>
+                        <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
+                            Rumah
+                        </MenuButton>
+                        <MenuList>
+                            <MenuItem>Kos</MenuItem>
+                            <MenuItem>Toko</MenuItem>
+                        </MenuList>
+                    </Menu>
                     <Spacer />
-                    <Button variant='ghost' colorScheme='blue'>Tambah Alamat</Button>
+                    <Button variant='ghost' colorScheme='blue' onClick={onOpen}>Tambah Alamat</Button>
+                    <Modal
+                        initialFocusRef={initialRef}
+                        finalFocusRef={finalRef}
+                        isOpen={isOpen}
+                        onClose={onClose}
+                    >
+                        <ModalOverlay />
+                        <ModalContent>
+                        <ModalHeader>Create new address</ModalHeader>
+                        <ModalCloseButton />
+                        <ModalBody pb={6}>
+                            <FormControl>
+                            <FormLabel>Label address</FormLabel>
+                            <Input ref={initialRef} placeholder='Input your label' />
+                            </FormControl>
+
+                            <FormControl mt={4}>
+                            <FormLabel>Jalan</FormLabel>
+                            <Input placeholder='Input your street' />
+                            </FormControl>
+
+                            <FormControl mt={4}>
+                            <FormLabel>Provinsi</FormLabel>
+                            <Input placeholder='Input your province' />
+                            </FormControl>
+
+                            <FormControl mt={4}>
+                            <FormLabel>Kota/Kabupaten</FormLabel>
+                            <Input placeholder='Input your city/regency' />
+                            </FormControl>
+
+                            <FormControl mt={4}>
+                            <FormLabel>Kode Pos</FormLabel>
+                            <Input placeholder='Input your pos code' />
+                            </FormControl>
+                        </ModalBody>
+
+                        <ModalFooter>
+                            <Button colorScheme='blue' mr={3}
+                                onClick={() =>
+                                    toast({
+                                      title: 'New address created.',
+                                      description: "We've created your address for you.",
+                                      status: 'success',
+                                      duration: 9000,
+                                      isClosable: true,
+                                    })
+                                  }
+                            >
+                            Save
+                            </Button>
+                            <Button onClick={onClose}>Cancel</Button>
+                        </ModalFooter>
+                        </ModalContent>
+                    </Modal>
                 </Stack>
                 <Stack direction='row'>
                     <FormControl id="jalan" pl='5' pt='5' pb='5'>
