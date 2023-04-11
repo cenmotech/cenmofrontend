@@ -8,7 +8,7 @@ export const AuthenticationProvider = ({children}) => {
     const [user, setUser] = useState("")
 	const [accessToken, setAccessToken] = useState("")
 	const [error, setError] = useState("")
-	const baseUrl = 'http://localhost:3001/api'
+	const baseUrl = 'http://localhost:3000/api'
 	// const router = useRouter()
 
     // Login
