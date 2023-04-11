@@ -96,7 +96,7 @@ useEffect(() => {
 
 
 return (
-    <Box data-testid="navbar">
+    <Box data-testid="navbar" h='100vh'>
         <Grid templateRows='repeat(6, 1fr)' gap={0}>
         <GridItem rowSpan={2}>
         <Flex minWidth='max-content' alignItems='center' gap='2' pt='3'>

@@ -5,8 +5,10 @@ import { ReactNode, useState, useContext, useRef, useEffect } from 'react'
 import { useController } from "react-hook-form";
 import AuthenticationContext from '../../context/AuthenticationContext'
 import Navbar from '../../components/navbar'
-import { useToast, Textarea, Progress, Menu, MenuButton, MenuItem, MenuList, Image, InputLeftAddon, FormErrorMessage, Grid, Select, GridItem, Input, FormControl, FormLabel, InputGroup, InputLeftElement, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, ButtonGroup, Button, Flex, Card, CardHeader, Box, Heading, Avatar, Stack, Text, Center, CardBody, IconButton, CardFooter, Divider, Spacer, AspectRatio, position, useDisclosure, NumberInput, NumberInputField, FormHelperText } from '@chakra-ui/react'
-import { BsThreeDotsVertical, GrLinkPrevious, BsCardImage } from 'react-icons/bs'
+import { Show, Drawer, DrawerHeader, DrawerContent, DrawerCloseButton, Hide, useToast, Textarea, Progress, Menu, MenuButton, MenuItem, MenuList, Image, InputLeftAddon, FormErrorMessage, Grid, Select, GridItem, Input, FormControl, FormLabel, InputGroup, InputLeftElement, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, ButtonGroup, Button, Flex, Card, CardHeader, Box, Heading, Avatar, Stack, Text, Center, CardBody, IconButton, CardFooter, Divider, Spacer, AspectRatio, position, useDisclosure, NumberInput, NumberInputField, FormHelperText } from '@chakra-ui/react'
+import { BsThreeDotsVertical, GrLinkPrevious, BsCardImage, BsList } from 'react-icons/bs'
+import { BiStore } from 'react-icons/bi'
+import { HiViewList } from 'react-icons/hi'
 import { SearchIcon, BellIcon, AddIcon, ArrowBackIcon, ArrowForwardIcon } from '@chakra-ui/icons'
 import { isMember, getPostOnGroup, getListingOnGroup, searchPostByDesc, seeGroup, joinGroup, createListing, createPost, searchPostOnGroup, searchListingOnGroup, deletePost } from '../../helpers/group/api'
 import '@splidejs/react-splide/css';
@@ -18,8 +20,8 @@ import { getStorage, ref, uploadBytes } from "firebase/storage";
 import { storage } from '../../firebaseConfig';
 import { v4 } from 'uuid';
 import { grid } from '@chakra-ui/styled-system';
-import PostImage from '../../components/postImage';
-import MainImage from '../../components/mainImage';
+import Post from '../../components/post';
+import Listing from '../../components/listing';
 
 
 export default function Group() {
@@ -30,7 +32,6 @@ export default function Group() {
   useEffect(() => {
     if (!router.isReady) return;
     setGroupId(router.query.group_id)
-
   }, [router.isReady]);
 
   useEffect(() => {
@@ -68,18 +69,11 @@ export default function Group() {
   }, [province])
 
   // HANDLE IMAGE UPLOAD
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const handleClickPrev = () => {
-    setCurrentIndex((prev) => prev === 0 ? images.length - 1 : prev - 1);
-  };
-  const handleClickNext = () => {
-    setCurrentIndex((prev) => prev === images.length - 1 ? 0 : prev + 1);
-  };
 
-  const { isOpen: isDetailsListOpen, onOpen: onDetailsListOpen, onClose: onDetailsListClose } = useDisclosure()
-  const { isOpen: isReadMoreOpen, onOpen: onReadMoreOpen, onClose: onReadMoreClose } = useDisclosure()
   const { isOpen: isListOpen, onOpen: onListOpen, onClose: onListClose } = useDisclosure()
   const { isOpen: isPostOpen, onOpen: onPostOpen, onClose: onPostClose } = useDisclosure()
+  const { isOpen: isNavOpen, onOpen: onNavOpen, onClose: onNavClose } = useDisclosure()
+  const { isOpen: isStoreOpen, onOpen: onStoreOpen, onClose: onStoreClose } = useDisclosure()
   const btnRef = useRef(null)
 
   const [userName, setUserName] = useState("")
@@ -149,10 +143,10 @@ export default function Group() {
       console.error(error);
     }
   }
-  
+
 
   async function getUserFromApi() {
-    try{
+    try {
       const response = await getUserInfo(localStorage.getItem('accessToken'));
       setUserName(response.name)
       setUserKey(response.email)
@@ -176,22 +170,6 @@ export default function Group() {
       // handle the error
       console.error(error);
     }
-  }
-
-
-  const [listingName, setListingName] = useState("")
-  const [listingPrice, setListingPrice] = useState(0)
-  const [listingDesc, setListingDesc] = useState("")
-  const [listingImage, setListingImage] = useState("")
-  const [listingRegion, setListingRegion] = useState("")
-  const [listingSellerName, setListingSellerName] = useState("")
-  const setModalValue = (listingData) => {
-    setListingName(listingData.goods_name)
-    setListingPrice(listingData.goods_price)
-    setListingDesc(listingData.goods_description)
-    setListingImage({ "post_image_link": listingData.goods_image_link })
-    setListingRegion(listingData.goods_region)
-    setListingSellerName(listingData.seller_name)
   }
 
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -283,7 +261,7 @@ export default function Group() {
       const x = document.getElementById("progressImage");
       x.style.display = "block"
       const image = await uploadImage("listing")
-      uploadListingInfo(image).then((res) => {router.reload()})
+      uploadListingInfo(image).then((res) => { router.reload() })
     } else {
       toast({
         title: "Please Fill all the required form",
@@ -294,7 +272,7 @@ export default function Group() {
     }
   };
 
-  function uploadListingInfo(image){
+  function uploadListingInfo(image) {
     const region = `${city.name},${province.name}`
     const group = groupId;
     const data = { name, price, desc, image, region, group };
@@ -315,10 +293,10 @@ export default function Group() {
   async function uploadPost() {
     if (selectedFiles.length !== 0) {
       const image = await uploadImage("post")
-      uploadPostInfo(image).then(() => {router.reload()})
+      uploadPostInfo(image).then(() => { router.reload() })
     } else {
       const image = ""
-      uploadPostInfo(image).then(() => {router.reload()})
+      uploadPostInfo(image).then(() => { router.reload() })
     }
   };
 
@@ -327,7 +305,7 @@ export default function Group() {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
-  function uploadPostInfo(image){
+  function uploadPostInfo(image) {
     const group = groupId;
     const desc = postDesc;
     const data = { desc, image, group };
@@ -346,7 +324,7 @@ export default function Group() {
   async function join() {
     const id = groupId;
     const data = { id };
-    groupJoined(data).then(() => {router.reload()})
+    groupJoined(data).then(() => { router.reload() })
   };
 
   async function groupJoined(data) {
@@ -399,28 +377,146 @@ export default function Group() {
     }
   }
 
-  const handleDeleteClick = async (postId) => {
-    console.log(postId)
-    console.log(groupId)
-    try {
-      const response = await deletePost(localStorage.getItem("accessToken"), groupId, postId)
-      await router.reload()
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const listingTemplate = () => {
+    return (
+      <div>
+        <Flex minWidth='max-content' alignItems='center' gap='2' px='5' pt='7' >
+          <Heading color='black' size='md'>Store</Heading>
+          <Spacer />
+          {isJoined === true && (
+            <IconButton icon={<AddIcon />} size="sm" ref={btnRef} onClick={onListOpen} />
+          )}
+        </Flex>
+        <Modal
+          onClose={onListClose}
+          finalFocusRef={btnRef}
+          isOpen={isListOpen}
+          scrollBehavior={"inside"}
+          size="xl"
+        >
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Add Listing</ModalHeader>
+            <ModalCloseButton onClick={handleRemoveAll} mt="2" mr="1" />
+            <ModalBody>
+              <form>
+                <FormControl>
+                  <FormLabel>Product Title</FormLabel>
+                  <Input onChange={(e) => setName(e.target.value)} maxLength={50} type='text' />
+                </FormControl>
+                <br />
+                <FormControl>
+                  <FormLabel>Description</FormLabel>
+                  <Textarea onChange={(e) => setDesc(e.target.value)} maxLength={400} h="180" />
+                </FormControl>
+                <br />
+                <FormControl>
+                  <FormLabel>Image</FormLabel>
+                  <Stack direction="row" flexWrap="wrap">
+                    {renderImages()}
+                    <label htmlFor="file-input">
+                      <Input
+                        id="file-input"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileSelect}
+                        display="none"
+                        multiple
+                      />
+                      <Button rightIcon={<BsCardImage />} width={100} height={100} cursor="pointer" as="span"></Button>
+                    </label>
+                  </Stack>
+                </FormControl>
+                <br />
+                <FormControl>
+                  <FormLabel>Price</FormLabel>
+                  <InputGroup>
+                    <InputLeftAddon children='Rp.' />
+                    <NumberInput onChange={(e) => setPrice(e)} min={100}>
+                      <NumberInputField />
+                    </NumberInput>
+                  </InputGroup>
+                </FormControl>
+                <br />
+                <FormControl>
+                  <FormLabel>Region</FormLabel>
+                  <Stack spacing={8} direction='row'>
+                    <Select id="province" placeholder="Select Province" onChange={(e) => changeProvince(e)}>
+                      {provinceList.map((province, index) => (
+                        <option key={index} value={JSON.stringify({ "id": province.id, "name": province.name })}>{province.name}</option>
+                      ))}
+                    </Select>
+                    <Select id="city" placeholder="Select City" onChange={(e) => changeCity(e)}>
+                      {cityList.map((city, index) => (
+                        <option key={index} value={JSON.stringify({ "id": city.id, "name": city.name })}>{city.name}</option>
+                      ))}
+                    </Select>
+                  </Stack>
+                </FormControl>
+              </form>
+            </ModalBody>
+            <ModalFooter justifyContent="flex-start">
+              <Stack id="progressImage" w="100%" display="none" direction='column' mr="4" spacing={1}>
+                <Text fontSize='sm'>Uploading Image {progress}/{selectedFiles.length}</Text>
+                <Progress w="100%" value={progress / selectedFiles.length * 100} size='xs' colorScheme='green' />
+              </Stack>
+              <Spacer />
+              <Button colorScheme='blue' onClick={uploadListing}>Save</Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+        <InputGroup pl='5' pr='5' pt='5'>
+          <InputLeftElement
+            pl='9' pt='10'
+            pointerEvents='none'
+            children={<SearchIcon color='gray.300' />}
+          />
+          <Input pl='10' type='tel' placeholder='Search' borderRadius='30' onKeyDown={handleSearchListing} />
+        </InputGroup>
+      </div>
+    )
+  }
 
   return (
     <main className={styles.container}>
-      <Grid templateColumns='repeat(5, 1fr)' gap={0}>
-        <GridItem colSpan={1} w='100%' h="100vh" position="sticky" top="0" left="0" overflow="hidden" borderRight='1px' borderColor='gray.200'>
+      <Flex p="3" borderBottom='1px' borderColor='gray.200' height={100} display={{ base: "block", xl: "none" }}>
+        <Stack direction="row">
+          <Button variant='ghost' onClick={onNavOpen}>
+            <HiViewList />
+          </Button>
+          <Spacer />
+          <Button variant='ghost' onClick={onStoreOpen}>
+            <BiStore />
+          </Button>
+        </Stack>
+      </Flex>
+      <Drawer isOpen={isNavOpen} placement="left" onClose={onNavClose}>
+        <DrawerContent>
           <Navbar />
-        </GridItem>
-        <GridItem colSpan={3} w='100%'>
+        </DrawerContent>
+      </Drawer>
+      <Drawer isOpen={isStoreOpen} placement="right" size="sm" onClose={onStoreClose}>
+        <DrawerContent overflow='scroll'>
+          <DrawerHeader>
+        <DrawerCloseButton />
+        </DrawerHeader>
+          {listingTemplate()}
+          {listingList.map((list, index) => (
+            <Listing list={list} key={index}></Listing>
+          ))}
+        </DrawerContent>
+      </Drawer>
+      <Grid templateColumns={{ base: 'repeat(3, 1fr)', xl: 'repeat(5, 1fr)' }} gap={0}>
+        <Show above='xl'>
+          <GridItem colSpan={1} w='100%' h="100vh" position="sticky" top="0" left="0" overflow="hidden" borderRight='1px' borderColor='gray.200'>
+            <Navbar />
+          </GridItem>
+        </Show>
+        <GridItem colSpan={3}>
           <Center>
             <Stack direction='column' spacing={8}>
               <div style={{}}>
-                <Card w={[700]} h={[200]} mt="5" borderRadius='15'>
+                <Card w={{base: "400px", md:"550px", lg: "700px"}} h={[200]} mt="5" borderRadius='15'>
                   <CardBody>
                     <Box position="relative" width="100%" height="500px">
                       <Grid h='170px' templateRows='repeat(5, 1fr)' templateColumns='repeat(9, 1fr)' gap={4}>
@@ -468,7 +564,7 @@ export default function Group() {
                     {/* </Stack> */}
                   </CardBody>
                 </Card>
-                <InputGroup pl='5' pr='5' pt='3'>
+                <InputGroup  w={{base: "400px", md:"550px", lg: "700px"}} pl='5' pr='5' pt='3'>
                   <InputLeftElement
                     pl='9' pt='6'
                     pointerEvents='none'
@@ -478,19 +574,19 @@ export default function Group() {
                 </InputGroup>
 
                 {isJoined === true && (
-                <Card w={[700]} borderRadius='15' mt='10'>
-                  <CardBody>
-                    <Stack direction='row' alignItems="center">
-                      <Avatar size='md' name={userName} />
-                      <Stack spacing={0} direction='column'>
-                        <Text fontSize="xl">{userName}</Text>
+                  <Card  w={{base: "400px", md:"550px", lg: "700px"}} borderRadius='15' mt='10'>
+                    <CardBody>
+                      <Stack direction='row' alignItems="center">
+                        <Avatar size='md' name={userName} />
+                        <Stack spacing={0} direction='column'>
+                          <Text fontSize="xl">{userName}</Text>
+                        </Stack>
                       </Stack>
-                    </Stack>
-                    <Box mt={5} w='100%' p={4} boxShadow="0px 1px 4px rgba(0, 0, 0, 0.25)" borderRadius="10px" cursor={'pointer'} onClick={onPostOpen} >
-                      What's on your mind?
-                    </Box>
-                  </CardBody>
-                </Card>)}
+                      <Box mt={5} w='100%' p={4} boxShadow="0px 1px 4px rgba(0, 0, 0, 0.25)" borderRadius="10px" cursor={'pointer'} onClick={onPostOpen} >
+                        What's on your mind?
+                      </Box>
+                    </CardBody>
+                  </Card>)}
 
                 <Modal isOpen={isPostOpen} onClose={onPostClose} size="xl" closeOnOverlayClick={false}>
                   <ModalOverlay />
@@ -541,261 +637,19 @@ export default function Group() {
                 </Modal>
               </div>
               {postList.map((post, index) => (
-                <Card key={index} w={[700]} borderRadius='15'>
-                  <CardHeader>
-                    <Stack direction='row'>
-                      <Avatar size='md' name={post.post_user_name} />
-                      <Stack spacing={0} direction='column'>
-                        <Text fontSize="xl">{post.post_user_name}</Text>
-                        <Text fontSize="sm" mt="0">Posted on {moment(post.post_date).format("MMMM Do YYYY, h:mm:ss a")}</Text>
-                      </Stack>
-                      <Spacer />
-                      {post.post_user_id === userKey &&
-                      <Menu>
-                        <MenuButton
-                          as={IconButton}
-                          variant='ghost'
-                          colorScheme='gray'
-                          aria-label='See menu'
-                          icon={<BsThreeDotsVertical />}
-                        />
-                        <MenuList>
-                          <MenuItem onClick={() => handleDeleteClick(post.post_id)} >Delete</MenuItem>
-                        </MenuList>
-                      </Menu>
-                      }
-                    </Stack>
-                  </CardHeader>
-                  <CardBody pt='0'>
-                    <Text mb="5" fontSize='xl'>{post.post_desc}</Text>
-                    { post.post_image_link !== "" && 
-                    <PostImage post={post}></PostImage>
-                    }
-                  </CardBody>
-                </Card>
+                <Post post={post} userKey={userKey} groupId={groupId} key={index}></Post>
               ))}
             </Stack>
           </Center>
         </GridItem>
-        <GridItem colSpan={1} w='100%' h="100vh" position="sticky" top="0" left="0" overflowY="auto" borderLeft='1px' borderColor='gray.200'>
-          <Flex minWidth='max-content' alignItems='center' gap='2' px='5' pt='7' >
-            <Heading color='black' size='md'>Store</Heading>
-            <Spacer />
-            {isJoined === true && (
-            <IconButton icon={<AddIcon />} size="sm" ref={btnRef} onClick={onListOpen} />
-            )}
-          </Flex>
-          <Modal
-            onClose={onListClose}
-            finalFocusRef={btnRef}
-            isOpen={isListOpen}
-            scrollBehavior={"inside"}
-            size="xl"
-          >
-            <ModalOverlay />
-            <ModalContent>
-              <ModalHeader>Add Listing</ModalHeader>
-              <ModalCloseButton onClick={handleRemoveAll} mt="2" mr="1" />
-              <ModalBody>
-                <form>
-                  <FormControl>
-                    <FormLabel>Product Title</FormLabel>
-                    <Input onChange={(e) => setName(e.target.value)} maxLength={50} type='text' />
-                  </FormControl>
-                  <br />
-                  <FormControl>
-                    <FormLabel>Description</FormLabel>
-                    <Textarea onChange={(e) => setDesc(e.target.value)} maxLength={400} h="180" />
-                  </FormControl>
-                  <br />
-                  <FormControl>
-                    <FormLabel>Image</FormLabel>
-                    <Stack direction="row" flexWrap="wrap">
-                      {renderImages()}
-                      <label htmlFor="file-input">
-                        <Input
-                          id="file-input"
-                          type="file"
-                          accept="image/*"
-                          onChange={handleFileSelect}
-                          display="none"
-                          multiple
-                        />
-                        <Button rightIcon={<BsCardImage />} width={100} height={100} cursor="pointer" as="span"></Button>
-                      </label>
-                    </Stack>
-                  </FormControl>
-                  <br />
-                  <FormControl>
-                    <FormLabel>Price</FormLabel>
-                    <InputGroup>
-                      <InputLeftAddon children='Rp.' />
-                      <NumberInput onChange={(e) => setPrice(e)} min={100}>
-                        <NumberInputField />
-                      </NumberInput>
-                    </InputGroup>
-                  </FormControl>
-                  <br />
-                  <FormControl>
-                    <FormLabel>Region</FormLabel>
-                    <Stack spacing={8} direction='row'>
-                      <Select id="province" placeholder="Select Province" onChange={(e) => changeProvince(e)}>
-                        {provinceList.map((province, index) => (
-                          <option key={index} value={JSON.stringify({ "id": province.id, "name": province.name })}>{province.name}</option>
-                        ))}
-                      </Select>
-                      <Select id="city" placeholder="Select City" onChange={(e) => changeCity(e)}>
-                        {cityList.map((city, index) => (
-                          <option key={index} value={JSON.stringify({ "id": city.id, "name": city.name })}>{city.name}</option>
-                        ))}
-                      </Select>
-                    </Stack>
-                  </FormControl>
-                </form>
-              </ModalBody>
-              <ModalFooter justifyContent="flex-start">
-                <Stack id="progressImage" w="100%" display="none" direction='column' mr="4" spacing={1}>
-                  <Text fontSize='sm'>Uploading Image {progress}/{selectedFiles.length}</Text>
-                  <Progress w="100%" value={progress / selectedFiles.length * 100} size='xs' colorScheme='green' />
-                </Stack>
-                <Spacer />
-                {/* <Button colorScheme='red' mr={3} onClick={checkValue}>test</Button> */}
-                <Button colorScheme='blue' onClick={uploadListing}>Save</Button>
-              </ModalFooter>
-            </ModalContent>
-          </Modal>
-          <InputGroup pl='5' pr='5' pt='5'>
-            <InputLeftElement
-              pl='9' pt='10'
-              pointerEvents='none'
-              children={<SearchIcon color='gray.300' />}
-            />
-            <Input pl='10' type='tel' placeholder='Search' borderRadius='30' onKeyDown={handleSearchListing} />
-          </InputGroup>
-          <Modal isOpen={isDetailsListOpen} onClose={onDetailsListClose} size="xl">
-            <ModalOverlay />
-            <ModalContent>
-              <ModalHeader>
-                <ModalCloseButton onClick={handleRemoveAll} mt="2" mr="1" />
-              </ModalHeader>
-
-
-              <ModalBody>
-                <Grid
-                  h='700px'
-                  templateRows='repeat(15, 1fr)'
-                  templateColumns='repeat(6, 1fr)'
-                  gap={2}
-                >
-                  <GridItem rowSpan={8} colSpan={6}>
-                    <PostImage post={listingImage}></PostImage>
-                  </GridItem>
-                  <GridItem>
-
-                  </GridItem>
-                  <GridItem rowSpan={1} colSpan={6}>
-                    <Flex justifyContent='center'>
-                      <Center height='23px' width='500px' justifyContent='left'>
-                        <Text fontSize='30px'>
-                          <b>{listingName}</b>
-                        </Text>
-                      </Center>
-                    </Flex>
-                  </GridItem>
-                  <GridItem rowSpan={1} colSpan={6}>
-                    <Flex justifyContent='center'>
-                      <Center height='23px' width='500px' justifyContent='left'>
-                        <Text fontSize='18px'>
-                          <b>Rp{listingPrice}</b>
-                        </Text>
-                      </Center>
-                    </Flex>
-                  </GridItem>
-                  <GridItem rowSpan={2} colSpan={6} borderBottom='2px' borderColor='gray.200'>
-                    <Box box='1' height='auto' justifyItems='center' marginX='15px'>
-                      <Text mb="5" fontSize='16px'>{listingDesc}
-                      </Text>
-                    </Box>
-
-                  </GridItem>
-                  <GridItem rowSpan={1} colSpan={6}>
-
-                  </GridItem>
-                  <GridItem rowSpan={2} colSpan={1}>
-                    <Center w='100px' h='70px'>
-                      <Avatar size='lg' name='Dan Abrahmov' src='https://bit.ly/dan-abramov' />
-                    </Center>
-                  </GridItem>
-
-                  <GridItem rowSpan={1} colSpan={5}>
-                    <Flex justifyContent='center'>
-                      <Center height='23px' width='500px' justifyContent='left'>
-                        <Text fontSize='20px'>
-                          <b>{listingSellerName}</b>
-                        </Text>
-                      </Center>
-                    </Flex>
-                  </GridItem>
-                  <GridItem rowSpan={1} colSpan={5} >
-                    <Flex justifyContent='center'>
-                      <Center height='23px' width='500px' justifyContent='left'>
-                        <Text fontSize='18px'>
-                          {listingRegion}
-                        </Text>
-                      </Center>
-                    </Flex>
-                  </GridItem>
-
-                </Grid>
-
-
-              </ModalBody>
-              <ModalFooter>
-                <Button onClick={onDetailsListClose}>Close</Button>
-              </ModalFooter>
-            </ModalContent>
-          </Modal>
-
-          <Modal isOpen={isReadMoreOpen} onClose={onReadMoreClose} size="xl" closeOnOverlayClick={false}>
-            <ModalOverlay />
-            <ModalContent>
-              <ModalHeader>{groupMethod.group_name}'s Description</ModalHeader>
-              <ModalCloseButton onClick={handleRemoveAll} mt="2" mr="1" />
-              <ModalBody>
-                <Textarea rows="10">{fullDesc}</Textarea>
-
-              </ModalBody>
-              <ModalFooter>
-              </ModalFooter>
-            </ModalContent>
-          </Modal>
-          {listingList.map((list, index) => (
-            <Card overflow="hidden" height="145" m="5" borderRadius='15' className='listingCard' onClick={() => { setModalValue(list); onDetailsListOpen() }} cursor='pointer' key={index}>
-              <CardBody>
-                <Stack direction='row' align='stretch' spacing={3}>
-                  <Box flex="1">
-                    <Box mt='1' fontWeight='semibold' as='h4' lineHeight='tight' noOfLines={3} minHeight='4em'
-                      style={{
-                        display: '-webkit-box',
-                        WebkitLineClamp: 3,
-                        WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden'
-                      }}
-                    >
-                      {list.goods_name}
-                    </Box>
-                    <Box fontSize="sm" display="block" marginTop="auto" mt='10px'>
-                      Rp{list.goods_price}
-                    </Box>
-                  </Box>
-                  <Stack alignItems="center" justifyContent="center">
-                    <MainImage listingList={list}></MainImage>
-                  </Stack>
-                </Stack>
-              </CardBody>
-            </Card>
-          ))}
-        </GridItem>
+        <Show above='xl'>
+          <GridItem colSpan={1} w='100%' h="100vh" position="sticky" top="0" left="0" overflowY="auto" borderLeft='1px' borderColor='gray.200'>
+            {listingTemplate()}
+            {listingList.map((list, index) => (
+              <Listing list={list} key={index}></Listing>
+            ))}
+          </GridItem>
+        </Show>
       </Grid>
     </main>
   )
