@@ -4,6 +4,7 @@ import { ArrowBackIcon, ArrowForwardIcon } from '@chakra-ui/icons'
 import { getStorage, ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
 import { storage } from '../firebaseConfig';
 import { useDisclosure } from "@chakra-ui/react"
+import { getSnapToken } from '../helpers/transaction/api';
 
 const Listing = ({ list }) => {
     const [images, setImages] = useState([])
@@ -34,10 +35,52 @@ const Listing = ({ list }) => {
     useEffect(() => {
         getPhotoOnListing(list.goods_image_link).then((res) => {
             setImages(res)
-            console.log(images)
         })
     }, [list])
 
+    const [snapToken, setSnapToken] = useState("");
+    
+    useEffect(() => {
+        const midtransScriptUrl = 'https://app.sandbox.midtrans.com/snap/snap.js';  
+      
+        let scriptTag = document.createElement('script');
+        scriptTag.src = midtransScriptUrl;
+      
+        const myMidtransClientKey = "Mid-client-giT1yaCWRdXGL4_h";
+        scriptTag.setAttribute('data-client-key', myMidtransClientKey);
+      
+        document.body.appendChild(scriptTag);
+      
+        return () => {
+          document.body.removeChild(scriptTag);
+        }
+    }, []);
+
+    async function getTokenFromSnap() {
+      try {
+        const token = await getSnapToken(list)
+        return token
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    const showPayment = () => {
+      getTokenFromSnap().then((snapToken) => {
+        console.log(snapToken.token)
+        window.snap.pay(snapToken.token, {
+          onSuccess: function (result) {
+            console.log(result);
+          },
+          onPending: function (result) {
+            console.log(result);
+          },
+          onError: function (result) {
+            console.log(result);
+          }
+        });
+      })
+    }
 
     return <div>
         <Card overflow="hidden" height="145" m="5" borderRadius='15' className='listingCard' onClick={onOpen} cursor='pointer'>
@@ -159,6 +202,7 @@ const Listing = ({ list }) => {
                 </Grid>
               </ModalBody>
               <ModalFooter>
+                <Button onClick={showPayment} colorScheme='green'>Buy</Button>
                 <Button onClick={onClose}>Close</Button>
               </ModalFooter>
             </ModalContent>
