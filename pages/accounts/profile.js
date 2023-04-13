@@ -12,7 +12,7 @@ import { CheckIcon, CloseIcon, ChevronDownIcon } from '@chakra-ui/icons'
 import { useEffect, useState, useContext } from 'react'
 import Navbar from '../../components/navbar'
 import axios from "axios";
-import { getUserProfile } from '../../helpers/profile/api';
+import { getUserProfile, addAddress, setMainAddress } from '../../helpers/profile/api';
 import {useRouter} from 'next/router'
 import React from 'react';
 
@@ -24,9 +24,24 @@ const [email, setUserEmail] = useState("");
 const [emailError, setEmailError] = useState("");
 const [phone, setUserPhone] = useState("");
 const [phoneError, setPhoneError] = useState("");
+const [address, setUserAddress] = useState("");
+const [addressError, setAddressError] = useState("");
+const [city, setUserCity] = useState("");
+const [cityError, setCityError] = useState("");
+const [province, setUserProvince] = useState("");
+const [provinceError, setProvinceError] = useState("");
+const [postalCode, setUserPostalCode] = useState("");
+const [postalCodeError, setPostalCodeError] = useState("");
+const [street, setUserStreet] = useState("");
+const [addressList, setAddressList] = useState([]);
 const toast = useToast()
 const baseUrl = "http://127.0.0.1:8000"
 
+const [addressId, setAddressId] = useState("");
+
+const [isLoading, setIsLoading] = useState(false);
+const [isSuccess, setIsSuccess] = useState(false);
+const [error, setError] = useState(null);
 
 useEffect (() => {
     setUserProfile()
@@ -36,8 +51,15 @@ async function setUserProfile() {
     try {
         const response = await getUserProfile(localStorage.getItem('accessToken'));
         setUserName(response.name);
-        setUserEmail(response.user);
+        setUserEmail(response.email);
         setUserPhone(response.phone);
+        console.log(response.res);
+        setUserStreet(response.address_main.street);
+        setUserCity(response.address_main.city);
+        setUserProvince(response.address_main.province);
+        setUserPostalCode(response.address_main.zip_code);
+        setUserAddress(response.address_main.address_name);
+        setAddressList(response.address_list);
         } catch (error) {
           // handle the error
           console.error(error);
@@ -94,6 +116,43 @@ const handleSubmit = async (e) => {
     }
 }
 
+const [dataNewAddress, setNewAddress] = useState({
+    address_name: "",
+    street: "",
+    city: "",
+    province: "",
+    zip_code: "",
+  });
+
+const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setNewAddress((prevData) => ({ ...prevData, [name]: value }));
+    console.log(dataNewAddress)
+  };
+
+const handleNewAddress = async (e) => {
+    e.preventDefault()
+    setIsLoading(true)
+    try{
+        const response = await addAddress(localStorage.getItem('accessToken'), dataNewAddress);
+        setIsSuccess(true);
+    }
+    catch (error) {
+        console.log(error)
+    }
+    router.reload()
+};
+
+const handleMainAddress = async (e) => {
+    e.preventDefault()
+    try{
+        const response = await setMainAddress(localStorage.getItem('accessToken'), addressId)
+        await router.reload()
+    }
+    catch (error) {
+        console.log(error)
+    }
+}
 
 return (
     <div size={{ base: "100px", md: "200px", lg: "300px" }}>
@@ -109,7 +168,7 @@ return (
                     <Avatar size='2xl' name={name} />
                         <FormControl id="firstName" pl='5'>
                             <FormLabel>Full Name</FormLabel>
-                            <Input focusBorderColor="brand.blue" onChange={handleNameChange} type="text" placeholder="Tim Timberlake" value={name}/>
+                            <Input focusBorderColor="brand.blue" onChange={handleNameChange} type="text" placeholder="Full Name" value={name}/>
                             <Stack direction='row' mt='3'>
                             <Badge mt='1' fontSize='0.8em' colorScheme='red'>
                                 Not Verified
@@ -124,22 +183,44 @@ return (
 
                     <FormControl id="Email" pl='5' pt='5'>
                     <FormLabel>Email</FormLabel>
-                    <Input focusBorderColor="brand.blue" type="text" value={email} isDisabled={true} />
+                    <Input focusBorderColor="brand.blue" type="text" isDisabled={true} value={email}/>
                     </FormControl>
                 <FormControl id="no_hp" pl='5' pt='5'>
                     <FormLabel>No. HP</FormLabel>
                     <Input focusBorderColor="brand.blue" onChange={handlePhoneChange} type='number' value={phone} />
                     <FormErrorMessage>{phoneError}</FormErrorMessage>
                 </FormControl>
+                <Button ml='5' mt='5' colorScheme='blue' onClick={e =>{toast({
+                        title: 'Profile Updated',
+                        description: "Make sure you fill the right data",
+                        status: 'success',
+                        duration: 9000,
+                        isClosable: true,
+                        });
+                        handleSubmit(e);
+                    }} >Update</Button>
                 <Stack direction='row' pl='5' pt='9'>
                     <Text pr='5' pt='1' as='b' fontSize='xl'>Alamat</Text>
                     <Menu>
                         <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
-                            Rumah
+                            {address}
                         </MenuButton>
                         <MenuList>
-                            <MenuItem>Kos</MenuItem>
-                            <MenuItem>Toko</MenuItem>
+                            {addressList.map((address) => {
+                                return (
+                                    <MenuItem key={address.id} onClick={() => {
+                                        setAddressId(address.id);
+                                        setUserAddress(address.address_name);
+                                        setUserCity(address.city);
+                                        setUserProvince(address.province);
+                                        setUserPostalCode(address.zip_code);
+                                        setUserStreet(address.street);
+                                    }}>
+                                        {address.address_name}
+                                    </MenuItem>
+                                )
+                            }
+                            )}
                         </MenuList>
                     </Menu>
                     <Spacer />
@@ -155,34 +236,33 @@ return (
                         <ModalHeader>Create new address</ModalHeader>
                         <ModalCloseButton />
                         <ModalBody pb={6}>
+                            <form onSubmit={handleNewAddress}>
                             <FormControl>
                             <FormLabel>Label address</FormLabel>
-                            <Input ref={initialRef} placeholder='Input your label' />
+                            <Input ref={initialRef} type='text' name="address_name" value={dataNewAddress.address_name} onChange={handleInputChange} placeholder='Input your label' />
                             </FormControl>
 
                             <FormControl mt={4}>
                             <FormLabel>Jalan</FormLabel>
-                            <Input placeholder='Input your street' />
+                            <Input type='text' name="street" value={dataNewAddress.street} onChange={handleInputChange} placeholder='Input your street' />
                             </FormControl>
 
                             <FormControl mt={4}>
                             <FormLabel>Provinsi</FormLabel>
-                            <Input placeholder='Input your province' />
+                            <Input type='text' name="province" value={dataNewAddress.province} onChange={handleInputChange} placeholder='Input your province' />
                             </FormControl>
 
                             <FormControl mt={4}>
                             <FormLabel>Kota/Kabupaten</FormLabel>
-                            <Input placeholder='Input your city/regency' />
+                            <Input type='text' name="city" value={dataNewAddress.city} onChange={handleInputChange} placeholder='Input your city/regency' />
                             </FormControl>
 
                             <FormControl mt={4}>
                             <FormLabel>Kode Pos</FormLabel>
-                            <Input placeholder='Input your pos code' />
+                            <Input type='text' name="zip_code" value={dataNewAddress.zip_code} onChange={handleInputChange} placeholder='Input your pos code' />
                             </FormControl>
-                        </ModalBody>
-
-                        <ModalFooter>
-                            <Button colorScheme='blue' mr={3}
+                            <ModalFooter>
+                            <Button type='submit' colorScheme='blue' mr={3}
                                 onClick={() =>
                                     toast({
                                       title: 'New address created.',
@@ -197,40 +277,42 @@ return (
                             </Button>
                             <Button onClick={onClose}>Cancel</Button>
                         </ModalFooter>
+                            </form>
+                        </ModalBody>
                         </ModalContent>
                     </Modal>
                 </Stack>
                 <Stack direction='row'>
                     <FormControl id="jalan" pl='5' pt='5' pb='5'>
                         <FormLabel>Jalan</FormLabel>
-                        <Input focusBorderColor="brand.blue" type="text" placeholder="Jl. Kemayoran Baru Blok 5D" />
+                        <Input focusBorderColor="brand.blue" type="text" placeholder="Jl. Kemayoran Baru Blok 5D" value={street}/>
                     </FormControl>
                     <FormControl id="provinsi" pl='5' pt='5' pb='5'>
                         <FormLabel>Provinsi</FormLabel>
-                        <Input focusBorderColor="brand.blue" type="text" placeholder="Jawa Barat" />
+                        <Input focusBorderColor="brand.blue" type="text" placeholder="Jawa Barat" value={province} />
                     </FormControl>
                 </Stack>
 
                 <Stack direction='row'>
                     <FormControl id="kota_kabupaten" pl='5' pt='5' pb='5'>
                         <FormLabel>Kota/Kabupaten</FormLabel>
-                        <Input focusBorderColor="brand.blue" type="text" placeholder="DKI Jakarta" />
+                        <Input focusBorderColor="brand.blue" type="text" placeholder="DKI Jakarta" value={city} />
                     </FormControl>
                     <FormControl id="kode_pos" pl='5' pt='5' pb='5'>
                         <FormLabel>Kode Pos</FormLabel>
-                        <Input focusBorderColor="brand.blue" type="text" placeholder="16810" />
+                        <Input focusBorderColor="brand.blue" type="text" placeholder="16810" value={postalCode} />
                     </FormControl>
                 </Stack>
                 
                 <Button ml='5' colorScheme='blue' onClick={e =>{toast({
-                        title: 'Profile Updated',
-                        description: "Make sure you fill the right data",
+                        title: 'Set Address Updated',
+                        description: "This is your main address",
                         status: 'success',
                         duration: 9000,
                         isClosable: true,
                         });
-                        handleSubmit(e);
-                    }} >Update</Button>
+                        handleMainAddress(e);
+                    }} >Set as Main Address</Button>
                 </Box>
         </GridItem>
         <GridItem colSpan={1} w='100%' h="100vh" position="sticky" top="0" left="0" overflow="hidden" borderLeft='1px' borderColor='gray.200'>
