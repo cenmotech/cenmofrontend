@@ -42,7 +42,7 @@ useEffect (() => {
     const fetchCategories = async () => {
         console.log(localStorage.getItem('accessToken'))
         if(filter === '') {
-            const response = await axios.get(`${baseUrl}/group/get_all_categories`, {
+            const response = await axios.get(`http://127.0.0.1:8000/group/get_all_categories`, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',

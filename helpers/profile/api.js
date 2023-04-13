@@ -52,6 +52,17 @@ export const getUserInfo = async (Token) => {
     }
 }
 
+export const setMainAddress = async (Token, id) => {
+    accessToken = Token;
+    try{
+        console.log(getConfig());
+        const response  = await axios.post(`${baseUrl}/set-address/${id}`, {}, getConfig());
+        return response.data;
+    }catch(error){
+        throw new Error(error.response.data.error);
+    }
+}
+
 //HOW TO USE IN A FRONTEND COMPONENT
 // async function myFunction() {
 //     try {
