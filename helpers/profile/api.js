@@ -1,5 +1,5 @@
 import axios from "axios";
-const baseUrl = 'http://127.0.0.1:8000/authuser';
+const baseUrl = 'https://cenmo-pro-fikriazain.vercel.app/authuser';
 let accessToken = null;
 const getConfig = () => {
     return {
@@ -15,9 +15,9 @@ export const getUserProfile = async (Token) => {
     accessToken = Token;
     try {
         const response = await axios.get(`${baseUrl}/get-user-profile`, getConfig());
-        console.log(response.data);
         return response.data;
     } catch (error) {
+        console.log(error);
         throw new Error(error.response.data.error);
     }
 }

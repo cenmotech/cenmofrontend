@@ -1,5 +1,5 @@
 import axios from "axios";
-const baseUrl = 'http://127.0.0.1:8000/transaction';
+const baseUrl = 'https://cenmo-pro-fikriazain.vercel.app/transaction';
 let accessToken = null;
 const getConfig = () => {
     return {

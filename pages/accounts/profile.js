@@ -35,7 +35,7 @@ const [postalCodeError, setPostalCodeError] = useState("");
 const [street, setUserStreet] = useState("");
 const [addressList, setAddressList] = useState([]);
 const toast = useToast()
-const baseUrl = "http://127.0.0.1:8000"
+const baseUrl = "https://cenmo-pro-fikriazain.vercel.app"
 
 const [addressId, setAddressId] = useState("");
 
@@ -53,13 +53,13 @@ async function setUserProfile() {
         setUserName(response.name);
         setUserEmail(response.email);
         setUserPhone(response.phone);
-        console.log(response.res);
         setUserStreet(response.address_main.street);
         setUserCity(response.address_main.city);
         setUserProvince(response.address_main.province);
         setUserPostalCode(response.address_main.zip_code);
         setUserAddress(response.address_main.address_name);
         setAddressList(response.address_list);
+        console.log(response.res);
         } catch (error) {
           // handle the error
           console.error(error);
