@@ -17,7 +17,6 @@ export const getUserProfile = async (Token) => {
         const response = await axios.get(`${baseUrl}/get-user-profile`, getConfig());
         return response.data;
     } catch (error) {
-        console.log(error);
         throw new Error(error.response.data.error);
     }
 }
