@@ -75,12 +75,22 @@ export default function Register() {
   
   function handelSubmit (e) {
     e.preventDefault();
-    register({name, email, password, phone}).then((success) => {
-      /* istanbul ignore next */
-      if(success){
-        router.push('/login')
-      }
-    })
+    if (name !== "" && email !== "" && password !== "" && phone !== "") {
+      register({name, email, password, phone}).then((success) => {
+        /* istanbul ignore next */
+        if(success){
+          router.push('/login')
+        }
+      })
+    }
+    else {
+      toast({
+        title: "Please Fill all the required form",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      })
+    }
   }
   /* istanbul ignore next */
   return (

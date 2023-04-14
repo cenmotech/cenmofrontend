@@ -291,11 +291,15 @@ export default function Group() {
   const [postDesc, setPostDesc] = useState("");
 
   async function uploadPost() {
-    if (selectedFiles.length !== 0) {
-      const image = await uploadImage("post")
-      uploadPostInfo(image).then(() => { router.reload() })
+    if (selectedFiles.length == 0 && postDesc == "" ) {
+      toast({
+        title: "Please Fill all the required form",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      })
     } else {
-      const image = ""
+      const image = await uploadImage("post")
       uploadPostInfo(image).then(() => { router.reload() })
     }
   };
