@@ -225,3 +225,25 @@ export const isMember = async (Token, groupId) => {
         throw new Error(error.response.data.error);
     }
 }
+
+//Get Store and Feed
+
+export const getFeeds = async (Token) => {
+    accessToken = Token;
+    try{
+        const response  = await axios.get(`${baseUrl}/get_feed`, getConfig());
+        return response.data;
+    }catch(error){
+        throw new Error(error.response.data.error);
+    }
+}
+
+export const getStore = async (Token) => {
+    accessToken = Token;
+    try{
+        const response  = await axios.get(`${baseUrl}/get_store`, getConfig());
+        return response.data;
+    }catch(error){
+        throw new Error(error.response.data.error);
+    }
+}
