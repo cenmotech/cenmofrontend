@@ -17,7 +17,7 @@ const [categories, setCategories] = useState([])
 const [categoriesFilter, setCategoriesFilter] = useState(null)
 const [filter, setFilter] = useState('')
 const {logout} = useContext(AuthenticationContext);
-const baseUrl = "https://cenmo-pro-fikriazain.vercel.app"
+const baseUrl = "http://localhost:8000"
 const router = useRouter();
 
 useEffect(() => {
@@ -42,7 +42,7 @@ useEffect (() => {
     const fetchCategories = async () => {
         console.log(localStorage.getItem('accessToken'))
         if(filter === '') {
-            const response = await axios.get(`https://cenmo-pro-fikriazain.vercel.app/group/get_all_categories`, {
+            const response = await axios.get(`http://localhost:8000/group/get_all_categories`, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
@@ -117,7 +117,7 @@ return (
             <Button leftIcon={<BellIcon />} justifyContent='left' width='100%' borderRadius='30' colorScheme='blue'>Chats</Button>
         </ListItem>
         <ListItem>
-            <Button leftIcon={<BellIcon />} justifyContent='left' width='100%' borderRadius='30' colorScheme='blue'>Baskets</Button>
+            <Button leftIcon={<BellIcon />} justifyContent='left' onClick={() => router.push("/basket")} width='100%' borderRadius='30' colorScheme='blue'>Baskets</Button>
         </ListItem>
         <ListItem>
             <Button leftIcon={<BellIcon />} justifyContent='left' width='100%' borderRadius='30' colorScheme='blue'>Transaction</Button>

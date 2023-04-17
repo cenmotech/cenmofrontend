@@ -4,7 +4,7 @@ import cookie from "cookie";
 
 export default async (req, res) => {
     let accessToken = null;
-    const baseUrl = "https://cenmo-pro-fikriazain.vercel.app"
+    const baseUrl = "http://localhost:8000"
 
     if (req.method === 'POST') {
         const {email, password} = req.body
