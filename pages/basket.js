@@ -6,18 +6,62 @@ import { Grid, GridItem, Box, Heading, InputGroup,
 import { SearchIcon, DeleteIcon } from '@chakra-ui/icons'
 import Navbar from '../components/navbar'
 import { Image } from '@chakra-ui/react'
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { getCart, updateToCart } from '../helpers/shopcart/api';
 import React from 'react';
 
 export default function Basket() {
     const [quantity, setQuantity] = useState(1);
     const pricePerItem = 237000;
     const totalPrice = quantity * pricePerItem;
+    const [basket, setBasket] = useState([]);
 
-    const handleQuantityChange = (value) => {
-        setQuantity(value);
-      };
-    
+    const [itemName, setItemName] = useState("");
+    const [itemPrice, setItemPrice] = useState("");
+    const [sellerName, setSellerName] = useState("");
+    const [itemDesc, setItemDesc] = useState("");
+    const [itemQuant, setItemQuant] = useState("");
+    const [itemTotalPrice, setItemTotalPrice] = useState("");
+
+    useEffect(() => {
+        getCart().then((data) => {
+            setBasket(data.response)
+        }, )
+    }, [])
+
+    useEffect(() => {
+        setItemTotalPrice(itemPrice * itemQuant);
+      }, [itemPrice, itemQuant]);
+
+    const descChange = (item) => {
+        setItemName(item.goods__goods_name)
+        setItemPrice(item.goods__goods_price)
+        setSellerName(item.goods__seller_name)
+        setItemDesc(item.goods__goods_description)
+        setItemQuant(item.quantity)
+    }
+    async function cartHandler(action, goods_id){
+        try {
+          await updateToCart(action, goods_id)
+        } catch (error) {
+          console.error(error)
+        }
+      }
+      
+      const handleQuantityChange = (action, id, index) => {
+        const updatedBasket = [...basket];
+        if (action === 'add') {
+            updatedBasket[index].quantity += 1;
+            cartHandler('add', id)
+        }else if(action === 'remove' && updatedBasket[index].quantity > 1){
+            updatedBasket[index].quantity -= 1;
+            cartHandler('remove', id)
+        }else if(action === 'delete'){
+            updatedBasket.splice(index, 1);
+            cartHandler('delete', id)
+        }
+        setBasket(updatedBasket);
+      }
     return (
         <div size={{ base: "100px", md: "200px", lg: "300px" }}>
             <Grid templateColumns='repeat(5, 1fr)' gap={0}>
@@ -36,30 +80,32 @@ export default function Basket() {
                         />
                         <Input pl={{base: '10', md: '10'}} type='tel' placeholder='Search' borderRadius='30' />
                         </InputGroup>
-                        <Card w={{base: "100%", md: "550px", lg: "510px"}} borderRadius='15' mt='5' pr={{base: '3', md: '5'}}>
-                        <CardBody>
-                            <Stack direction={{base: 'column', md: 'row'}} alignItems={{base: 'flex-start', md: 'center'}}>
-                            <Image boxSize={{base: '70px', md: '70px'}} src='https://bit.ly/dan-abramov' alt='Dan Abramov' borderRadius='10' />
-                            <Stack spacing={0} direction='column' pl={{base: '0', md: '3'}}>
-                                <Stack direction='row'>
-                                <Text fontSize="sm">WEBCAM 4k Limited Edition</Text>
+                        {basket.map((item, index) => (
+                            <Card w={{base: "100%", md: "550px", lg: "510px"}} borderRadius='15' mt='5' pr={{base: '3', md: '5'}} key= {index} cursor="pointer" onClick={() => descChange(item)}>
+                            <CardBody>
+                                <Stack direction={{base: 'column', md: 'row'}} alignItems={{base: 'flex-start', md: 'center'}}>
+                                <Image boxSize={{base: '70px', md: '70px'}} src={item.goods__goods_image_link} alt='URL Gambar' borderRadius='10' />
+                                <Stack spacing={0} direction='column' pl={{base: '0', md: '3'}}>
+                                    <Stack direction='row'>
+                                    <Text fontSize="sm">{item.goods__goods_name}</Text>
+                                    </Stack>
+                                    <Text fontSize="md" as='b'>Rp {item.goods__goods_price * item.quantity}</Text>
+                                    <Text fontSize="md">{item.goods__seller_name}</Text>
                                 </Stack>
-                                <Text fontSize="md" as='b'>Rp 237,000</Text>
-                                <Text fontSize="md">Haji Kunfayakun</Text>
-                            </Stack>
-                            <Stack direction='row' alignItems={{base: 'flex-start', md: 'center'}} pl={{base: '0', md: '50'}}>
-                                <IconButton aria-label='Delete' icon={<DeleteIcon />} color='red.500'/>
-                                <NumberInput size='sm' maxW={20} defaultValue={quantity} min={1} onChange={value => setQuantity(value)}>
-                                <NumberInputField />
-                                <NumberInputStepper>
-                                    <NumberIncrementStepper />
-                                    <NumberDecrementStepper />
-                                </NumberInputStepper>
-                                </NumberInput>
-                            </Stack>
-                            </Stack>
-                        </CardBody>
-                        </Card>
+                                <Stack direction='row' alignItems={{base: 'flex-start', md: 'center'}} pl={{base: '0', md: '50'}}>
+                                    <IconButton aria-label='Delete' icon={<DeleteIcon />} color='red.500' onClick={(e) => {e.stopPropagation(); handleQuantityChange("delete", item.goods__goods_id, index)}}/>
+                                    <NumberInput size='sm' maxW={20} value={item.quantity} min={1} onClick={(e) => e.stopPropagation()} isReadOnly={true}>
+                                    <NumberInputField />
+                                    <NumberInputStepper>
+                                        <NumberIncrementStepper onClick = {() => handleQuantityChange("add", item.goods__goods_id, index)}/>
+                                        <NumberDecrementStepper onClick = {() => handleQuantityChange("remove", item.goods__goods_id, index)} isDisabled={item.quantity === 1}/>
+                                    </NumberInputStepper>
+                                    </NumberInput>
+                                </Stack>
+                                </Stack>
+                            </CardBody>
+                            </Card>
+                        ))}
                     </Box>
                 </GridItem>
                 <GridItem colSpan={2} borderLeft='1px' borderColor='gray.200'>
@@ -68,23 +114,23 @@ export default function Basket() {
                         <Stack direction='row' pb='7'>
                             <Image boxSize='150px' src='https://bit.ly/dan-abramov' alt='Dan Abramov' borderRadius='10' />
                             <Stack direction='column' pl='5'>
-                                <Text fontSize="xl">WEBCAM 4k Limited Edition</Text>
-                                <Text fontSize="xl" as='b'>Rp 237,000</Text>
+                                <Text fontSize="xl">{itemName}</Text>
+                                <Text fontSize="xl" as='b'>Rp {itemPrice}</Text>
                                 <Stack direction='row'>
                                         <Text fontSize="md" as='b'>Seller |</Text>
-                                        <Text fontSize="md">Haji Kunfayakun</Text>
+                                        <Text fontSize="md">{sellerName}</Text>
                                     </Stack>
                                     <Button colorScheme='blue'>Seller Chat</Button>
                             </Stack>                
                         </Stack>
                         <Text fontSize="lg" as='b' mt='10'>Product Description</Text>
-                        <Text pb='7' fontSize='md'>TCL 43 inch Google TV - 4K UHD - Dolby Audio - Google Assistant - Netflix/Youtube (model 43A28) TCL 43 inch Google TV - 4K UHD - Dolby Audio - Google Assistant - Netflix/Youtube (model 43A28) adalah televisi LED berukuran 43 inch yang cocok digunakan untuk kebutuhan menonton di rumah Anda. Bingkai televisi ini didesain dengan warna hitam yang elegan dan sangat sesuai untuk berbagai jenis interior. Anda dapat menikmati konsumsi daya yang lebih efisien dengan mengendalikan fitur pencahayaan berdasarkan konten pada televisi Anda. Anda juga dapat memanfaatkan koneksi antarmuka menggunakan USB yang praktis untuk memutar konten multimedia melalui televisi Anda. Tidak hanya tampilan visual, Tv ini juga memberikan Anda keleluasaan untuk dapat menikmati kualitas audio yang lebih tangguh.</Text>
+                        <Text pb='7' fontSize='md'>{itemDesc}</Text>
                         <Card boxShadow='outline'>
                             <CardBody>
                                 <Text as='b'>Shopping Summary</Text>
                                 <Stack direction='row' justifyContent="space-between">
-                                    <Text pl='5'>Total price ({quantity} {quantity === 1 ? 'item' : 'items'})</Text>
-                                    <Text as='b'>Rp {totalPrice.toLocaleString()}</Text>
+                                    <Text pl='5'>Total price {itemQuant} item * {itemPrice}</Text>
+                                    <Text as='b'>Rp {itemTotalPrice}</Text>
                                 </Stack>
                                 <br/>
                                 <Button float='right' colorScheme='blue'>Buy</Button>

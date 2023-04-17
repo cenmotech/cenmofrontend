@@ -5,7 +5,7 @@ import { getStorage, ref, uploadBytes, listAll, getDownloadURL } from "firebase/
 import { storage } from '../firebaseConfig';
 import { useDisclosure } from "@chakra-ui/react"
 import { getSnapToken } from '../helpers/transaction/api';
-
+import { updateToCart } from '../helpers/shopcart/api';
 const Listing = ({ list }) => {
     const [images, setImages] = useState([])
     const { isOpen, onOpen, onClose } = useDisclosure()
@@ -64,7 +64,17 @@ const Listing = ({ list }) => {
         console.error(error)
       }
     }
-
+    async function cartHandler(action, goods_id){
+      try {
+        await updateToCart(action, goods_id)
+      } catch (error) {
+        console.error(error)
+      }
+    }
+    const cartHandler2 = (e, id) => {
+      e.preventDefault()
+      cartHandler('add', id)
+    }
     const showPayment = () => {
       getTokenFromSnap().then((snapToken) => {
         console.log(snapToken.token)
@@ -203,6 +213,7 @@ const Listing = ({ list }) => {
               </ModalBody>
               <ModalFooter>
                 <Button onClick={showPayment} colorScheme='green'>Buy</Button>
+                <Button onClick={e => cartHandler2(e, list.goods_id)}>TARO KERNJANG</Button>
                 <Button onClick={onClose}>Close</Button>
               </ModalFooter>
             </ModalContent>
