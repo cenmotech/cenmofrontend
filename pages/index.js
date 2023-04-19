@@ -16,7 +16,7 @@ import { useRouter } from 'next/router'
 export default function Home() {
   const { isOpen: isNavOpen, onOpen: onNavOpen, onClose: onNavClose } = useDisclosure()
   const { isOpen: isStoreOpen, onOpen: onStoreOpen, onClose: onStoreClose } = useDisclosure()
-  const baseUrl = "http://127.0.0.1:8000"
+  const baseUrl = "https://cenmo-pro-fikriazain.vercel.app"
   const [feedList, setFeedList] = useState([]);
   const [storeList, setStoreList] = useState([]);
   const router = useRouter();

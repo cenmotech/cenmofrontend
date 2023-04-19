@@ -8,7 +8,7 @@ export const AuthenticationProvider = ({children}) => {
     const [user, setUser] = useState("")
 	const [accessToken, setAccessToken] = useState("")
 	const [error, setError] = useState("")
-	const baseUrl = 'http://localhost:3001/api'
+	const baseUrl = 'https://cenmo-frontend-dickynasje.vercel.app'
 	// const router = useRouter()
 
     // Login
