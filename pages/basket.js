@@ -8,6 +8,7 @@ import Navbar from '../components/navbar'
 import { Image } from '@chakra-ui/react'
 import { useEffect, useState } from 'react';
 import { getCart, updateToCart } from '../helpers/shopcart/api';
+import { createTransactionAndGetToken } from '../helpers/transaction/api';
 import React from 'react';
 
 export default function Basket() {
@@ -16,6 +17,7 @@ export default function Basket() {
     const totalPrice = quantity * pricePerItem;
     const [basket, setBasket] = useState([]);
 
+    const [itemId, setItemId] = useState("")
     const [itemName, setItemName] = useState("");
     const [itemPrice, setItemPrice] = useState("");
     const [sellerName, setSellerName] = useState("");
@@ -34,12 +36,57 @@ export default function Basket() {
       }, [itemPrice, itemQuant]);
 
     const descChange = (item) => {
+        setItemId(item.goods__goods_id)
         setItemName(item.goods__goods_name)
         setItemPrice(item.goods__goods_price)
         setSellerName(item.goods__seller_name)
         setItemDesc(item.goods__goods_description)
         setItemQuant(item.quantity)
     }
+
+    const [snapToken, setSnapToken] = useState("");
+    
+    useEffect(() => {
+        const midtransScriptUrl = 'https://app.sandbox.midtrans.com/snap/snap.js';  
+      
+        let scriptTag = document.createElement('script');
+        scriptTag.src = midtransScriptUrl;
+      
+        const myMidtransClientKey = "Mid-client-giT1yaCWRdXGL4_h";
+        scriptTag.setAttribute('data-client-key', myMidtransClientKey);
+      
+        document.body.appendChild(scriptTag);
+      
+        return () => {
+          document.body.removeChild(scriptTag);
+        }
+    }, []);
+
+    async function createTransaction() {
+      try {
+        const token = await createTransactionAndGetToken(itemId, itemQuant)
+        return token
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    const showPayment = () => {
+        createTransaction().then((snapToken) => {
+          window.snap.pay(snapToken, {
+            onSuccess: function (result) {
+              console.log(result);
+            },
+            onPending: function (result) {
+              console.log(result);
+            },
+            onError: function (result) {
+              console.log(result);
+            }
+          });
+        })
+      }
+
     async function cartHandler(action, goods_id){
         try {
           await updateToCart(action, goods_id)
@@ -133,7 +180,7 @@ export default function Basket() {
                                     <Text as='b'>Rp {itemTotalPrice}</Text>
                                 </Stack>
                                 <br/>
-                                <Button float='right' colorScheme='blue'>Buy</Button>
+                                <Button float='right' onClick={showPayment} colorScheme='blue'>Buy</Button>
                             </CardBody>
                         </Card>
                     </Box>

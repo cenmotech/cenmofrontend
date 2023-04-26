@@ -35,7 +35,7 @@ const [postalCodeError, setPostalCodeError] = useState("");
 const [street, setUserStreet] = useState("");
 const [addressList, setAddressList] = useState([]);
 const toast = useToast()
-const baseUrl = "https://cenmo-pro-fikriazain.vercel.app"
+const baseUrl = "http://localhost:8000"
 
 const [addressId, setAddressId] = useState("");
 
