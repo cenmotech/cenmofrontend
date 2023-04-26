@@ -17,7 +17,7 @@ const [categories, setCategories] = useState([])
 const [categoriesFilter, setCategoriesFilter] = useState(null)
 const [filter, setFilter] = useState('')
 const {logout} = useContext(AuthenticationContext);
-const baseUrl = "https://cenmo-pro-fikriazain.vercel.app"
+const baseUrl = "http://localhost:8000"
 const router = useRouter();
 
 useEffect(() => {
@@ -42,7 +42,7 @@ useEffect (() => {
     const fetchCategories = async () => {
         console.log(localStorage.getItem('accessToken'))
         if(filter === '') {
-            const response = await axios.get(`https://cenmo-pro-fikriazain.vercel.app/group/get_all_categories`, {
+            const response = await axios.get(`http://localhost:8000/group/get_all_categories`, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
@@ -96,8 +96,8 @@ useEffect(() => {
 
 
 return (
-    <Box data-testid="navbar" h='100vh'>
-        <Grid templateRows='repeat(6, 1fr)' gap={0}>
+    <Box data-testid="navbar" h='100vh' display="flex" flexDirection="column">
+  <Grid templateRows='repeat(6, 1fr)' gap={0} flex="1" minHeight="0">
         <GridItem rowSpan={2}>
         <Flex minWidth='max-content' alignItems='center' gap='2' pt='3'>
             <Box p='2' pl='5'>
