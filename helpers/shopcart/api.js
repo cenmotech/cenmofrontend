@@ -11,11 +11,12 @@ const getConfig = () => {
       }
     }
 }
-export const updateToCart = async (action, goodsID) => {
+export const updateToCart = async (action, goodsID, amount) => {
     try{
         const body = {
             "action": action,
-            "goods_id": goodsID
+            "goods_id": goodsID,
+            "amount": amount
         }
         const response  = await axios.post(`${baseUrl}/update_to_cart`, body, getConfig());
     }catch(error){
@@ -27,6 +28,16 @@ export const updateToCart = async (action, goodsID) => {
 export const getCart = async() => {
     try{
         const response  = await axios.get(`${baseUrl}/get_cart`, getConfig());
+        return response.data;
+    }catch(error){
+        throw new Error(error.response.data.error);
+    }
+}
+
+export const getItemCart = async(items_id) => {
+    try{
+        const response  = await axios.get(`${baseUrl}/get_carts_item/${items_id}`, getConfig());
+        console.log("test")
         return response.data;
     }catch(error){
         throw new Error(error.response.data.error);
