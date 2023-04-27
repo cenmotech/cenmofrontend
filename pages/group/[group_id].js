@@ -5,7 +5,7 @@ import { ReactNode, useState, useContext, useRef, useEffect } from 'react'
 import { useController } from "react-hook-form";
 import AuthenticationContext from '../../context/AuthenticationContext'
 import Navbar from '../../components/navbar'
-import { Show, Drawer, DrawerHeader, DrawerContent, DrawerCloseButton, Hide, useToast, Textarea, Progress, Menu, MenuButton, MenuItem, MenuList, Image, InputLeftAddon, FormErrorMessage, Grid, Select, GridItem, Input, FormControl, FormLabel, InputGroup, InputLeftElement, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, ButtonGroup, Button, Flex, Card, CardHeader, Box, Heading, Avatar, Stack, Text, Center, CardBody, IconButton, CardFooter, Divider, Spacer, AspectRatio, position, useDisclosure, NumberInput, NumberInputField, FormHelperText } from '@chakra-ui/react'
+import { Show, Drawer, DrawerHeader, DrawerContent, DrawerCloseButton, Hide, useToast, Textarea, Progress, Menu, MenuButton, MenuItem, MenuList, Image, InputLeftAddon, FormErrorMessage, Grid, Select, GridItem, Input, FormControl, FormLabel, InputGroup, InputLeftElement, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, ButtonGroup, Button, Flex, Card, CardHeader, Box, Heading, Avatar, Stack, Text, Center, CardBody, IconButton, CardFooter, Divider, Spacer, AspectRatio, position, useDisclosure, NumberInput, NumberInputField, FormHelperText, NumberIncrementStepper, NumberDecrementStepper, NumberInputStepper } from '@chakra-ui/react'
 import { BsThreeDotsVertical, GrLinkPrevious, BsCardImage, BsList } from 'react-icons/bs'
 import { BiStore } from 'react-icons/bi'
 import { HiViewList } from 'react-icons/hi'
@@ -230,9 +230,7 @@ export default function Group() {
   const [name, setName] = useState("");
   const [desc, setDesc] = useState("");
   const [price, setPrice] = useState(0);
-  const isErrorName = name === ''
-  const isErrorDesc = desc === ''
-  const isErrorPrice = price === ''
+  const [stock, setStock] = useState(0);
 
 
   // async function getRegion() {
@@ -257,7 +255,7 @@ export default function Group() {
   };
 
   async function uploadListing() {
-    if (selectedFiles.length !== 0 && name !== "" && desc !== "" && price !== "" && city !== null && province !== null) {
+    if (selectedFiles.length !== 0 && name !== "" && desc !== "" && price !== "" && city !== null && province !== null && stock !== 0) {
       const x = document.getElementById("progressImage");
       x.style.display = "block"
       const image = await uploadImage("listing")
@@ -275,7 +273,7 @@ export default function Group() {
   function uploadListingInfo(image) {
     const region = `${city.name},${province.name}`
     const group = groupId;
-    const data = { name, price, desc, image, region, group };
+    const data = { name, price, desc, image, region, group, stock };
     return postCreateListing(data)
   };
 
@@ -291,7 +289,7 @@ export default function Group() {
   const [postDesc, setPostDesc] = useState("");
 
   async function uploadPost() {
-    if (selectedFiles.length == 0 && postDesc == "" ) {
+    if (selectedFiles.length == 0 && postDesc == "") {
       toast({
         title: "Please Fill all the required form",
         status: "error",
@@ -432,15 +430,31 @@ export default function Group() {
                   </Stack>
                 </FormControl>
                 <br />
-                <FormControl>
-                  <FormLabel>Price</FormLabel>
-                  <InputGroup>
-                    <InputLeftAddon children='Rp.' />
-                    <NumberInput onChange={(e) => setPrice(e)} min={100}>
-                      <NumberInputField />
-                    </NumberInput>
-                  </InputGroup>
-                </FormControl>
+                <Flex>
+                  <FormControl mr="8">
+                    <FormLabel>Price</FormLabel>
+                    <InputGroup>
+                      <InputLeftAddon children='Rp.' />
+                      <NumberInput onChange={(e) => setPrice(e)} min={100} >
+                        <NumberInputField />
+                      </NumberInput>
+                    </InputGroup>
+                  </FormControl>
+                  <Spacer />
+                  <FormControl>
+                    <FormLabel>Stock</FormLabel>
+                    <InputGroup>
+                      <NumberInput onChange={(e) => setStock(e)} w="100%" min={1}>
+                        <NumberInputField />
+                        <NumberInputStepper>
+                          <NumberIncrementStepper />
+                          <NumberDecrementStepper />
+                        </NumberInputStepper>
+                      </NumberInput>
+                    </InputGroup>
+
+                  </FormControl>
+                </Flex>
                 <br />
                 <FormControl>
                   <FormLabel>Region</FormLabel>
@@ -502,11 +516,15 @@ export default function Group() {
       <Drawer isOpen={isStoreOpen} placement="right" size="sm" onClose={onStoreClose}>
         <DrawerContent overflow='scroll'>
           <DrawerHeader>
-        <DrawerCloseButton />
-        </DrawerHeader>
+            <DrawerCloseButton />
+          </DrawerHeader>
           {listingTemplate()}
           {listingList.map((list, index) => (
-            <Listing list={list} key={index}></Listing>
+            <>
+              {list.stock > 0 && (
+                <Listing list={list} key={index} />
+              )}
+            </>
           ))}
         </DrawerContent>
       </Drawer>
@@ -520,7 +538,7 @@ export default function Group() {
           <Center>
             <Stack direction='column' spacing={8}>
               <div style={{}}>
-                <Card w={{base: "400px", md:"550px", lg: "700px"}} h={[200]} mt="5" borderRadius='15'>
+                <Card w={{ base: "400px", md: "550px", lg: "700px" }} h={[200]} mt="5" borderRadius='15'>
                   <CardBody>
                     <Box position="relative" width="100%" height="500px">
                       <Grid h='170px' templateRows='repeat(5, 1fr)' templateColumns='repeat(9, 1fr)' gap={4}>
@@ -568,7 +586,7 @@ export default function Group() {
                     {/* </Stack> */}
                   </CardBody>
                 </Card>
-                <InputGroup  w={{base: "400px", md:"550px", lg: "700px"}} pl='5' pr='5' pt='3'>
+                <InputGroup w={{ base: "400px", md: "550px", lg: "700px" }} pl='5' pr='5' pt='3'>
                   <InputLeftElement
                     pl='9' pt='6'
                     pointerEvents='none'
@@ -578,7 +596,7 @@ export default function Group() {
                 </InputGroup>
 
                 {isJoined === true && (
-                  <Card  w={{base: "400px", md:"550px", lg: "700px"}} borderRadius='15' mt='10'>
+                  <Card w={{ base: "400px", md: "550px", lg: "700px" }} borderRadius='15' mt='10'>
                     <CardBody>
                       <Stack direction='row' alignItems="center">
                         <Avatar size='md' name={userName} />
@@ -650,7 +668,11 @@ export default function Group() {
           <GridItem colSpan={1} w='100%' h="100vh" position="sticky" top="0" left="0" overflowY="auto" borderLeft='1px' borderColor='gray.200'>
             {listingTemplate()}
             {listingList.map((list, index) => (
-              <Listing list={list} key={index}></Listing>
+              <>
+                {list.stock > 0 && (
+                  <Listing list={list} key={index} />
+                )}
+              </>
             ))}
           </GridItem>
         </Show>
