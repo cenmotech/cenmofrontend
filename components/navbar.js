@@ -120,7 +120,7 @@ export default function Navbar() {
                             <Button leftIcon={<BellIcon />} justifyContent='left' onClick={() => router.push("/basket")} width='100%' borderRadius='30' colorScheme='blue'>Baskets</Button>
                         </ListItem>
                         <ListItem>
-                            <Button leftIcon={<BellIcon />} justifyContent='left' width='100%' borderRadius='30' colorScheme='blue'>Transaction</Button>
+                            <Button leftIcon={<BellIcon />} justifyContent='left' onClick={() => router.push("/transaction")} width='100%' borderRadius='30' colorScheme='blue'>Transaction</Button>
                         </ListItem>
                         <ListItem>
                             <Button leftIcon={<BellIcon />} justifyContent='left' width='100%' borderRadius='30' colorScheme='blue'>Seller Portal</Button>
