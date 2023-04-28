@@ -61,6 +61,7 @@ export default function Seller() {
     const [itemImage, setItemImage] = useState("")
     const [filterList, setFilterList] = useState("")
     const [resi, setResi] = useState("");
+    const [chosenTrx, setChosenTrx] = useState("")
 
     const descChange = (list) => {
         setItemId(list.goods_id)
@@ -90,7 +91,6 @@ export default function Seller() {
         const fetchStore = async () => {
             try {
                 const response = await getListingBySeller(localStorage.getItem("accessToken"));
-                console.log("CEK LISTING", response)
                 setStoreList(response.response);
             } catch (error) {
                 console.error(error);
@@ -104,7 +104,6 @@ export default function Seller() {
         const fetchBuyer = async () => {
             try {
                 const response = await getSellerTransaction(localStorage.getItem("accessToken"));
-                console.log("CEK BUYER kece", response)
                 setBuyerList(response.transactions);
             } catch (error) {
                 console.error(error);
@@ -117,7 +116,6 @@ export default function Seller() {
         const fetchBuyerByGoodsId = async () => {
             try {
                 const response = await getBuyerByGoodsId(localStorage.getItem("accessToken"), itemId);
-                console.log("CEK BUYER", response)
                 setBuyerListByGoodsId(response.transactions);
             } catch (error) {
                 console.error(error);
@@ -141,12 +139,10 @@ export default function Seller() {
     };
 
     const handleResi = (e) => {
-        console.log("MASMASMASM", e)
         setResi(e.target.value);
     };
-    const handleSubmitStatus = async (e, transactionId) => {
-        e.preventDefault()
-        console.log("ID", transactionId)
+    const handleSubmitStatus = async () => {
+        console.log("ID", chosenTrx)
         const config = {
             headers: {
                 'Accept': 'application/json',
@@ -156,7 +152,7 @@ export default function Seller() {
         }
 
         const body = {
-            "transactionId": transactionId,
+            "transactionId": chosenTrx,
             "resi": resi
         }
         try {
@@ -167,6 +163,7 @@ export default function Seller() {
             console.log(error)
         }
     }
+    
     const handleSubmit = async (e) => {
         e.preventDefault()
         const config = {
@@ -223,10 +220,7 @@ export default function Seller() {
         else {
             getSellerTransaction(localStorage.getItem("accessToken")).then((data) => {
                 let newVar = data.transactions
-                console.log('ini filter di atas', selectedFilter)
-                console.log("CEK DATA BARU", newVar)
                 let filter = newVar.filter(item => item.progress === selectedFilter)
-                console.log("ini filter", filter)
                 setBuyerList(filter);
             })
 
@@ -241,11 +235,15 @@ export default function Seller() {
 
     const handleRejected = (buyer, index) => {
         const rejectBuyerList = [...buyerList]
-        console.log("inibuyer", buyer)
-        console.log("index", index)
         rejectBuyerList[index].progress = "Rejected"
         setBuyerList(rejectBuyerList)
     }
+
+    const openResi = (transactionId) => {
+        onAcceptOpen()
+        setChosenTrx(transactionId)
+    }
+
     return (
         <div size={{ base: "100px", md: "200px", lg: "300px" }}>
             <Flex p="3" borderBottom='1px' borderColor='gray.200' height="100" display={{ base: "block", xl: "none" }} >
@@ -264,7 +262,7 @@ export default function Seller() {
                     <Navbar />
                 </DrawerContent>
             </Drawer>
-            <Drawer isOpen={isDetailOpen} placement="right" size="sm" onClose={onDetailClose}>
+            {/* <Drawer isOpen={isDetailOpen} placement="right" size="sm" onClose={onDetailClose}>
                 <DrawerContent overflow='scroll'>
                     <DrawerHeader>
                         <GridItem colSpan={2} borderLeft='1px' borderColor='gray.200'>
@@ -291,15 +289,12 @@ export default function Seller() {
                                                 <ModalCloseButton />
                                                 <ModalBody>
                                                     <Stack direction='row'>
-                                                        {/* <Image mb='1' boxSize={{ base: '90px', md: '90px' }} src='https://bit.ly/dan-abramov' alt='Dan Abramov' borderRadius='10' /> */}
+                                                        
                                                         <FormControl pl='5'>
                                                             <FormLabel>Name Product</FormLabel>
                                                             <Input type='name_product' onChange={handleListNameChange} />
                                                         </FormControl>
                                                     </Stack>
-                                                    {/* <Link color='blue.500' href='#' fontSize='sm' as='b'>
-                                                        Edit Picture
-                                                    </Link> */}
                                                     <FormControl mt='3'>
                                                         <FormLabel>Price</FormLabel>
                                                         <NumberInput >
@@ -406,7 +401,6 @@ export default function Seller() {
                                                                                         duration: 9000,
                                                                                         isClosable: true,
                                                                                     });
-                                                                                    console.log(buyer.transactionId)
                                                                                     handleSubmitStatus(e, buyer.transactionId);
                                                                                 }}>
                                                                                     Save
@@ -445,7 +439,7 @@ export default function Seller() {
                         <DrawerCloseButton />
                     </DrawerHeader>
                 </DrawerContent>
-            </Drawer>
+            </Drawer> */}
             <Grid templateColumns={{ base: 'repeat(3, 1fr)', xl: 'repeat(5, 1fr)' }} gap={0} >
                 <Show above='xl' >
                     <GridItem colSpan={1} w='100%' h="100vh" position="sticky" top="0" left="0" overflow="hidden" borderRight='1px' borderColor='gray.200' >
@@ -591,54 +585,87 @@ export default function Seller() {
                                 </Select>
                             </Stack>
                             <Card w={{ base: "400px", md: "550px", lg: "700px" }} h={"100%"} mt="5" borderRadius='15' >
-                                <Stack direction='column' spacing={8}>
-                                    {buyerListByGoodsId.map((buyer, index) => (
-                                        <Card w={{ base: "100%", md: "550px", lg: "100%", mx: "10px" }} borderRadius='15' mt='5' buyer={buyer} key={index} cursor="pointer" onClick={() => descChange(buyer)} >
-                                            <CardBody >
-                                                <Stack direction={{ base: 'column', md: 'row' }} alignItems={{ base: 'flex-start', md: 'start' }} >
-                                                    <Image boxSize={{ base: '50px', md: '50px' }} src='https://bit.ly/dan-abramov' alt='Dan Abramov' borderRadius='10' />
-                                                    <Stack direction='row'>
-                                                        <Stack spacing={0} direction='column' pl={{ base: '0', md: '3' }} pr={{ base: '0', md: '5' }}>
-                                                            <Stack direction='row' pb={{ base: '0', md: '9' }}>
-                                                                <Text fontSize="md" as='b'>{buyer.buyer_name}</Text>
-                                                            </Stack>
-                                                            <Text fontSize="md" pb={{ base: '0', md: '1' }}>Status</Text >
-                                                            {selectedFilter === 'All' || buyer.progress === selectedFilter} {
-                                                                <Text key={buyer.progress}>{buyer.progress}</Text>
-                                                            }
-                                                        </Stack>
-                                                        <Center>
-                                                            {buyer.progress === "Verifying" && (
-                                                                <Stack direction='column' pr={{ base: '0', md: '10' }} align="center" justify="center" >
-                                                                    <Button onClick={() => {
-                                                                        onAcceptOpen()
-                                                                    }} colorScheme='green' >Accept</Button>
-                                                                    <Button colorScheme='red' onClick={() => { handleRejected(buyer, index) }}>Reject</Button>
+                                    <Stack direction='column' spacing={8}>
+                                        {buyerListByGoodsId.map((buyer, index) => (
+                                            <Card w={{ base: "100%", md: "550px", lg: "100%", mx: "10px" }} borderRadius='15' mt='5' buyer={buyer} key={index} cursor="pointer" onClick={() => descChange(buyer)} >
+                                                <CardBody >
+                                                    <Stack direction={{ base: 'column', md: 'row' }} alignItems={{ base: 'flex-start', md: 'start' }} >
+                                                        <Stack direction='row'>
+                                                            <Stack spacing={0} direction='column' pl={{ base: '0', md: '3' }} pr={{ base: '0', md: '5' }}>
+                                                                <Stack direction='row' pb={{ base: '0', md: '9' }}>
+                                                                    <Text fontSize="md" as='b'>{buyer.buyer_name}</Text>
                                                                 </Stack>
-                                                            )}
-                                                        </Center>
+                                                                <Text fontSize="md" pb={{ base: '0', md: '1' }}>Status</Text >
+                                                                {selectedFilter === 'All' || buyer.progress === selectedFilter} {
+                                                                    <Text key={buyer.progress}>{buyer.progress}</Text>
+                                                                }
+                                                            </Stack>
+                                                            <Center>
+                                                                <Stack direction='column' pr={{ base: '0', md: '10' }} align="center" justify="center" >
+                                                                    {buyer.progress === "Verifying" && (
+                                                                        <div>
+                                                                            <Button onClick={() => {
+                                                                                openResi(buyer.transactionId)
+                                                                            }} colorScheme='green'>Accept</Button>
+                                                                            <Button colorScheme='red' >Reject</Button>
+                                                                        </div>
+                                                                    )}
+                                                                    <Modal isCentered isOpen={isAcceptOpen} onClose={onCloseAccept}>
 
-                                                        <Stack direction='column' pr={{ base: '0', md: '10' }} alignItems={"center"}>
-                                                            <Stack>
-                                                                <Text fontSize="md" as='b'>{buyer.goodsName}</Text>
+                                                                        <ModalContent>
+                                                                            <ModalHeader>Pengisian Resi</ModalHeader>
+                                                                            <ModalCloseButton />
+                                                                            <ModalBody>
+                                                                                <Stack direction='row'>
+                                                                                    <FormControl pl='5'>
+                                                                                        <FormLabel>Nomor Resi</FormLabel>
+                                                                                        <Input type='resi' onChange={handleResi} />
+                                                                                    </FormControl>
+                                                                                </Stack>
+                                                                            </ModalBody>
+                                                                            <ModalFooter>
+                                                                                <Button colorScheme='blue' mr={3} onClick={(buyer) => {
+                                                                                    toast({
+                                                                                        title: 'Listing Updated',
+                                                                                        description: "Make sure you fill the right data",
+                                                                                        status: 'success',
+                                                                                        duration: 9000,
+                                                                                        isClosable: true,
+                                                                                    });
+                                                                                
+                                                                                    handleSubmitStatus();
+                                                                                }}>
+                                                                                    Save
+                                                                                </Button>
+                                                                                <Button variant='ghost' onClick={onClose}>Cancel</Button>
+                                                                            </ModalFooter>
+                                                                        </ModalContent>
+                                                                    </Modal>
+
+                                                                </Stack>
+                                                            </Center>
+
+                                                            <Stack direction='column' pr={{ base: '0', md: '10' }} alignItems={"center"}>
+                                                                <Stack>
+                                                                    <Text fontSize="md" as='b'>{buyer.goodsName}</Text>
+                                                                </Stack>
+                                                                <Stack>
+                                                                    <Text fontSize="md" as='b'>Rp {buyer.totalPrice}</Text>
+                                                                </Stack>
+                                                                <Stack>
+                                                                    <Text fontSize="small" as='b'>{buyer.transactionId}</Text>
+                                                                </Stack>
+                                                                <Button colorScheme='orange'>Chat</Button>
                                                             </Stack>
-                                                            <Stack>
-                                                                <Text fontSize="md" as='b'>Rp {buyer.totalPrice}</Text>
-                                                            </Stack>
-                                                            <Stack>
-                                                                <Text fontSize="small" as='b'>{buyer.transactionId}</Text>
-                                                            </Stack>
-                                                            <Button colorScheme='orange'>Chat</Button>
                                                         </Stack>
+
                                                     </Stack>
 
-                                                </Stack>
-
-                                            </CardBody>
-                                        </Card>
-                                    ))}
-                                </Stack>
-                            </Card>
+                                                </CardBody>
+                                            </Card>
+                                        ))}
+                                    </Stack>
+                                </Card>
                         </Box>
                     </GridItem>
                 </Show>
