@@ -112,7 +112,12 @@ export default function Home() {
           <DrawerHeader>
           {listingTemplate()}
           {storeList.map((list, index) => (
-              <Listing list={list} key={index}></Listing>))}
+              <>
+              {list.stock > 0 && (
+                <Listing list={list} key={index} />
+              )}
+            </>
+              ))}
         <DrawerCloseButton />
         </DrawerHeader>
         </DrawerContent>
@@ -139,7 +144,11 @@ export default function Home() {
         <GridItem colSpan={1} >
         {listingTemplate()}
         {storeList.map((list, index) => (
-              <Listing list={list} key={index}></Listing>
+              <>
+              {list.stock > 0 && (
+                <Listing list={list} key={index} />
+              )}
+            </>
             ))}
         </GridItem>
         </Show>
