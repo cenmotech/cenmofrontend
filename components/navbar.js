@@ -126,7 +126,7 @@ export default function Navbar() {
                             <Button leftIcon={<MdAttachMoney />} justifyContent='left' onClick={() => router.push("/transaction")} width='100%' borderRadius='30' colorScheme='blue'>Transaction</Button>
                         </ListItem>
                         <ListItem>
-                            <Button leftIcon={<BiStore />} justifyContent='left' width='100%' borderRadius='30' colorScheme='blue'>Seller Portal</Button>
+                            <Button leftIcon={<BiStore />} justifyContent='left' onClick={() => router.push("/sellerportal")} width='100%' borderRadius='30' colorScheme='blue'>Seller Portal</Button>
                         </ListItem>
                     </List>
                 </GridItem>
