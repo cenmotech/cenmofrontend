@@ -7,7 +7,10 @@ import {
     AccordionButton, AccordionIcon, AccordionPanel,
     Avatar, Link
 } from '@chakra-ui/react'
-import { SearchIcon, BellIcon } from '@chakra-ui/icons'
+import { SearchIcon } from '@chakra-ui/icons'
+import { BsCart2, BsChatRightText, BsBell } from "react-icons/bs";
+import { MdAttachMoney } from "react-icons/md";
+import { BiStore } from "react-icons/bi";
 import { useEffect, useState, useContext } from 'react'
 import axios from "axios";
 import AuthenticationContext from '../context/AuthenticationContext'
@@ -111,19 +114,19 @@ export default function Navbar() {
 
                     <List spacing={3} pl='5' pt='3' pr='3'>
                         <ListItem>
-                            <Button leftIcon={<BellIcon />} justifyContent='left' onClick={() => router.push("/")} cursor="pointer" width='100%' borderRadius='30' colorScheme='blue'>Home</Button>
+                            <Button leftIcon={<BsBell />} justifyContent='left' onClick={() => router.push("/")} cursor="pointer" width='100%' borderRadius='30' colorScheme='blue'>Home</Button>
                         </ListItem>
                         <ListItem>
-                            <Button leftIcon={<BellIcon />} justifyContent='left' width='100%' borderRadius='30' colorScheme='blue'>Chats</Button>
+                            <Button leftIcon={<BsChatRightText />} justifyContent='left' width='100%' borderRadius='30' colorScheme='blue'>Chats</Button>
                         </ListItem>
                         <ListItem>
-                            <Button leftIcon={<BellIcon />} justifyContent='left' onClick={() => router.push("/basket")} width='100%' borderRadius='30' colorScheme='blue'>Baskets</Button>
+                            <Button leftIcon={<BsCart2 />} justifyContent='left' onClick={() => router.push("/basket")} width='100%' borderRadius='30' colorScheme='blue'>Baskets</Button>
                         </ListItem>
                         <ListItem>
-                            <Button leftIcon={<BellIcon />} justifyContent='left' onClick={() => router.push("/transaction")} width='100%' borderRadius='30' colorScheme='blue'>Transaction</Button>
+                            <Button leftIcon={<MdAttachMoney />} justifyContent='left' onClick={() => router.push("/transaction")} width='100%' borderRadius='30' colorScheme='blue'>Transaction</Button>
                         </ListItem>
                         <ListItem>
-                            <Button leftIcon={<BellIcon />} justifyContent='left' width='100%' borderRadius='30' colorScheme='blue'>Seller Portal</Button>
+                            <Button leftIcon={<BiStore />} justifyContent='left' width='100%' borderRadius='30' colorScheme='blue'>Seller Portal</Button>
                         </ListItem>
                     </List>
                 </GridItem>

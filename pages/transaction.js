@@ -28,6 +28,7 @@ export default function Transaction() {
     const [itemDate, setItemDate] = useState("");
     const [itemImage, setItemImage] = useState("");
     const [sliderValue, setSliderValue] = useState(0);
+    const [snapToken , setSnapToken] = useState("");
 
     const descChange = (item) => {
         setItemId(item.transaction_id)
@@ -40,6 +41,7 @@ export default function Transaction() {
         setItemTotalPrice(item.total_price)
         setItemDate(item.date)
         setItemImage(item.goods__goods_image_link)
+        setSnapToken(item.snap_token)
     }
 
     useEffect(() => {
@@ -105,6 +107,36 @@ export default function Transaction() {
         updateTransaction(itemId);
         window.location.reload();
     };
+
+    useEffect(() => {
+        const midtransScriptUrl = 'https://app.sandbox.midtrans.com/snap/snap.js';
+    
+        let scriptTag = document.createElement('script');
+        scriptTag.src = midtransScriptUrl;
+    
+        const myMidtransClientKey = "Mid-client-giT1yaCWRdXGL4_h";
+        scriptTag.setAttribute('data-client-key', myMidtransClientKey);
+    
+        document.body.appendChild(scriptTag);
+    
+        return () => {
+          document.body.removeChild(scriptTag);
+        }
+      }, []);
+    
+    const showPayment = () => {
+        window.snap.pay(snapToken, {
+        onSuccess: function (result) {
+            console.log(result);
+        },
+        onPending: function (result) {
+            console.log(result);
+        },
+        onError: function (result) {
+            console.log(result);
+        }
+        }); 
+    }
 
     return (
         
@@ -243,6 +275,9 @@ export default function Transaction() {
                                     <Stack direction='row' justifyContent="space-between">
                                         <Text pl='5' as='b'>Total </Text>
                                         <Text as='b'>Rp {itemTotalPrice}</Text>
+                                    </Stack>
+                                    <Stack>
+                                        {itemProgress === 'Pending' && <Button colorScheme='blue' onClick={() => showPayment()} mt='5' >Pay</Button>}
                                     </Stack>
                                     
                                 </CardBody>
