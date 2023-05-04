@@ -1,5 +1,5 @@
 import axios from "axios";
-const baseUrl = 'http://localhost:8000/authuser';
+const baseUrl = 'https://cenmo-pro-fikriazain.vercel.app/authuser';
 let accessToken = null;
 const getConfig = () => {
     return {
