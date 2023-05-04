@@ -8,8 +8,8 @@ export const AuthenticationProvider = ({children}) => {
     const [user, setUser] = useState("")
 	const [accessToken, setAccessToken] = useState("")
 	const [error, setError] = useState("")
-	const baseUrl = 'http://localhost:3000/api'
-	// const router = useRouter()
+	const baseUrl = 'https://cenmo-frontend-dickynasje.vercel.app/api'
+	// const router = useRouter(
 
     // Login
 	const login = async ({email, password}) => {

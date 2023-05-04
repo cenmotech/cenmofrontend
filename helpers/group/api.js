@@ -1,5 +1,5 @@
 import axios from "axios";
-const baseUrl = "http://localhost:8000/group"
+const baseUrl = "https://cenmo-pro-fikriazain.vercel.app/group"
 let accessToken = null;
 const getConfig = () => {
     return {
@@ -96,7 +96,7 @@ export const getPostOnGroup = async (Token,groupId) => {
 export const getListingBySeller = async (Token, sellerEmail) => {
     accessToken = Token;
     try{
-        const response  = await axios.get(`${baseUrl}/get_listing_by_seller/${sellerEmail}`, getConfig());
+        const response  = await axios.get(`${baseUrl}/get_listing_by_seller`, getConfig());
         return response.data;
     }catch(error){
         throw new Error(error.response.data.error);
@@ -158,6 +158,16 @@ export const searchListingByName = async (Token, urlbody) => {
     accessToken = Token;
     try{
         const response  = await axios.get(`${baseUrl}/search_listing_by_name/${urlbody}/`, getConfig());
+        return response.data;
+    }catch(error){
+        throw new Error(error.response.data.error);
+    }
+}
+
+export const searchListingByNameAndSeller = async (Token, urlbody) => {
+    accessToken = Token;
+    try{
+        const response  = await axios.get(`${baseUrl}/search_listing_by_seller_and_name/${urlbody}/`, getConfig());
         return response.data;
     }catch(error){
         throw new Error(error.response.data.error);
@@ -244,6 +254,16 @@ export const getStore = async (Token) => {
         const response  = await axios.get(`${baseUrl}/get_store`, getConfig());
         return response.data;
     }catch(error){
+        throw new Error(error.response.data.error);
+    }
+}
+
+export const editListing = async (Token, Body) => {
+    accessToken = Token;
+    try{
+        const response  = await axios.post(`${baseUrl}/edit_listing`, Body, getConfig());
+        return response.data;
+    } catch(error){
         throw new Error(error.response.data.error);
     }
 }

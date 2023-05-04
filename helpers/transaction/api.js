@@ -1,5 +1,5 @@
 import axios from "axios";
-const baseUrl = 'http://localhost:8000/transaction';
+const baseUrl = 'https://cenmo-pro-fikriazain.vercel.app/transaction';
 let accessToken = null;
 const getConfig = () => {
     return {
@@ -10,6 +10,17 @@ const getConfig = () => {
       }
     }
   }
+
+export const getSellerTransaction = async (Token, qty) => {
+  accessToken = Token;
+  try {
+      const response = await axios.get(`${baseUrl}/get-seller-transaction`, getConfig());
+      return response.data;
+  } catch (error) {
+      console.log(error)
+      throw new Error(error.response.data.error);
+  }
+}
 
 export const createTransactionAndGetToken = async (id, qty) => {
   try {
@@ -93,5 +104,14 @@ export const updateTransaction = async (body) => {
       return response.data;
   }catch(error){
     console.log("ini error ", error)
+  }
+}
+export const getBuyerByGoodsId = async (Token,goods_id) => {
+  accessToken = Token
+  try{
+    const response = await axios.get(`${baseUrl}/get-buyer-by-goods-id/${goods_id}`, getConfig());
+    return response.data;
+  }catch (error) {
+      console.log(error)
   }
 }

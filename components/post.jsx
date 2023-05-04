@@ -75,7 +75,7 @@ const Post = ({ post, userKey = "", groupId = 0}) => {
                     }
                 </Stack>
             </CardHeader>
-            <CardBody pt='0'>
+            <CardBody pt='0' >
                 <Text mb="5" fontSize='xl'>{post.post_desc}</Text>
                 {post.post_image_link !== "" &&
                     <Flex alignItems="center">

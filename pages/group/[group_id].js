@@ -536,7 +536,7 @@ export default function Group() {
         </Show>
         <GridItem colSpan={3}>
           <Center>
-            <Stack direction='column' spacing={8}>
+            <Stack direction='column' spacing={8} >
               <div style={{}}>
                 <Card w={{ base: "400px", md: "550px", lg: "700px" }} h={[200]} mt="5" borderRadius='15'>
                   <CardBody>
