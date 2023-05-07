@@ -11,6 +11,17 @@ const getConfig = () => {
     }
   }
 
+export const getSellerTransaction = async (Token, qty) => {
+  accessToken = Token;
+  try {
+      const response = await axios.get(`${baseUrl}/get-seller-transaction`, getConfig());
+      return response.data;
+  } catch (error) {
+      console.log(error)
+      throw new Error(error.response.data.error);
+  }
+}
+
 export const createTransactionAndGetToken = async (id, qty) => {
   try {
       const body = { "goodId": id , "quantity": qty}
@@ -92,5 +103,14 @@ export const updateTransaction = async (body) => {
       return response.data;
   }catch(error){
     console.log("ini error ", error)
+  }
+}
+export const getBuyerByGoodsId = async (Token,goods_id) => {
+  accessToken = Token
+  try{
+    const response = await axios.get(`${baseUrl}/get-buyer-by-goods-id/${goods_id}`, getConfig());
+    return response.data;
+  }catch (error) {
+      console.log(error)
   }
 }
