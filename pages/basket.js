@@ -3,7 +3,9 @@ import {
   InputLeftElement, Input, Card, CardBody,
   Stack, Text, NumberInput, NumberInputField,
   NumberInputStepper, NumberIncrementStepper,
-  NumberDecrementStepper, IconButton, Button
+  NumberDecrementStepper, IconButton, Button, Modal, ModalOverlay, 
+  ModalContent, ModalHeader, ModalFooter, ModalBody,
+  ModalCloseButton, useDisclosure, FormControl, FormLabel,useToast
 } from '@chakra-ui/react'
 import { SearchIcon, DeleteIcon } from '@chakra-ui/icons'
 import Navbar from '../components/navbar'
@@ -15,13 +17,17 @@ import  BasketCard  from '../components/basketCard';
 import React from 'react';
 import { getStorage, ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
 import { storage } from '../firebaseConfig';
+import {useRouter} from 'next/router'
+import { getUserProfile, addAddress, setMainAddress } from '../helpers/profile/api';
+
 
 export default function Basket() {
   const [quantity, setQuantity] = useState(1);
   const pricePerItem = 237000;
+  const router = useRouter();
   const totalPrice = quantity * pricePerItem;
   const [basket, setBasket] = useState([]);
-
+  const toast = useToast()
   const [itemId, setItemId] = useState("")
   const [itemName, setItemName] = useState("");
   const [itemPrice, setItemPrice] = useState("");
@@ -73,15 +79,23 @@ export default function Basket() {
   async function createTransaction() {
     try {
       const token = await createTransactionAndGetToken(itemId, itemQuant)
-      return token
+      console.log(token)
+      if(token.status === 404){
+        onOpen()
+      }
+      else{
+        return token
+      }
     } catch (error) {
-      console.error(error)
+      console.log(error)
     }
   }
 
-  const showPayment = () => {
-    createTransaction().then((snapToken) => {
-      window.snap.pay(snapToken, {
+
+  const showPayment = async  () => {
+    const token = await createTransaction();
+    if (token) {
+      window.snap.pay(token, {
         onSuccess: function (result) {
           console.log(result);
         },
@@ -92,7 +106,7 @@ export default function Basket() {
           console.log(result);
         }
       });
-    })
+    }
   }
 
   async function getPhotoOnListing(url) {
@@ -116,6 +130,45 @@ export default function Basket() {
     })
   }, [itemImageLink])
 
+  //For Address not set
+  const initialRef = React.useRef(null)
+  const finalRef = React.useRef(null)
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [error, setError] = useState(null);
+
+  const [dataNewAddress, setNewAddress] = useState({
+    address_name: "",
+    street: "",
+    city: "",
+    province: "",
+    zip_code: "",
+  });
+
+const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setNewAddress((prevData) => ({ ...prevData, [name]: value }));
+    console.log(dataNewAddress)
+  };
+
+  const handleNewAddress = async (e) => {
+    e.preventDefault()
+    setIsLoading(true)
+    try{
+        const response = await addAddress(localStorage.getItem('accessToken'), dataNewAddress);
+        setIsSuccess(true);
+        onClose();
+    }
+    catch (error) {
+        console.log(error)
+    }
+    router.reload()
+};
+
+  //End Address not set
+
+
+  const { isOpen, onOpen, onClose } = useDisclosure()
   return (
     <div size={{ base: "100px", md: "200px", lg: "300px" }}>
       <Grid templateColumns='repeat(5, 1fr)' gap={0}>
@@ -163,6 +216,62 @@ export default function Basket() {
                   </Stack>
                   <br />
                   <Button float='right' onClick={showPayment} colorScheme='blue'>Buy</Button>
+                  <Modal
+                    isCentered
+                    onClose={onClose}
+                    isOpen={isOpen}
+                    motionPreset='slideInBottom'
+                  >
+                    <ModalOverlay />
+                    <ModalContent>
+                        <ModalHeader>You don't have any address<br></br>Please fill one</ModalHeader>
+                        <ModalCloseButton />
+                        <ModalBody pb={6}>
+                            <form onSubmit={handleNewAddress}>
+                            <FormControl>
+                            <FormLabel>Label address</FormLabel>
+                            <Input ref={initialRef} type='text' name="address_name" value={dataNewAddress.address_name} onChange={handleInputChange} placeholder='Input your label' />
+                            </FormControl>
+
+                            <FormControl mt={4}>
+                            <FormLabel>Jalan</FormLabel>
+                            <Input type='text' name="street" value={dataNewAddress.street} onChange={handleInputChange} placeholder='Input your street' />
+                            </FormControl>
+
+                            <FormControl mt={4}>
+                            <FormLabel>Provinsi</FormLabel>
+                            <Input type='text' name="province" value={dataNewAddress.province} onChange={handleInputChange} placeholder='Input your province' />
+                            </FormControl>
+
+                            <FormControl mt={4}>
+                            <FormLabel>Kota/Kabupaten</FormLabel>
+                            <Input type='text' name="city" value={dataNewAddress.city} onChange={handleInputChange} placeholder='Input your city/regency' />
+                            </FormControl>
+
+                            <FormControl mt={4}>
+                            <FormLabel>Kode Pos</FormLabel>
+                            <Input type='text' name="zip_code" value={dataNewAddress.zip_code} onChange={handleInputChange} placeholder='Input your pos code' />
+                            </FormControl>
+                            <ModalFooter>
+                            <Button type='submit' colorScheme='blue' mr={3}
+                                onClick={() =>
+                                    toast({
+                                      title: 'New address created.',
+                                      description: "We've created your address for you.",
+                                      status: 'success',
+                                      duration: 9000,
+                                      isClosable: true,
+                                    })
+                                  }
+                            >
+                            Save
+                            </Button>
+                            <Button onClick={onClose}>Cancel</Button>
+                        </ModalFooter>
+                            </form>
+                        </ModalBody>
+                        </ModalContent>
+                  </Modal>
                 </CardBody>
               </Card>
             </Box>

@@ -1,5 +1,5 @@
 import axios from "axios";
-const baseUrl = 'http://localhost:8000/transaction';
+const baseUrl = 'https://cenmo-pro-fikriazain.vercel.app/transaction';
 let accessToken = null;
 const getConfig = () => {
     return {
@@ -18,8 +18,7 @@ export const createTransactionAndGetToken = async (id, qty) => {
       console.log(response.data.token)
       return response.data.token;
   } catch (error) {
-      console.log(error)
-      throw new Error(error.response.data.error);
+    return error.response
   }
 }
 

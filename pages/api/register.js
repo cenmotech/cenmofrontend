@@ -3,7 +3,7 @@ import axios from 'axios'
 
 export default async (req, res) => {
   let accessToken = null;
-  const baseUrl = "http://localhost:8000"
+  const baseUrl = "https://cenmo-pro-fikriazain.vercel.app"
 
   if (req.method === 'POST') {
     const {name, email, password, phone} = req.body
