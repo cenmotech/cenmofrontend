@@ -8,7 +8,7 @@ export const AuthenticationProvider = ({children}) => {
     const [user, setUser] = useState("")
 	const [accessToken, setAccessToken] = useState("")
 	const [error, setError] = useState("")
-	const baseUrl = 'https://cenmo-frontend-dickynasje.vercel.app/api'
+	const baseUrl = process.env.NEXT_PUBLIC_DEV
 	// const router = useRouter(
 
     // Login
@@ -67,6 +67,7 @@ export const AuthenticationProvider = ({children}) => {
 
         try {
 			// call nextjs api function to create a user
+			console.log("ini dev", baseUrl)
 			await axios.post(`${baseUrl}/register`, body, config)
 			return true
 		} catch(error) {

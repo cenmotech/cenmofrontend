@@ -44,35 +44,39 @@ export default function Navbar() {
     }
 
     useEffect(() => {
-        const fetchCategories = async () => {
-            if (filter === '') {
-                const response = await axios.get(`https://cenmo-pro-fikriazain.vercel.app/group/get_all_categories`, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+        if (localStorage.getItem("accessToken") == null) {
+            router.push("/login")
+        } else {
+            const fetchCategories = async () => {
+                if (filter === '') {
+                    const response = await axios.get(`https://cenmo-pro-fikriazain.vercel.app/group/get_all_categories`, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                        }
+                    })
+                    if (response && response.data && response.data.category_groups) {
+                        setCategories(response.data.category_groups)
+                        setCategoriesFilter(response.data.category_groups)
                     }
-                })
-                if (response && response.data && response.data.category_groups) {
-                    setCategories(response.data.category_groups)
-                    setCategoriesFilter(response.data.category_groups)
+                }
+                else {
+                    const response = await axios.get(`${baseUrl}/group/get_all_categories_contains/${filter}`, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                        }
+                    })
+                    if (response && response.data && response.data.category_groups) {
+                        setCategories(response.data.category_groups)
+                        setCategoriesFilter(response.data.category_groups)
+                    }
                 }
             }
-            else {
-                const response = await axios.get(`${baseUrl}/group/get_all_categories_contains/${filter}`, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-                    }
-                })
-                if (response && response.data && response.data.category_groups) {
-                    setCategories(response.data.category_groups)
-                    setCategoriesFilter(response.data.category_groups)
-                }
-            }
+            fetchCategories()
         }
-        fetchCategories()
     }, [filter])
 
     const handleSearch = (e) => {
@@ -90,11 +94,15 @@ export default function Navbar() {
 
     const [userName, setUserName] = useState("")
     useEffect(() => {
-        const getUser = async () => {
-            const response = await getUserInfo(localStorage.getItem('accessToken'));
-            setUserName(response.name)
+        if (localStorage.getItem("accessToken") == null) {
+            router.push("/login")
+        } else {
+            const getUser = async () => {
+                const response = await getUserInfo(localStorage.getItem('accessToken'));
+                setUserName(response.name)
+            }
+            getUser()
         }
-        getUser()
     }, [])
 
 
