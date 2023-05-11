@@ -267,3 +267,45 @@ export const editListing = async (Token, Body) => {
         throw new Error(error.response.data.error);
     }
 }
+
+export const like = async (Token, postId) => {
+    accessToken = Token;
+    try{
+        await axios.post(`${baseUrl}/like/${postId}`, body, getConfig()).then(res => {
+            return res.data;
+        })
+    }catch(error){
+        throw new Error(error.response.data.error);
+    }
+}
+
+export const likeByUser = async (Token) => {
+    accessToken = Token;
+    try{
+        const response  = await axios.get(`${baseUrl}/liked_by_user`, getConfig());
+        return response.data;
+    }catch(error){
+        throw new Error(error.response.data.error);
+    }
+}
+
+export const comment = async (Token, postId) => {
+    accessToken = Token;
+    try{
+        await axios.post(`${baseUrl}/comment/${postId}`, body, getConfig()).then(res => {
+            return res.data;
+        })
+    }catch(error){
+        throw new Error(error.response.data.error);
+    }
+}
+
+export const getComment = async (Token, postId) => {
+    accessToken = Token;
+    try{
+        const response  = await axios.get(`${baseUrl}/get_comment/${postId}`, getConfig());
+        return response.data;
+    }catch(error){
+        throw new Error(error.response.data.error);
+    }
+}

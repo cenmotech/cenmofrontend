@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Flex, Image, Button, Box, Stack, Center, Avatar, Text, Spacer, Menu, MenuButton, MenuItem, MenuList, Grid, GridItem, Card, CardHeader, CardBody, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, IconButton } from '@chakra-ui/react';
+import { Flex, Image, Button, Box, Stack, Center, Avatar, Text, Spacer, Menu, MenuButton, MenuItem, MenuList, Grid, GridItem, Card, CardHeader, CardFooter, CardBody, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, IconButton } from '@chakra-ui/react';
 import { ArrowBackIcon, ArrowForwardIcon } from '@chakra-ui/icons'
 import { getStorage, ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
 import { BsThreeDotsVertical } from 'react-icons/bs'
@@ -7,7 +7,12 @@ import { storage } from '../firebaseConfig';
 import { deletePost } from '../helpers/group/api';
 import { useRouter } from 'next/router'
 import moment from "moment"
+import { FaHeart, FaComment } from 'react-icons/fa';
+import { Icon } from '@chakra-ui/react'
+import axios from "axios";
 
+// const baseUrl = "https://cenmo-pro-fikriazain.vercel.app"
+const baseUrl = "http://127.0.0.1:8000"
 const Post = ({ post, userKey = "", groupId = 0}) => {
     const [images, setImages] = useState([])
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -49,6 +54,26 @@ const Post = ({ post, userKey = "", groupId = 0}) => {
         })
     }, [post])
 
+    const [likes, setLikes] = useState(post.post_likes);
+    const [isLiked, setIsLiked] = useState(false);
+  
+    const handleLikeClick = async () => {
+    console.log("INI POST ID", post.post_id)
+    const response = await axios.post(`${baseUrl}/group/like/${post.post_id}`, {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+        },
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setIsLiked(!isLiked);
+        setLikes(likes + (isLiked ? -1 : 1));
+      } else {
+        console.log(data.message);
+      }
+    };
     return <div>
         <Card w={{base: "400px", md:"550px", lg: "700px"}} borderRadius='15'>
             <CardHeader>
@@ -106,6 +131,25 @@ const Post = ({ post, userKey = "", groupId = 0}) => {
                     </Flex>
                 }
             </CardBody>
+            <CardFooter
+    justify='space-between'
+    flexWrap='wrap'
+    sx={{
+      '& > button': {
+        minW: '136px',
+      },
+    }}
+  >
+    <Button flex='1' variant='ghost' leftIcon={<Icon as={FaHeart} color={isLiked ? 'red.500' : 'gray.500'} />
+      }
+      onClick={handleLikeClick}
+    >
+      {post.post_likes}
+    </Button>
+    <Button flex='1' variant='ghost' leftIcon={<FaComment />}>
+      Comment
+    </Button>
+  </CardFooter>
         </Card>
     </div>
 }
