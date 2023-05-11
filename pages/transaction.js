@@ -2,7 +2,15 @@ import { Grid, GridItem, Box, Heading, InputGroup,
     InputLeftElement, Input, Card, CardBody,
     Stack, Badge,Text,Slider,SliderTrack,SliderFilledTrack,SliderThumb, SliderMark,NumberInput, NumberInputField,
     NumberInputStepper, NumberIncrementStepper,
-    NumberDecrementStepper, IconButton, Button, Spacer } from '@chakra-ui/react'
+    NumberDecrementStepper, IconButton, Button, Spacer, Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalFooter,
+    ModalBody,
+    ModalCloseButton, 
+    useDisclosure,
+    Textarea} from '@chakra-ui/react'
 import { SearchIcon, DeleteIcon } from '@chakra-ui/icons'
 import Navbar from '../components/navbar'
 import ListImage from '../components/listImage';
@@ -11,7 +19,7 @@ import { useEffect, useState } from 'react';
 import React from 'react';
 import { SlBasket } from 'react-icons/sl';
 import {AiOutlineClose} from 'react-icons/ai';
-import { getUserTransaction,getUserPendingTransaction,getUserVerifyingTransaction,getUserProcessingTransaction,getUserCompletedTransaction,getUserCancelledTransaction, cancelTransaction, updateTransaction } from '../helpers/transaction/api';
+import { getUserTransaction,getUserPendingTransaction,getUserVerifyingTransaction,getUserProcessingTransaction,getUserCompletedTransaction,getUserCancelledTransaction, cancelTransaction, updateTransaction, createComplain } from '../helpers/transaction/api';
 
 
 export default function Transaction() {
@@ -108,6 +116,7 @@ export default function Transaction() {
         window.location.reload();
     };
 
+
     useEffect(() => {
         const midtransScriptUrl = 'https://app.sandbox.midtrans.com/snap/snap.js';
     
@@ -137,9 +146,32 @@ export default function Transaction() {
         }
         }); 
     }
+    //COMPLAIN MODAL LOGIC
+    const { isOpen, onOpen, onClose } = useDisclosure()
+    const complainOrder = async () => {
+        if(complainText === ""){
+            alert("Please fill the complain form")
+        }else{
+            let transactionId = itemId;
+            console.log({complainText, transactionId})
+            createComplain({complainText, transactionId}).then((data) => {
+                console.log(data);
+                onClose();
+            })
+        }
+    };
 
+    const OverlayTwo = () => (
+        <ModalOverlay
+          bg='none'
+          backdropFilter='auto'
+          backdropBlur='2px'
+        />
+      )
+    const [overlay, setOverlay] = useState(<OverlayTwo/>)
+    const [complainText, setComplaintext] = useState("")
     return (
-        
+
         <div size={{ base: "100px", md: "200px", lg: "300px" }}>
             <Grid templateColumns='repeat(5, 1fr)' gap={0}>
                 <GridItem colSpan={1} w='100%' h="100vh" position="sticky" top="0" left="0" overflow="hidden" borderRight='1px' borderColor='gray.200'>
@@ -217,6 +249,31 @@ export default function Transaction() {
                                     <Stack direction='row'>
                                         <Button colorScheme='blue'>Chat Seller</Button>
                                         {itemProgress === 'Pending' && <Button colorScheme='red' onClick={() => cancelOrder()}>Cancel Order</Button>}
+                                        {(itemProgress === 'Cancelled' || itemProgress === 'Pending' || itemProgress === 'Verifying') && <Button colorScheme='orange' onClick={() => {onOpen(); setComplaintext("")}}>Complain Order</Button>}
+                                        <Modal onClose={onClose} isOpen={isOpen} isCentered>
+                                            {overlay}
+                                            <ModalOverlay />
+                                            <ModalContent>
+                                            <ModalHeader>Complain Order</ModalHeader>
+                                            <ModalCloseButton />
+                                            <ModalBody>
+                                                <Stack direction='column'>
+                                                    <Text fontSize='md'>Please describe your problem</Text>
+                                                    <Textarea
+                                                    placeholder='...'
+                                                    size='sm'
+                                                    resize='vertical'
+                                                    onChange={(e) => setComplaintext(e.target.value)}
+                                                    isInvalid={complainText === '' ? true : false}
+                                                    />
+                                                </Stack>
+                                            </ModalBody>
+                                            <ModalFooter>
+                                                <Button colorScheme='orange' isDisabled={complainText === '' ? true : false} onClick={() => complainOrder()}>Complain Order</Button>
+                                                <Button onClick={onClose}>Close</Button>
+                                            </ModalFooter>
+                                            </ModalContent>
+                                        </Modal>
                                         {itemProgress === 'Processing' && <Button colorScheme='green' onClick={() => finishTransaction()}>Finished Order</Button>}
                                     </Stack>
                                 </Stack>                
