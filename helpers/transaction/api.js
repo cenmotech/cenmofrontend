@@ -114,3 +114,11 @@ export const getBuyerByGoodsId = async (Token,goods_id) => {
       console.log(error)
   }
 }
+export const createComplain = async (body) => {
+  try{
+      const response  = await axios.post(`${baseUrl}/create-complain`, body, getConfig());
+      return response.data;
+  }catch(error){
+    console.log("ini error ", error)
+  }
+}

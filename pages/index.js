@@ -22,6 +22,9 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
+    if (localStorage.getItem("accessToken") == null) {
+      router.push("/login")
+    } else {
     const fetchFeed = async () => {
       try {
         const response = await getFeeds(localStorage.getItem("accessToken"));
@@ -46,6 +49,7 @@ export default function Home() {
 
     fetchFeed();
     fetchStore();
+  }
   }, []);
   const [filterList, setFilterList] = useState("")
 
