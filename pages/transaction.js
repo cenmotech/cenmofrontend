@@ -173,6 +173,7 @@ export default function Transaction() {
     return (
 
         <div size={{ base: "100px", md: "200px", lg: "300px" }}>
+            <title>Transaction</title>
             <Grid templateColumns='repeat(5, 1fr)' gap={0}>
                 <GridItem colSpan={1} w='100%' h="100vh" position="sticky" top="0" left="0" overflow="hidden" borderRight='1px' borderColor='gray.200'>
                     <Navbar />
