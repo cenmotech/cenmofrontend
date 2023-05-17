@@ -1,5 +1,5 @@
 import axios from "axios";
-const baseUrl = 'http://127.0.0.1:8000/authuser';
+const baseUrl = `${process.env.NEXT_PUBLIC_BE_URL}/authuser`;
 let accessToken = null;
 const getConfig = () => {
     return {

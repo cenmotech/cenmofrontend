@@ -27,7 +27,7 @@ export default function Navbar() {
     const [categoriesFilter, setCategoriesFilter] = useState(null)
     const [filter, setFilter] = useState('')
     const { logout } = useContext(AuthenticationContext);
-    const baseUrl = "http://127.0.0.1:8000"
+    const baseUrl = process.env.NEXT_PUBLIC_BE_URL
     const router = useRouter();
     const toast = useToast()
 
@@ -55,7 +55,7 @@ export default function Navbar() {
         } else {
             const fetchCategories = async () => {
                 if (filter === '') {
-                    const response = await axios.get(`https://cenmo-pro-fikriazain.vercel.app/group/get_all_categories`, {
+                    const response = await axios.get(`${baseUrl}/group/get_all_categories`, {
                         headers: {
                             'Content-Type': 'application/json',
                             'Accept': 'application/json',

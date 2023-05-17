@@ -216,7 +216,8 @@ const handleInputChange = (event) => {
                     <Text as='b'>Rp {itemTotalPrice.toLocaleString('id-ID')}</Text>
                   </Stack>
                   <br />
-                  <Button float='right' onClick={showPayment} colorScheme='blue'>Buy</Button>
+                  {/* <Button float='right' onClick={showPayment} colorScheme='blue'>Buy</Button> */}
+                  <Button float='right' isDisabled colorScheme='blue'>Buy</Button>
                   <Modal
                     isCentered
                     onClose={onClose}
