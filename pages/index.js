@@ -16,7 +16,7 @@ import { useRouter } from 'next/router'
 export default function Home() {
   const { isOpen: isNavOpen, onOpen: onNavOpen, onClose: onNavClose } = useDisclosure()
   const { isOpen: isStoreOpen, onOpen: onStoreOpen, onClose: onStoreClose } = useDisclosure()
-  const baseUrl = "https://cenmo-pro-fikriazain.vercel.app"
+  const baseUrl = "http://127.0.0.1:8000"
   const [feedList, setFeedList] = useState([]);
   const [storeList, setStoreList] = useState([]);
   const router = useRouter();
@@ -75,8 +75,9 @@ export default function Home() {
 
 
   const listingTemplate = () => {
-    return (
+    return (  
       <div>
+        <title>Home</title>
         <Flex minWidth='max-content' alignItems='center' gap='2' px='5' pt='7' >
           <Heading color='black' size='md'>Store</Heading>
           <Spacer />

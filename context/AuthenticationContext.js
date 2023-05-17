@@ -31,7 +31,7 @@ export const AuthenticationProvider = ({children}) => {
 			setAccessToken(access.data.accessToken)
 			localStorage.setItem('accessToken', access.data.accessToken)
 			localStorage.setItem('user', access.data.user.email)
-			return true;
+			return {"success": true, "is_admin": access.data.user.is_admin}
 		} catch(error){
 			if (error) {
 				setError(error.response)

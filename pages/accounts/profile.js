@@ -35,7 +35,7 @@ const [postalCodeError, setPostalCodeError] = useState("");
 const [street, setUserStreet] = useState("");
 const [addressList, setAddressList] = useState([]);
 const toast = useToast()
-const baseUrl = "https://cenmo-pro-fikriazain.vercel.app"
+const baseUrl = "http://127.0.0.1:8000"
 
 const [addressId, setAddressId] = useState("");
 
@@ -156,6 +156,7 @@ const handleMainAddress = async (e) => {
 
 return (
     <div size={{ base: "100px", md: "200px", lg: "300px" }}>
+    <title>{name}'s Profile</title>
     <Grid templateColumns='repeat(5, 1fr)' gap={0}>
         <GridItem colSpan={1} w='100%' h="100vh" position="sticky" top="0" left="0" overflow="hidden" borderRight='1px' borderColor='gray.200'>
         <Navbar />

@@ -497,6 +497,7 @@ export default function Group() {
 
   return (
     <main className={styles.container}>
+      <title>{groupMethod.group_name} Group</title>
       <Flex p="3" borderBottom='1px' borderColor='gray.200' height={100} display={{ base: "block", xl: "none" }}>
         <Stack direction="row">
           <Button variant='ghost' onClick={onNavOpen}>

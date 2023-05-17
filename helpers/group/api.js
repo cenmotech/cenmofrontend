@@ -1,5 +1,5 @@
 import axios from "axios";
-const baseUrl = "https://cenmo-pro-fikriazain.vercel.app/group"
+const baseUrl = "http://127.0.0.1:8000/group"
 let accessToken = null;
 const getConfig = () => {
     return {
@@ -11,21 +11,19 @@ const getConfig = () => {
     }
   }
 //CREATE GROUP POST LISTING CATEGORY
-export const createGroup = async (Token, body) => {
-    accessToken = Token;
+export const createGroup = async (body) => {
     try{
         const response  = await axios.post(`${baseUrl}/create_group`, body, getConfig());
-        return response.data;
+        return response;
     }catch(error){
         throw new Error(error.response.data.error);
     }
 }
 
-export const createCategory = async (Token, body) => {
-    accessToken = Token;
+export const createCategory = async (body) => {
     try{
         const response  = await axios.post(`${baseUrl}/create_category`, body, getConfig());
-        return response.data;
+        return response;
     }catch(error){
         throw new Error(error.response.data.error);
     }
