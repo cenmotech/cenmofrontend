@@ -8,8 +8,8 @@ export const AuthenticationProvider = ({children}) => {
     const [user, setUser] = useState("")
 	const [accessToken, setAccessToken] = useState("")
 	const [error, setError] = useState("")
-	const baseUrl = 'https://cenmo.tech/api'
-	// const router = useRouter()
+	const baseUrl = process.env.NEXT_PUBLIC_DEV
+	// const router = useRouter(
 
     // Login
 	const login = async ({email, password}) => {
@@ -31,7 +31,7 @@ export const AuthenticationProvider = ({children}) => {
 			setAccessToken(access.data.accessToken)
 			localStorage.setItem('accessToken', access.data.accessToken)
 			localStorage.setItem('user', access.data.user.email)
-			return true;
+			return {"success": true, "is_admin": access.data.user.is_admin}
 		} catch(error){
 			if (error) {
 				setError(error.response)
@@ -67,6 +67,7 @@ export const AuthenticationProvider = ({children}) => {
 
         try {
 			// call nextjs api function to create a user
+			console.log("ini dev", baseUrl)
 			await axios.post(`${baseUrl}/register`, body, config)
 			return true
 		} catch(error) {

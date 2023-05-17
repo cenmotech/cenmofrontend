@@ -3,7 +3,7 @@ import axios from 'axios'
 
 export default async (req, res) => {
   let accessToken = null;
-  const baseUrl = "https://cenmo-pro.vercel.app"
+  const baseUrl = `${process.env.NEXT_PUBLIC_BE_URL}`
 
   if (req.method === 'POST') {
     const {name, email, password, phone} = req.body

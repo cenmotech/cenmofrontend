@@ -1,5 +1,5 @@
 import axios from "axios";
-const baseUrl = 'https://cenmo-pro.vercel.app/authuser';
+const baseUrl = `${process.env.NEXT_PUBLIC_BE_URL}/authuser`;
 let accessToken = null;
 const getConfig = () => {
     return {
@@ -15,7 +15,6 @@ export const getUserProfile = async (Token) => {
     accessToken = Token;
     try {
         const response = await axios.get(`${baseUrl}/get-user-profile`, getConfig());
-        console.log(response.data);
         return response.data;
     } catch (error) {
         throw new Error(error.response.data.error);
@@ -48,6 +47,17 @@ export const getUserInfo = async (Token) => {
         const response = await axios.get(`${baseUrl}/get-user-session`, getConfig());
         return response.data;
     } catch (error) {
+        throw new Error(error.response.data.error);
+    }
+}
+
+export const setMainAddress = async (Token, id) => {
+    accessToken = Token;
+    try{
+        console.log(getConfig());
+        const response  = await axios.post(`${baseUrl}/set-address/${id}`, {}, getConfig());
+        return response.data;
+    }catch(error){
         throw new Error(error.response.data.error);
     }
 }
