@@ -55,12 +55,34 @@ export default function Login() {
 
         function submitHandler (e) {
             e.preventDefault();
-            login({email, password}).then((success) => {
-                /* istanbul ignore next */
-                if(success){
-                    router.push('/')
-                }
-            })
+            if (email !== "" && password !== "") {
+                login({email, password}).then((success) => {
+                    /* istanbul ignore next */
+                    if(success.success === true && success.is_admin === true){
+                        router.push('/admin')
+                    }
+                    else if (success.success === true && success.is_admin === false){
+                        router.push('/')
+                    }
+                    else {
+                        toast({
+                            title: "Wrong email or password",
+                            status: "error",
+                            duration: 3000,
+                            isClosable: true,
+                          })
+                    }
+                })
+            }
+            else {
+                toast({
+                    title: "Please Fill all the required form",
+                    status: "error",
+                    duration: 3000,
+                    isClosable: true,
+                  })
+            }
+
         }
     return (
         <>

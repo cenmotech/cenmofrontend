@@ -31,3 +31,5 @@ yarn-error.log*
 .vercel
 .scannerwork
 test-report.xml
+# Sentry Auth Token
+.sentryclirc

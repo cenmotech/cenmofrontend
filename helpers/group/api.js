@@ -1,5 +1,5 @@
 import axios from "axios";
-const baseUrl = "https://cenmo-pro.vercel.app/group"
+const baseUrl = `${process.env.NEXT_PUBLIC_BE_URL}/group`
 let accessToken = null;
 const getConfig = () => {
     return {
@@ -11,21 +11,19 @@ const getConfig = () => {
     }
   }
 //CREATE GROUP POST LISTING CATEGORY
-export const createGroup = async (Token, body) => {
-    accessToken = Token;
+export const createGroup = async (body) => {
     try{
         const response  = await axios.post(`${baseUrl}/create_group`, body, getConfig());
-        return response.data;
+        return response;
     }catch(error){
         throw new Error(error.response.data.error);
     }
 }
 
-export const createCategory = async (Token, body) => {
-    accessToken = Token;
+export const createCategory = async (body) => {
     try{
         const response  = await axios.post(`${baseUrl}/create_category`, body, getConfig());
-        return response.data;
+        return response;
     }catch(error){
         throw new Error(error.response.data.error);
     }
@@ -96,7 +94,7 @@ export const getPostOnGroup = async (Token,groupId) => {
 export const getListingBySeller = async (Token, sellerEmail) => {
     accessToken = Token;
     try{
-        const response  = await axios.get(`${baseUrl}/get_listing_by_seller/${sellerEmail}`, getConfig());
+        const response  = await axios.get(`${baseUrl}/get_listing_by_seller`, getConfig());
         return response.data;
     }catch(error){
         throw new Error(error.response.data.error);
@@ -164,6 +162,16 @@ export const searchListingByName = async (Token, urlbody) => {
     }
 }
 
+export const searchListingByNameAndSeller = async (Token, urlbody) => {
+    accessToken = Token;
+    try{
+        const response  = await axios.get(`${baseUrl}/search_listing_by_seller_and_name/${urlbody}/`, getConfig());
+        return response.data;
+    }catch(error){
+        throw new Error(error.response.data.error);
+    }
+}
+
 export const searchListingOnGroup = async (Token,groupId, urlbody) => {
     accessToken = Token;
     try{
@@ -222,6 +230,38 @@ export const isMember = async (Token, groupId) => {
         const response  = await axios.get(`${baseUrl}/is_joined/${groupId}`, getConfig());
         return response.data;
     }catch(error){
+        throw new Error(error.response.data.error);
+    }
+}
+
+//Get Store and Feed
+
+export const getFeeds = async (Token) => {
+    accessToken = Token;
+    try{
+        const response  = await axios.get(`${baseUrl}/get_feed`, getConfig());
+        return response.data;
+    }catch(error){
+        throw new Error(error.response.data.error);
+    }
+}
+
+export const getStore = async (Token) => {
+    accessToken = Token;
+    try{
+        const response  = await axios.get(`${baseUrl}/get_store`, getConfig());
+        return response.data;
+    }catch(error){
+        throw new Error(error.response.data.error);
+    }
+}
+
+export const editListing = async (Token, Body) => {
+    accessToken = Token;
+    try{
+        const response  = await axios.post(`${baseUrl}/edit_listing`, Body, getConfig());
+        return response.data;
+    } catch(error){
         throw new Error(error.response.data.error);
     }
 }
