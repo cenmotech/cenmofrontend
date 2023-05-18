@@ -12,6 +12,8 @@ import { useEffect, useState, useContext } from 'react'
 import { SearchIcon } from '@chakra-ui/icons'
 import { useRouter } from 'next/router'
 
+import AuthenticationContext from '../context/AuthenticationContext'
+
 //change this to home page using our navbar from components
 export default function Home() {
   const { isOpen: isNavOpen, onOpen: onNavOpen, onClose: onNavClose } = useDisclosure()
@@ -20,7 +22,8 @@ export default function Home() {
   const [feedList, setFeedList] = useState([]);
   const [storeList, setStoreList] = useState([]);
   const router = useRouter();
-
+  const {accessToken} = useContext(AuthenticationContext);
+  console.log("index.js", accessToken)
   useEffect(() => {
     const fetchFeed = async () => {
       try {
@@ -104,7 +107,7 @@ export default function Home() {
       </Flex>
       <Drawer isOpen={isNavOpen} placement="left" onClose={onNavClose} >
         <DrawerContent>
-          <Navbar />
+          {/* <Navbar /> */}
         </DrawerContent>
       </Drawer>
       <Drawer isOpen={isStoreOpen} placement="right" size="sm" onClose={onStoreClose}>
@@ -125,7 +128,7 @@ export default function Home() {
       <Grid templateColumns={{ base: 'repeat(3, 1fr)', xl: 'repeat(5, 1fr)' }} gap={0} >
       <Show above='xl' >
         <GridItem colSpan={1} w='100%' h="100vh" position="sticky" top="0" left="0" overflow="hidden" borderRight='1px' borderColor='gray.200' >
-          <Navbar data-testid="navbar"/>
+          {/* <Navbar data-testid="navbar"/> */}
         </GridItem>
       </Show>
       <GridItem colSpan={3}>

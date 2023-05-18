@@ -1,14 +1,16 @@
 import { createContext, useState } from 'react'
 import axios from 'axios'
 import { useRouter } from 'next/router'
+import { set } from 'firebase/database'
 
 const AuthenticationContext = createContext()
 
 export const AuthenticationProvider = ({children}) => {
     const [user, setUser] = useState("")
+	const [userName, setUsername] = useState("")
 	const [accessToken, setAccessToken] = useState("")
 	const [error, setError] = useState("")
-	const baseUrl = 'https://cenmo-frontend-dickynasje.vercel.app/api'
+	const baseUrl = process.env.NEXT_PUBLIC_DEV
 	// const router = useRouter(
 
     // Login
@@ -28,6 +30,11 @@ export const AuthenticationProvider = ({children}) => {
 		try {
 			let access = await axios.post(`${baseUrl}/login`, body, config)
 			setUser(access.data.user.email)
+
+			// DELETE THIS LINE AFTER TESTING
+			sessionStorage.setItem('accessToken', access.data.accessToken)
+			sessionStorage.setItem('userEmail', access.data.user.email)
+			sessionStorage.setItem('userName', access.data.user.name)
 			setAccessToken(access.data.accessToken)
 			localStorage.setItem('accessToken', access.data.accessToken)
 			localStorage.setItem('user', access.data.user.email)
@@ -35,6 +42,7 @@ export const AuthenticationProvider = ({children}) => {
 		} catch(error){
 			if (error) {
 				setError(error.response)
+				console.log(error)
 				return false
 			} else if (error.request) {
 			  setError('Something went wrong')
@@ -85,6 +93,17 @@ export const AuthenticationProvider = ({children}) => {
 	      return false
 		}
     }
+	//LoadUser
+	const loadUser = async () => {
+		const token = sessionStorage.getItem('accessToken')
+		const userName = sessionStorage.getItem('userName')
+		const userEmail = sessionStorage.getItem('userEmail')
+		setAccessToken(token)
+		setUser(userEmail)
+		setUsername(userName)
+		let data = {token, userName, userEmail}	
+		return data;
+	}
 	//Logout
 	const logout = async () => {
 		try{
@@ -92,6 +111,9 @@ export const AuthenticationProvider = ({children}) => {
 			setAccessToken("")
 			localStorage.removeItem('accessToken')
 			localStorage.removeItem('user')
+			sessionStorage.removeItem('accessToken')
+			sessionStorage.removeItem('userEmail')
+			sessionStorage.removeItem('userName')
 			return true
 		}catch(error){
 			setError(error.response)
@@ -100,7 +122,7 @@ export const AuthenticationProvider = ({children}) => {
 	}
 
 	return (
-		<AuthenticationContext.Provider value={{ user, accessToken, error, login, register, logout}}>
+		<AuthenticationContext.Provider value={{ user, setUser, userName, setUsername, accessToken, setAccessToken, error, login, register, logout, loadUser}}>
 			{children}
 		</AuthenticationContext.Provider>
 	)
