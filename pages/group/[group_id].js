@@ -2,11 +2,19 @@ import Head from 'next/head'
 import styles from '../../styles/Home.module.css'
 import { useRouter } from 'next/router'
 import { ReactNode, useState, useContext, useRef, useEffect } from 'react'
-import { useController } from "react-hook-form";
+import { set, useController } from "react-hook-form";
 import AuthenticationContext from '../../context/AuthenticationContext'
 import Navbar from '../../components/navbar'
-import { Show, Drawer, DrawerHeader, DrawerContent, DrawerCloseButton, Hide, useToast, Textarea, Progress, Menu, MenuButton, MenuItem, MenuList, Image, InputLeftAddon, FormErrorMessage, Grid, Select, GridItem, Input, FormControl, FormLabel, InputGroup, InputLeftElement, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, ButtonGroup, Button, Flex, Card, CardHeader, Box, Heading, Avatar, Stack, Text, Center, CardBody, IconButton, CardFooter, Divider, Spacer, AspectRatio, position, useDisclosure, NumberInput, NumberInputField, FormHelperText, NumberIncrementStepper, NumberDecrementStepper, NumberInputStepper } from '@chakra-ui/react'
+import {
+  Show, Drawer, DrawerHeader, DrawerContent, DrawerCloseButton, Hide, useToast, Textarea, Progress, Menu, MenuButton,
+  MenuItem, MenuList, Image, InputLeftAddon, FormErrorMessage, Grid, Select, GridItem, Input, FormControl, FormLabel,
+  InputGroup, InputLeftElement, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter,
+  ButtonGroup, Button, Flex, Card, CardHeader, Box, Heading, Avatar, Stack, Text, Center, CardBody, IconButton, CardFooter,
+  Divider, Spacer, AspectRatio, position, useDisclosure, NumberInput, NumberInputField, FormHelperText, NumberIncrementStepper,
+  NumberDecrementStepper, NumberInputStepper, Tag, TagLabel, TagCloseButton, HStack, Radio, RadioGroup
+} from '@chakra-ui/react'
 import { BsThreeDotsVertical, GrLinkPrevious, BsCardImage, BsList } from 'react-icons/bs'
+import { GoSettings } from 'react-icons/go'
 import { BiStore } from 'react-icons/bi'
 import { HiViewList } from 'react-icons/hi'
 import { SearchIcon, BellIcon, AddIcon, ArrowBackIcon, ArrowForwardIcon } from '@chakra-ui/icons'
@@ -22,16 +30,19 @@ import { v4 } from 'uuid';
 import { grid } from '@chakra-ui/styled-system';
 import Post from '../../components/post';
 import Listing from '../../components/listing';
+import { setTag } from '@sentry/nextjs';
 
 
 export default function Group() {
   // HANDLE ROUTER GROUP
   const [groupId, setGroupId] = useState(0)
+  const [tagsUrl, setTagsUrl] = useState([])
 
   const router = useRouter();
   useEffect(() => {
     if (!router.isReady) return;
     setGroupId(router.query.group_id)
+    setTagsUrl(router.query.tags)
   }, [router.isReady]);
 
   useEffect(() => {
@@ -74,6 +85,7 @@ export default function Group() {
   const { isOpen: isPostOpen, onOpen: onPostOpen, onClose: onPostClose } = useDisclosure()
   const { isOpen: isNavOpen, onOpen: onNavOpen, onClose: onNavClose } = useDisclosure()
   const { isOpen: isStoreOpen, onOpen: onStoreOpen, onClose: onStoreClose } = useDisclosure()
+  const { isOpen: isFilterOpen, onOpen: onFilterOpen, onClose: onFilterClose } = useDisclosure()
   const btnRef = useRef(null)
 
   const [userName, setUserName] = useState("")
@@ -112,30 +124,25 @@ export default function Group() {
     if (!router.isReady) return;
     const searchPost = async () => {
       if (filter === "") {
-        const response = await getPostOnGroup(localStorage.getItem('accessToken'), groupId);
+        const response = await getPostOnGroup(localStorage.getItem('accessToken'), groupId, tagsUrl);
         setPostList(response.response)
-        console.log("IF")
-        console.log(response.response)
       }
       else {
-        const response = await searchPostOnGroup(localStorage.getItem('accessToken'), groupId, filter);
+        const response = await searchPostOnGroup(localStorage.getItem('accessToken'), groupId, filter, tagsUrl);
         setPostList(response.response)
-        console.log("ELSE")
-        console.log(filter)
-        console.log(response.response)
       }
     }
     searchPost()
-  }, [filter])
+  }, [filter, tagsUrl])
 
 
   async function getPostFromApi() {
     try {
       if (filter === '') {
-        const response = await getPostOnGroup(localStorage.getItem('accessToken'), groupId);
+        const response = await getPostOnGroup(localStorage.getItem('accessToken'), groupId, tagsUrl);
         setPostList(response.response)
       } else {
-        const response = await searchPostByDesc(localStorage.getItem('accessToken'), groupId, filter);
+        const response = await searchPostOnGroup(localStorage.getItem('accessToken'), groupId, filter, tagsUrl);
         setPostList(response.response)
       }
     } catch (error) {
@@ -222,8 +229,10 @@ export default function Group() {
   const handleRemoveAll = () => {
     setSelectedFiles([]);
     setPreviewUrls([]);
+    setTags([]);
     onListClose();
     onPostClose();
+    onFilterClose();
   };
 
   // HANDLE POST LISTING
@@ -289,7 +298,7 @@ export default function Group() {
   const [postDesc, setPostDesc] = useState("");
 
   async function uploadPost() {
-    if (selectedFiles.length == 0 && postDesc == "") {
+    if (postDesc == "") {
       toast({
         title: "Please Fill all the required form",
         status: "error",
@@ -297,7 +306,10 @@ export default function Group() {
         isClosable: true,
       })
     } else {
-      const image = await uploadImage("post")
+      var image = "";
+      if (selectedFiles.length !== 0) {
+        image = await uploadImage("post")
+      }
       uploadPostInfo(image).then(() => { router.reload() })
     }
   };
@@ -310,13 +322,14 @@ export default function Group() {
   function uploadPostInfo(image) {
     const group = groupId;
     const desc = postDesc;
-    const data = { desc, image, group };
+    const data = { desc, image, group, tags };
     return postCreatePost(data)
   };
 
   async function postCreatePost(data) {
     try {
       const response = await createPost(localStorage.getItem("accessToken"), data)
+      return response
     } catch (error) {
       console.error(error);
     }
@@ -376,6 +389,49 @@ export default function Group() {
   const handleSearchListing = (e) => {
     if (e.key === 'Enter') {
       setFilterList(e.target.value)
+    }
+  }
+
+  // HANDLE TAG INPUT
+  const [tags, setTags] = useState([]);
+  const [inputValue, setInputValue] = useState("");
+
+  const handleInputChange = (event) => {
+    setInputValue(event.target.value);
+  };
+
+  const handleInputKeyDown = (event) => {
+    if (event.key === "Enter" && inputValue) {
+      setTags([...tags, inputValue]);
+      setInputValue("");
+    }
+  };
+
+  const handleTagDelete = (tagToDelete) => {
+    const newTags = tags.filter((tag) => tag !== tagToDelete);
+    setTags(newTags);
+  };
+
+  const filterPost = () => {
+    if (tags.length === 0) {
+      toast({
+        title: "Please Fill at least one tag",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      })
+    } else {
+      onFilterClose()
+      const joinedTags = tags.join(",");
+      const encodedTags = tags.map(tag => encodeURIComponent(tag));
+      const queryString = `tags=${encodedTags.join(",")}`;
+      const urlPathname = `/group/${groupId}`;
+      setTagsUrl(joinedTags)
+      setTags([])
+      router.push({
+        pathname: urlPathname,
+        query: queryString
+      });
     }
   }
 
@@ -587,14 +643,54 @@ export default function Group() {
                     {/* </Stack> */}
                   </CardBody>
                 </Card>
-                <InputGroup w={{ base: "400px", md: "550px", lg: "700px" }} pl='5' pr='5' pt='3'>
-                  <InputLeftElement
-                    pl='9' pt='6'
-                    pointerEvents='none'
-                    children={<SearchIcon color='gray.300' />}
-                  />
-                  <Input pl='10' type='tel' placeholder='Search' borderRadius='30' onKeyDown={handleSearch} />
-                </InputGroup>
+                <Stack direction='row' spacing={2} pt='3'>
+                  <InputGroup w={{ base: "300px", md: "450px", lg: "600px" }}>
+                    <InputLeftElement
+                      pointerEvents='none'
+                      children={<SearchIcon color='gray.300' />}
+                    />
+                    <Input type='tel' placeholder='Search' borderRadius='30' onKeyDown={handleSearch} />
+                  </InputGroup>
+                  <Button rightIcon={<GoSettings />} w="90px" m="" onClick={onFilterOpen} colorScheme='blue' >
+                    Filter
+                  </Button>
+                </Stack>
+
+                <Modal isOpen={isFilterOpen} onClose={onFilterClose} isCentered closeOnOverlayClick={false}>
+                  <ModalOverlay />
+                  <ModalContent>
+                    <ModalHeader>Filter Post</ModalHeader>
+                    <ModalCloseButton onClick={handleRemoveAll} mt="2" mr="1" />
+                    <ModalBody>
+                      <FormControl id="tag-form" maxW="100%">
+                        <FormLabel>Tags</FormLabel>
+                        <Input
+                          placeholder="Type a tag & Press enter"
+                          value={inputValue}
+                          onChange={handleInputChange}
+                          onKeyDown={handleInputKeyDown}
+                          size='md'
+                          mb={2}
+                        />
+                        <HStack flexWrap="wrap">
+                          {tags.map((tag) => (
+                            <Tag mb="5" key={tag} size="md" variant="subtle" colorScheme="blue">
+                              <TagLabel>{tag}</TagLabel>
+                              <TagCloseButton onClick={() => handleTagDelete(tag)} />
+                            </Tag>
+                          ))}
+                        </HStack>
+
+                      </FormControl>
+                    </ModalBody>
+                    <ModalFooter>
+                      <Button colorScheme="blue" onClick={filterPost}>
+                        Filter
+                      </Button>
+                    </ModalFooter>
+                  </ModalContent>
+                </Modal>
+
 
                 {isJoined === true && (
                   <Card w={{ base: "400px", md: "550px", lg: "700px" }} borderRadius='15' mt='10'>
@@ -646,6 +742,27 @@ export default function Group() {
                               />
                               <Button rightIcon={<BsCardImage />} width={100} height={100} cursor="pointer" as="span"></Button>
                             </label>
+
+                            <FormControl pt='5' id="tag-form" maxW="100%">
+                              <FormLabel>Tags</FormLabel>
+                              <Input
+                                placeholder="Type a tag & Press enter"
+                                value={inputValue}
+                                onChange={handleInputChange}
+                                onKeyDown={handleInputKeyDown}
+                                size='md'
+                                mb={2}
+                              />
+                              <HStack flexWrap="wrap">
+                                {tags.map((tag) => (
+                                  <Tag key={tag} size="md" variant="subtle" colorScheme="blue">
+                                    <TagLabel>{tag}</TagLabel>
+                                    <TagCloseButton onClick={() => handleTagDelete(tag)} />
+                                  </Tag>
+                                ))}
+                              </HStack>
+
+                            </FormControl>
                           </Flex>
                         </Box>
                       </Stack>

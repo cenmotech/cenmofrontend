@@ -12,7 +12,6 @@ deploy_preview:
     - staging-vercel
   script:
     - npm install --location=global vercel
-    - vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
     - vercel build --token=$VERCEL_TOKEN
     - vercel deploy --prebuilt  --token=$VERCEL_TOKEN
 
@@ -22,7 +21,6 @@ deploy_development:
     - staging
   script:
     - npm install --location=global vercel
-    - vercel pull --yes --environment=development --token=$VERCEL_TOKEN
     - vercel build --token=$VERCEL_TOKEN
     - vercel deploy --prebuilt  --token=$VERCEL_TOKEN
 
@@ -32,7 +30,6 @@ deploy_production:
     - main
   script:
     - npm install --location=global vercel
-    - vercel pull --yes --environment=production --token=$VERCEL_TOKEN
     - vercel build --prod --token=$VERCEL_TOKEN
     - vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
 

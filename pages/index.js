@@ -143,7 +143,6 @@ export default function Home() {
 ))}
 </Stack>
         </Center>
-      
         </GridItem>
         <Show above='xl'>
         <GridItem colSpan={1} >

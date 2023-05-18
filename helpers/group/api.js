@@ -81,11 +81,20 @@ export const getListingbyLoggedUser = async (Token) => {
     }
 }
 
-export const getPostOnGroup = async (Token,groupId) => {
+export const getPostOnGroup = async (Token,groupId, tags="") => {
     accessToken = Token;
     try{
-        const response  = await axios.get(`${baseUrl}/get_post_on_group/${groupId}`, getConfig());
-        return response.data;
+        if (tags === ""){
+            const response  = await axios.get(`${baseUrl}/get_post_on_group/${groupId}`, getConfig());
+            return response.data;
+        } else {    
+            // console.log(tags)
+            tags = tags.split(",")
+            const encodedTags = tags.map(tag => encodeURIComponent(tag));
+            const queryString = `tags=${encodedTags.join(",")}`;
+            const response  = await axios.get(`${baseUrl}/get_post_on_group/${groupId}?${queryString}`, getConfig());
+            return response.data;
+        }
     }catch(error){
         throw new Error(error.response.data.error);
     }
@@ -145,8 +154,18 @@ export const searchPostByDesc = async (Token, urlbody) => {
 export const searchPostOnGroup = async (Token,groupId, urlbody) => {
     accessToken = Token;
     try{
-        const response  = await axios.get(`${baseUrl}/search_post_on_group/${groupId}/${urlbody}/`, getConfig());
+        const response  = await axios.get(`${baseUrl}/search_post_on_group/${groupId}/${urlbody}`, getConfig());
         return response.data;
+        // if (tags === ""){
+        //     const response  = await axios.get(`${baseUrl}/search_post_on_group/${groupId}/${urlbody}`, getConfig());
+        //     return response.data;
+        // } else {
+        //     tags = tags.split(",")
+        //     const encodedTags = tags.map(tag => encodeURIComponent(tag));
+        //     const queryString = `tags=${encodedTags.join(",")}`;
+        //     const response  = await axios.get(`${baseUrl}/search_post_on_group/${groupId}/${urlbody}?${queryString}`, getConfig());
+        //     return response.data;
+        // }
     }catch(error){
         throw new Error(error.response.data.error);
     }
