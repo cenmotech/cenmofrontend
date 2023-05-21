@@ -22,7 +22,7 @@ export default function Navbar() {
     const [categoriesFilter, setCategoriesFilter] = useState(null)
     const [filter, setFilter] = useState('')
     const { logout } = useContext(AuthenticationContext);
-    const baseUrl = "http://127.0.0.1:8000"
+    const baseUrl = process.env.NEXT_PUBLIC_BE_URL
     const router = useRouter();
 
     useEffect(() => {
@@ -46,7 +46,7 @@ export default function Navbar() {
     useEffect(() => {
         const fetchCategories = async () => {
             if (filter === '') {
-                const response = await axios.get(`https://cenmo-pro-fikriazain.vercel.app/group/get_all_categories`, {
+                const response = await axios.get(`${baseUrl}/group/get_all_categories`, {
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
@@ -99,7 +99,7 @@ export default function Navbar() {
 
 
     return (
-        <Box data-testid="navbar" h='100vh' display="flex" flexDirection="column">
+        <Box data-testid="navbar" h='100vh' display="flex" flexDirection="column" bg='white'>
             <Grid templateRows='repeat(13, 1fr)' gap={0} flex="1" minHeight="0">
                 <GridItem>
                     <Flex minWidth='max-content' alignItems='center' gap='2' pt='13'>

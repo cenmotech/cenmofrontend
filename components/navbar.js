@@ -135,7 +135,7 @@ export default function Navbar() {
 
     const { isOpen, onOpen, onClose } = useDisclosure()
     return (
-        <Box data-testid="navbar" h='100vh' display="flex" flexDirection="column">
+        <Box data-testid="navbar" h='100vh' display="flex" flexDirection="column" bg='white'>
             <Grid templateRows='repeat(13, 1fr)' gap={0} flex="1" minHeight="0">
                 <GridItem>
                     <Flex minWidth='max-content' alignItems='center' gap='2' pt='13'>

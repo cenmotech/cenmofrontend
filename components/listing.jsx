@@ -7,16 +7,10 @@ import { storage } from '../firebaseConfig';
 import { useDisclosure } from "@chakra-ui/react"
 import { getSnapToken } from '../helpers/transaction/api';
 import { updateToCart } from '../helpers/shopcart/api';
+import { useRouter } from 'next/router'
 const Listing = ({ list }) => {
   const [images, setImages] = useState([])
-  const { isOpen, onOpen, onClose } = useDisclosure()
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const handleClickPrev = () => {
-    setCurrentIndex((prev) => prev === 0 ? images.length - 1 : prev - 1);
-  };
-  const handleClickNext = () => {
-    setCurrentIndex((prev) => prev === images.length - 1 ? 0 : prev + 1);
-  };
+  const router = useRouter();
 
   async function getPhotoOnListing(url) {
     if (url != "") {
@@ -39,26 +33,26 @@ const Listing = ({ list }) => {
     })
   }, [list])
 
-  const toast = useToast()
+  // const toast = useToast()
 
-  async function cartHandler(action, goods_id) {
-    try {
-      await updateToCart(action, goods_id)
-      toast({
-        title: 'Success',
-        description: "Item added to cart",
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-      });
-    } catch (error) {
-      console.error(error)
-    }
-  }
-  const cartHandler2 = (e, id) => {
-    e.preventDefault()
-    cartHandler('add', id)
-  }
+  // async function cartHandler(action, goods_id) {
+  //   try {
+  //     await updateToCart(action, goods_id)
+  //     toast({
+  //       title: 'Success',
+  //       description: "Item added to cart",
+  //       status: 'success',
+  //       duration: 3000,
+  //       isClosable: true,
+  //     });
+  //   } catch (error) {
+  //     console.error(error)
+  //   }
+  // }
+  // const cartHandler2 = (e, id) => {
+  //   e.preventDefault()
+  //   cartHandler('add', id)
+  // }
 
   const getCity = (region) => {
     const city = region.split(',')[0]
@@ -70,7 +64,7 @@ const Listing = ({ list }) => {
   }
 
   return <div>
-    <Card overflow="hidden" height="145" m="5" borderRadius='15' className='listingCard' onClick={onOpen} cursor='pointer'>
+    <Card overflow="hidden" height="145" m="5" borderRadius='15' className='listingCard' onClick={() => router.push(`/listing/${list.goods_id}`)} cursor='pointer'>
       <CardBody p="0">
         <Stack justifyContent="space-between" direction='row' align='stretch'>
           <Box flex="1">
@@ -95,7 +89,7 @@ const Listing = ({ list }) => {
     </Card>
 
 
-    <Modal isOpen={isOpen} onClose={onClose} size="xl">
+    {/* <Modal isOpen={isOpen} onClose={onClose} size="xl">
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
@@ -198,7 +192,7 @@ const Listing = ({ list }) => {
           <Button onClick={onClose}>Close</Button>
         </ModalFooter>
       </ModalContent>
-    </Modal>
+    </Modal> */}
 
   </div >
 }

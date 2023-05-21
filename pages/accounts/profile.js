@@ -16,8 +16,10 @@ import { useEffect, useState, useContext } from 'react'
 import Navbar from '../../components/navbar'
 import axios from "axios";
 import { getUserProfile, addAddress, setMainAddress } from '../../helpers/profile/api';
+import { getBankList, getUserBankAccount, validateBank, addBankAccount, withdrawToBank, getWithdrawalHistory } from '../../helpers/transaction/api';
 import { useRouter } from 'next/router'
 import React from 'react';
+import moment from "moment"
 
 export default function Profile() {
     const router = useRouter();
@@ -49,6 +51,9 @@ export default function Profile() {
 
     useEffect(() => {
         setUserProfile()
+        setListOfBank()
+        setUserBankAccount()
+        setUserWithdrawalHistory()
     }, [])
 
     async function setUserProfile() {
@@ -68,6 +73,137 @@ export default function Profile() {
         } catch (error) {
             // handle the error
             console.error(error);
+        }
+    }
+
+    const [bankList, setBankList] = useState([]);
+    const [userBankList, setUserBankList] = useState([]);
+    const [withdrawalHistory, setWithdrawalHistory] = useState([]);
+    const [selectedBank, setSelectedBank] = useState("");
+    const [typedAccountNumber, setTypedAccountNumber] = useState("");
+    const [verifiedBank, setVerifiedBank] = useState({});
+    const [showAddButton, setShowAddButton] = useState("none");
+
+
+    async function setListOfBank() {
+        try {
+            const response = await getBankList();
+            setBankList(response.response.beneficiary_banks);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    async function setUserBankAccount() {
+        try {
+            const response = await getUserBankAccount();
+            setUserBankList(response.response)
+            console.log(userBankList)
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    async function setUserWithdrawalHistory() {
+        try {
+            const response = await getWithdrawalHistory();
+            setWithdrawalHistory(response.response)
+            console.log(withdrawalHistory)
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    async function handleCheckBank() {
+        if (selectedBank === "" || typedAccountNumber === "") {
+            setShowAddButton("none")
+            toast({
+                title: "Please fill all fields",
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+            });
+        } else {
+            try {
+                const response = await validateBank(selectedBank, typedAccountNumber);
+                if (response != null) {
+                    setVerifiedBank(response.data.response)
+                    setShowAddButton("block")
+                } else {
+                    setShowAddButton("none")
+                    toast({
+                        title: "The account is not valid",
+                        status: "error",
+                        duration: 3000,
+                        isClosable: true,
+                    });
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        }
+    }
+
+    async function saveBankAccount() {
+        if (Object.keys(verifiedBank).length !== 0) {
+            try {
+                const response = await addBankAccount(verifiedBank);
+                console.log(response)
+                if (response != null) {
+                    onCloseCreateBank()
+                    router.reload()
+                } else {
+                    toast({
+                        title: "Bank Account Already Exist",
+                        status: "error",
+                        duration: 3000,
+                        isClosable: true,
+                    });
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        } else {
+            toast({
+                title: "Please fill bank details",
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+            });
+        }
+    }
+
+    const [withdrawalAmount, setWithdrawalAmount] = useState(0);
+    const [withdrawalBank, setWithdrawalBank] = useState("");
+    const [amountValid, setAmountValid] = useState(true);
+
+    const handleAmount = (amount) => {
+        amount = parseInt(amount);
+        setWithdrawalAmount(amount);
+        if (amount > balance || amount < 10000 || amount == NaN) {
+            console.log("masuk sini")
+            setAmountValid(false);
+        } else {
+            setAmountValid(true);
+        }
+    }
+
+    async function withdraw() {
+        console.log(withdrawalAmount, withdrawalBank)
+        if (withdrawalAmount < 10000 || withdrawalAmount > balance || withdrawalAmount == NaN || withdrawalBank === "") {
+            toast({
+                title: "Please fill all fields",
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+            });
+        } else {
+            try {
+                const response = await withdrawToBank(withdrawalBank, withdrawalAmount);
+                router.reload()
+            } catch (error) {
+                console.error(error);
+            }
         }
     }
 
@@ -160,10 +296,6 @@ export default function Profile() {
     }
 
     const { isOpen: isOpenCreateBank, onOpen: onOpenCreateBank, onClose: onCloseCreateBank } = useDisclosure()
-
-    const handleCheckBank = () => {
-
-    }
 
     return (
         <div size={{ base: "100px", md: "200px", lg: "300px" }}>
@@ -329,79 +461,98 @@ export default function Profile() {
                     </Box>
                 </GridItem>
                 <GridItem colSpan={1} w='100%' h="100vh" position="sticky" top="0" left="0" overflow="hidden" borderLeft='1px' borderColor='gray.200'>
-                    <Heading pl='2' pt='7' color='black' size='md'>Balance</Heading>
-                    <Stack m="2" divider={<StackDivider />} spacing='4'>
-                        {/* <Text fontSize='xl' pl='3' pt='2'>Rp {balance.toLocaleString('id-ID')}</Text> */}
-                        <Text fontSize='xl' pl='3' pt='2'>Rp XXXXXX</Text>
-                        <div>
-                            <Heading color='black' size='md'>Withdrawal</Heading>
-                            <Stack pt="2" direction='row'>
-                                <Select placeholder='Select Bank Account' pl='3' />
-                                <Button mt="2" onClick={onOpenCreateBank}>+</Button>
-                                <Modal isOpen={isOpenCreateBank} onClose={onCloseCreateBank}>
-                                    <ModalOverlay />
-                                    <ModalContent>
-                                        <ModalHeader>Add New Bank Account</ModalHeader>
-                                        <ModalCloseButton />
-                                        <ModalBody>
-                                            <Select placeholder='Select Bank'>
-                                                <option value='option1'>Option 1</option>
-                                            </Select>
-                                            <InputGroup mt="3">
-                                                <Input placeholder='Input Account Number' />
-                                                <InputRightElement width='4.5rem'>
-                                                    <Button h='1.75rem' size='sm' onClick={handleCheckBank}>
-                                                        Check
-                                                    </Button>
-                                                </InputRightElement>
-                                            </InputGroup>
-                                        </ModalBody>
+                    <Stack m="4" h='100vh' display="flex" flexDirection="column" divider={<StackDivider />} spacing='4'>
+                        <Card >
+                            <CardBody>
+                                <Heading color='black' size='md'>Balance</Heading>
+                                <Text fontSize='xl' pt='2'>Rp {balance.toLocaleString('id-ID')}</Text>
+                            </CardBody>
+                        </Card>
+                        <Card>
+                            <CardBody>
+                                <Heading color='black' size='md'>Withdrawal</Heading>
+                                <Stack pt="4" direction='row'>
+                                    <Select placeholder='Select Bank Account' onChange={(e) => setWithdrawalBank(e.target.value)}>
+                                        {userBankList.map((bank, index) => (
+                                            <option key={index} value={bank.id}>{bank.bank_name} - {bank.account_name}</option>
+                                        ))}
+                                    </Select>
+                                    <Button mt="2" onClick={onOpenCreateBank}>+</Button>
+                                    <Modal isOpen={isOpenCreateBank} onClose={onCloseCreateBank} closeOnOverlayClick={false}>
+                                        <ModalOverlay />
+                                        <ModalContent>
+                                            <ModalHeader>Add New Bank Account</ModalHeader>
+                                            <ModalCloseButton onClick={() => { setVerifiedBank({}); setShowAddButton("none") }} />
+                                            <ModalBody>
+                                                <Select placeholder='Select Bank' onChange={(e) => setSelectedBank(e.target.value)}>
+                                                    {bankList.map((bank, index) => (
+                                                        <option key={index} value={bank.code}>{bank.name}</option>
+                                                    ))}
+                                                </Select>
+                                                <InputGroup mt="3">
+                                                    <Input type="number" onChange={(e) => setTypedAccountNumber(e.target.value)} placeholder='Input Account Number' />
+                                                    <InputRightElement width='4.5rem'>
+                                                        <Button h='1.75rem' size='sm' onClick={handleCheckBank}>
+                                                            Check
+                                                        </Button>
+                                                    </InputRightElement>
+                                                </InputGroup>
+                                                {Object.keys(verifiedBank).length !== 0 && (
+                                                    <Text mt="3">{verifiedBank.bank_name} - {verifiedBank.account_name}</Text>
+                                                )}
+                                            </ModalBody>
 
-                                        <ModalFooter>
-                                            <Button colorScheme='blue' onClick={onClose}>
-                                                Add
-                                            </Button>
-                                        </ModalFooter>
-                                    </ModalContent>
-                                </Modal>
-                            </Stack>
-                            <Text mt="3" pl="3">Amount:</Text>
-                            <NumberInput mt="1" pl='3' min={10000}>
-                                <NumberInputField />
-                                <NumberInputStepper>
-                                    <NumberIncrementStepper />
-                                    <NumberDecrementStepper />
-                                </NumberInputStepper>
-                            </NumberInput>
-                            <Stack mt="3" direction='row'>
-                                <Spacer />
-                                <Button>
-                                    Withdraw
-                                </Button>
-                            </Stack>
-                        </div>
-                        <div>
-                            <Heading pl='2' color='black' size='md'>History</Heading>
-                            <Stack m="2" divider={<StackDivider />} spacing='2'>
-                                <Card>
-                                    <CardHeader py="0" pt="4">
-                                        <Heading size='sm'>ID: XXXXX</Heading>
-                                    </CardHeader>
-                                    <CardBody>
-                                        <Stack divider={<StackDivider />}>
-                                            <Box>
-                                                <Text pt='2' fontSize='sm'>
-                                                    Amount: Rp.20.0000
-                                                </Text>
-                                                <Text pt='2' fontSize='sm'>
-                                                    Status: Success
-                                                </Text>
-                                            </Box>
-                                        </Stack>
-                                    </CardBody>
-                                </Card>
-                            </Stack>
-                        </div>
+                                            <ModalFooter>
+                                                <Button display={showAddButton} colorScheme='blue' onClick={saveBankAccount}>
+                                                    Add
+                                                </Button>
+                                            </ModalFooter>
+                                        </ModalContent>
+                                    </Modal>
+                                </Stack>
+                                <Text mt="3">Amount:</Text>
+                                <FormControl isInvalid={!amountValid}>
+                                    <Input placeholder="Minimum Rp10.000" onChange={(e) => handleAmount(e.target.value)} mt="1" />
+                                    {!amountValid && (
+                                        <FormErrorMessage>
+                                            Enter minimum Rp10.000 and maximum Rp{balance.toLocaleString('id-ID')}
+                                        </FormErrorMessage>
+                                    )}
+                                </FormControl>
+                                <Stack mt="4" direction='row'>
+                                    <Spacer />
+                                    <Button onClick={withdraw}>
+                                        Withdraw
+                                    </Button>
+                                </Stack>
+                            </CardBody>
+                        </Card>
+                        <Card mb="8" overflowY="auto">
+                            <CardBody>
+                                <Heading color='black' size='md'>History</Heading>
+                                <Stack mt="4" divider={<StackDivider />} spacing='2'>
+                                    {withdrawalHistory.map((history, index) => (
+                                    <Stack>
+                                        <Box>
+                                            <Heading size='sm'>ID: {history.id}</Heading>
+                                            <Text fontSize='sm'>
+                                                Date: {moment(history.date).format("MMMM Do YYYY, h:mm:ss a")}
+                                            </Text>
+                                            <Text fontSize='sm'>
+                                                Amount: Rp {parseInt(history.amount).toLocaleString('id-ID')}
+                                            </Text>
+                                            <Text fontSize='sm'>
+                                                Status:
+                                                <Badge variant='solid' ml="1" colorScheme={history.progress === 'processed' ? 'orange' : history.progress === 'completed' ? 'green' : history.progress === 'failed' ? 'red' : 'gray'} fontSize='0.8em'>
+                                                    {history.status}
+                                                </Badge>
+                                            </Text>
+                                        </Box>
+                                    </Stack>
+                                    ))}
+                                </Stack>
+                            </CardBody>
+                        </Card>
                     </Stack>
                 </GridItem>
             </Grid>

@@ -6,21 +6,13 @@ stages:
 - test
 - sonarqube
 
-deploy_preview:
-  stage: deploy
-  only:
-    - staging-vercel
-  script:
-    - npm install --location=global vercel
-    - vercel build --token=$VERCEL_TOKEN
-    - vercel deploy --prebuilt  --token=$VERCEL_TOKEN
-
 deploy_development:
   stage: deploy
   only:
     - staging-vercel
   script:
     - npm install --location=global vercel
+    - vercel pull --yes --environment=development --token=$VERCEL_TOKEN
     - vercel build --token=$VERCEL_TOKEN
     - vercel deploy --prebuilt  --token=$VERCEL_TOKEN
 
@@ -30,6 +22,7 @@ deploy_production:
     - main
   script:
     - npm install --location=global vercel
+    - vercel pull --yes --environment=production --token=$VERCEL_TOKEN
     - vercel build --prod --token=$VERCEL_TOKEN
     - vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
 
