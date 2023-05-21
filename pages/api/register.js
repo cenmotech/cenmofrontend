@@ -3,8 +3,8 @@ import axios from 'axios'
 
 export default async (req, res) => {
   let accessToken = null;
-  const baseUrl = `${process.env.NEXT_PUBLIC_BE_URL}`
-  // const baseUrl = "http://127.0.0.1:8000"
+  // const baseUrl = `${process.env.NEXT_PUBLIC_BE_URL}`
+  const baseUrl = "http://127.0.0.1:8000"
 
   if (req.method === 'POST') {
     const {name, email, password, phone} = req.body

@@ -78,8 +78,8 @@ const Post = ({ post, userKey = "", groupId = 0 }) => {
             <CardBody pt='0' >
                 {post.tags[0] !== null && (
                     <>
-                        {post.tags.map((tag) => (
-                            <Tag key={tag} size="md" mr="2" variant="subtle" colorScheme="blue">
+                        {post.tags.map((tag, index) => (
+                            <Tag key={index} size="md" mr="2" variant="subtle" colorScheme="blue">
                                 <TagLabel>{tag}</TagLabel>
                             </Tag>
                         ))}
