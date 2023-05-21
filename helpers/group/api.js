@@ -71,6 +71,15 @@ export const getPostbyLoggedUser = async (Token) => {
     }
 }
 
+export const getListingbyId = async (id) => {
+    try{
+        const response  = await axios.get(`${baseUrl}/get_listing_by_id/${id}`, getConfig());
+        return response.data;
+    }catch(error){
+        throw new Error(error.response.data.error);
+    }
+}
+
 export const getListingbyLoggedUser = async (Token) => {
     accessToken = Token;
     try{
@@ -104,6 +113,15 @@ export const getListingBySeller = async (Token, sellerEmail) => {
     accessToken = Token;
     try{
         const response  = await axios.get(`${baseUrl}/get_listing_by_seller`, getConfig());
+        return response.data;
+    }catch(error){
+        throw new Error(error.response.data.error);
+    }
+}
+
+export const getAllListingFromSeller = async (sellerEmail, currentListing) => {
+    try{
+        const response  = await axios.get(`${baseUrl}/get-all-listing-from-seller/${sellerEmail}/${currentListing}`, getConfig());
         return response.data;
     }catch(error){
         throw new Error(error.response.data.error);
