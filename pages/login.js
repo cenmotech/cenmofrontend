@@ -58,7 +58,10 @@ export default function Login() {
             if (email !== "" && password !== "") {
                 login({email, password}).then((success) => {
                     /* istanbul ignore next */
-                    if(success){
+                    if(success.success === true && success.is_admin === true){
+                        router.push('/admin')
+                    }
+                    else if (success.success === true && success.is_admin === false){
                         router.push('/')
                     }
                     else {

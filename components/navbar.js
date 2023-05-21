@@ -5,25 +5,31 @@ import {
     Input, InputGroup, SimpleGrid, Card, CardBody,
     Stack, StackDivider, Accordion, AccordionItem,
     AccordionButton, AccordionIcon, AccordionPanel,
-    Avatar, Link
+    Avatar, Link, Modal, ModalOverlay, 
+    ModalContent, ModalHeader, ModalFooter, ModalBody,
+    ModalCloseButton, useDisclosure, FormControl, FormLabel,useToast, Textarea 
 } from '@chakra-ui/react'
 import { SearchIcon } from '@chakra-ui/icons'
 import { BsCart2, BsChatRightText, BsBell } from "react-icons/bs";
 import { MdAttachMoney } from "react-icons/md";
-import { BiStore } from "react-icons/bi";
+import { BiBody, BiStore } from "react-icons/bi";
 import { useEffect, useState, useContext } from 'react'
 import axios from "axios";
 import AuthenticationContext from '../context/AuthenticationContext'
 import { useRouter } from 'next/router'
 import { getUserInfo } from '../helpers/profile/api';
+import React from 'react';
+import { sendSuggestions } from '../helpers/admin/api';
+
 
 export default function Navbar() {
     const [categories, setCategories] = useState([])
     const [categoriesFilter, setCategoriesFilter] = useState(null)
     const [filter, setFilter] = useState('')
     const { logout } = useContext(AuthenticationContext);
-    const baseUrl = "https://cenmo-pro-fikriazain.vercel.app"
+    const baseUrl = process.env.NEXT_PUBLIC_BE_URL
     const router = useRouter();
+    const toast = useToast()
 
     useEffect(() => {
         if (localStorage.getItem("accessToken") == null) {
@@ -44,35 +50,39 @@ export default function Navbar() {
     }
 
     useEffect(() => {
-        const fetchCategories = async () => {
-            if (filter === '') {
-                const response = await axios.get(`https://cenmo-pro-fikriazain.vercel.app/group/get_all_categories`, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+        if (localStorage.getItem("accessToken") == null) {
+            router.push("/login")
+        } else {
+            const fetchCategories = async () => {
+                if (filter === '') {
+                    const response = await axios.get(`${baseUrl}/group/get_all_categories`, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                        }
+                    })
+                    if (response && response.data && response.data.category_groups) {
+                        setCategories(response.data.category_groups)
+                        setCategoriesFilter(response.data.category_groups)
                     }
-                })
-                if (response && response.data && response.data.category_groups) {
-                    setCategories(response.data.category_groups)
-                    setCategoriesFilter(response.data.category_groups)
+                }
+                else {
+                    const response = await axios.get(`${baseUrl}/group/get_all_categories_contains/${filter}`, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                        }
+                    })
+                    if (response && response.data && response.data.category_groups) {
+                        setCategories(response.data.category_groups)
+                        setCategoriesFilter(response.data.category_groups)
+                    }
                 }
             }
-            else {
-                const response = await axios.get(`${baseUrl}/group/get_all_categories_contains/${filter}`, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-                    }
-                })
-                if (response && response.data && response.data.category_groups) {
-                    setCategories(response.data.category_groups)
-                    setCategoriesFilter(response.data.category_groups)
-                }
-            }
+            fetchCategories()
         }
-        fetchCategories()
     }, [filter])
 
     const handleSearch = (e) => {
@@ -90,29 +100,56 @@ export default function Navbar() {
 
     const [userName, setUserName] = useState("")
     useEffect(() => {
-        const getUser = async () => {
-            const response = await getUserInfo(localStorage.getItem('accessToken'));
-            setUserName(response.name)
+        if (localStorage.getItem("accessToken") == null) {
+            router.push("/login")
+        } else {
+            const getUser = async () => {
+                const response = await getUserInfo(localStorage.getItem('accessToken'));
+                setUserName(response.name)
+            }
+            getUser()
         }
-        getUser()
     }, [])
 
+    const initialRef = React.useRef(null)
+    const finalRef = React.useRef(null)
+    const [isLoading, setIsLoading] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [error, setError] = useState(null);
 
+    const handleRequestForm = async (e) => {
+        e.preventDefault()
+        setIsLoading(true)
+        try{
+            const body={
+                "suggestion":e.target.request_user.value
+            }
+            const response = await sendSuggestions(body);
+            setIsSuccess(true);
+            onClose();
+        }
+        catch (error) {
+            console.log(error)
+        }
+    };
+
+    const { isOpen, onOpen, onClose } = useDisclosure()
     return (
         <Box data-testid="navbar" h='100vh' display="flex" flexDirection="column">
-            <Grid templateRows='repeat(19, 1fr)' gap={0} flex="1" minHeight="0">
-                <GridItem rowSpan={7} overflowY="auto" overflowX="hidden">
-                    <Flex minWidth='max-content' alignItems='center' gap='2' pt='3'>
+            <Grid templateRows='repeat(13, 1fr)' gap={0} flex="1" minHeight="0">
+                <GridItem>
+                    <Flex minWidth='max-content' alignItems='center' gap='2' pt='13'>
                         <Box p='2' pl='5'>
-                            <Heading as='b' color='black' size='lg'>Cenmo</Heading>
+                            <Heading as='b' color='black' size='lg'>Cenmo Admin</Heading>
                         </Box>
                         <Spacer />
                         <ButtonGroup gap='2' p='2' pr='5' borderRadius='30'>
                             <Button borderRadius='15' color='black' onClick={handleLogout}>Log Out</Button>
                         </ButtonGroup>
                     </Flex>
-
-                    <List spacing={3} pl='5' pt='3' pr='3'>
+                </GridItem>
+                <GridItem rowSpan={1}>
+                <List spacing={3} pl='5' pt='3' pr='3'>
                         <ListItem>
                             <Button leftIcon={<BsBell />} justifyContent='left' onClick={() => router.push("/")} cursor="pointer" width='100%' borderRadius='30' colorScheme='blue'>Home</Button>
                         </ListItem>
@@ -132,7 +169,6 @@ export default function Navbar() {
                 </GridItem>
                 <GridItem rowSpan={9} overflowY="auto">
                     <Heading pl='5' pt='7' color='black' size='md'>Categories</Heading>
-
                     <InputGroup pl='5' pr='5' pt='3'>
                         <InputLeftElement
                             pl='9' pt='6'
@@ -163,7 +199,42 @@ export default function Navbar() {
                                         </AccordionItem>
                                     ))}
                                 </Accordion>
-                                <Button justifyContent='left' colorScheme='blue' variant='ghost'>Request Category</Button>
+                                <Button justifyContent='left' colorScheme='blue'onClick={onOpen} variant='ghost'>Request Category</Button>
+                                <Modal
+                    isCentered
+                    onClose={onClose}
+                    isOpen={isOpen}
+                    motionPreset='slideInBottom'
+                  >
+                    <ModalOverlay />
+                    <ModalContent>
+                        <ModalHeader>Request Form</ModalHeader>
+                        <ModalCloseButton />
+                        <ModalBody pb={6}>
+                            <form onSubmit={handleRequestForm}>
+                            <FormControl>
+                            <FormLabel>What's your request?</FormLabel>
+                            <Textarea  ref={initialRef} type='text' name="request_user" size="lg" height="200px" resize="vertical"/>
+                            </FormControl>
+                            <ModalFooter>
+                            <Button type='submit' colorScheme='blue' mr={3}
+                                onClick={() =>
+                                    toast({
+                                      title: 'Suggestions Sent',
+                                      description: "Your suggestion has been send to admin",
+                                      status: 'success',
+                                      duration: 9000,
+                                      isClosable: true,
+                                    })
+                                  }
+                            >
+                            Send
+                            </Button>
+                        </ModalFooter>
+                            </form>
+                        </ModalBody>
+                        </ModalContent>
+                  </Modal>
                             </CardBody>
                         </Card>
                     </Box>

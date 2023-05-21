@@ -1,5 +1,5 @@
 import axios from "axios";
-const baseUrl = 'https://cenmo-pro-fikriazain.vercel.app/transaction';
+const baseUrl = `${process.env.NEXT_PUBLIC_BE_URL}/transaction`;
 let accessToken = null;
 const getConfig = () => {
     return {
@@ -112,5 +112,13 @@ export const getBuyerByGoodsId = async (Token,goods_id) => {
     return response.data;
   }catch (error) {
       console.log(error)
+  }
+}
+export const createComplain = async (body) => {
+  try{
+      const response  = await axios.post(`${baseUrl}/create-complain`, body, getConfig());
+      return response.data;
+  }catch(error){
+    console.log("ini error ", error)
   }
 }

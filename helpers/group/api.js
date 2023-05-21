@@ -1,5 +1,5 @@
 import axios from "axios";
-const baseUrl = "https://cenmo-pro-fikriazain.vercel.app/group"
+const baseUrl = `${process.env.NEXT_PUBLIC_BE_URL}/group`
 let accessToken = null;
 const getConfig = () => {
     return {
@@ -11,21 +11,19 @@ const getConfig = () => {
     }
   }
 //CREATE GROUP POST LISTING CATEGORY
-export const createGroup = async (Token, body) => {
-    accessToken = Token;
+export const createGroup = async (body) => {
     try{
         const response  = await axios.post(`${baseUrl}/create_group`, body, getConfig());
-        return response.data;
+        return response;
     }catch(error){
         throw new Error(error.response.data.error);
     }
 }
 
-export const createCategory = async (Token, body) => {
-    accessToken = Token;
+export const createCategory = async (body) => {
     try{
         const response  = await axios.post(`${baseUrl}/create_category`, body, getConfig());
-        return response.data;
+        return response;
     }catch(error){
         throw new Error(error.response.data.error);
     }
@@ -83,11 +81,20 @@ export const getListingbyLoggedUser = async (Token) => {
     }
 }
 
-export const getPostOnGroup = async (Token,groupId) => {
+export const getPostOnGroup = async (Token,groupId, tags="") => {
     accessToken = Token;
     try{
-        const response  = await axios.get(`${baseUrl}/get_post_on_group/${groupId}`, getConfig());
-        return response.data;
+        if (tags === ""){
+            const response  = await axios.get(`${baseUrl}/get_post_on_group/${groupId}`, getConfig());
+            return response.data;
+        } else {    
+            // console.log(tags)
+            tags = tags.split(",")
+            const encodedTags = tags.map(tag => encodeURIComponent(tag));
+            const queryString = `tags=${encodedTags.join(",")}`;
+            const response  = await axios.get(`${baseUrl}/get_post_on_group/${groupId}?${queryString}`, getConfig());
+            return response.data;
+        }
     }catch(error){
         throw new Error(error.response.data.error);
     }
@@ -147,8 +154,18 @@ export const searchPostByDesc = async (Token, urlbody) => {
 export const searchPostOnGroup = async (Token,groupId, urlbody) => {
     accessToken = Token;
     try{
-        const response  = await axios.get(`${baseUrl}/search_post_on_group/${groupId}/${urlbody}/`, getConfig());
+        const response  = await axios.get(`${baseUrl}/search_post_on_group/${groupId}/${urlbody}`, getConfig());
         return response.data;
+        // if (tags === ""){
+        //     const response  = await axios.get(`${baseUrl}/search_post_on_group/${groupId}/${urlbody}`, getConfig());
+        //     return response.data;
+        // } else {
+        //     tags = tags.split(",")
+        //     const encodedTags = tags.map(tag => encodeURIComponent(tag));
+        //     const queryString = `tags=${encodedTags.join(",")}`;
+        //     const response  = await axios.get(`${baseUrl}/search_post_on_group/${groupId}/${urlbody}?${queryString}`, getConfig());
+        //     return response.data;
+        // }
     }catch(error){
         throw new Error(error.response.data.error);
     }

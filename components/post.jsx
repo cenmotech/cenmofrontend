@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Flex, Image, Button, Box, Stack, Center, Avatar, Text, Spacer, Menu, MenuButton, MenuItem, MenuList, Grid, GridItem, Card, CardHeader, CardFooter, CardBody, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, IconButton } from '@chakra-ui/react';
+import { Flex, Image, Button, Box, Stack, Center, Avatar, Text, Spacer, Tag, TagLabel, TagCloseButton, Menu, MenuButton, MenuItem, MenuList, Grid, GridItem, Card, CardHeader, CardBody, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, IconButton } from '@chakra-ui/react';
 import { ArrowBackIcon, ArrowForwardIcon } from '@chakra-ui/icons'
 import { getStorage, ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
 import { BsThreeDotsVertical } from 'react-icons/bs'
@@ -75,12 +75,12 @@ const Post = ({ post, userKey = "", groupId = 0}) => {
       }
     };
     return <div>
-        <Card w={{base: "400px", md:"550px", lg: "700px"}} borderRadius='15'>
+        <Card w={{ base: "400px", md: "550px", lg: "700px" }} borderRadius='15'>
             <CardHeader>
                 <Stack direction='row'>
-                    <Avatar size='md' name={post.post_user_name} />
+                    <Avatar size='md' name={post.post_user__name} />
                     <Stack spacing={0} direction='column'>
-                        <Text fontSize="xl">{post.post_user_name}</Text>
+                        <Text fontSize="xl">{post.post_user__name}</Text>
                         <Text fontSize="sm" mt="0">Posted on {moment(post.post_date).format("MMMM Do YYYY, h:mm:ss a")}</Text>
                     </Stack>
                     <Spacer />
@@ -101,6 +101,15 @@ const Post = ({ post, userKey = "", groupId = 0}) => {
                 </Stack>
             </CardHeader>
             <CardBody pt='0' >
+                {post.tags[0] !== null && (
+                    <>
+                        {post.tags.map((tag) => (
+                            <Tag key={tag} size="md" mr="2" variant="subtle" colorScheme="blue">
+                                <TagLabel>{tag}</TagLabel>
+                            </Tag>
+                        ))}
+                    </>
+                )}
                 <Text mb="5" fontSize='xl'>{post.post_desc}</Text>
                 {post.post_image_link !== "" &&
                     <Flex alignItems="center">
@@ -122,8 +131,7 @@ const Post = ({ post, userKey = "", groupId = 0}) => {
                                     transition="opacity 0.5s ease-in-out"
                                     objectFit="contain"
                                 />
-                            })
-                            }
+                            })}
                         </Box>
                         {images.length > 1 && (
                             <Button bg="transparent" rightIcon={<ArrowForwardIcon cursor="pointer" />} onClick={handleClickNext} ></Button>

@@ -1,6 +1,6 @@
 import axios from "axios";
 //const baseUrl = 'http://localhost:8000/shopcart';
-const baseUrl = 'https://cenmo-pro-fikriazain.vercel.app/shopcart';
+const baseUrl = `${process.env.NEXT_PUBLIC_BE_URL}/shopcart`;
 let accessToken = null;
 const getConfig = () => {
     return {

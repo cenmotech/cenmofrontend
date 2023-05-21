@@ -18,13 +18,16 @@ import AuthenticationContext from '../context/AuthenticationContext'
 export default function Home() {
   const { isOpen: isNavOpen, onOpen: onNavOpen, onClose: onNavClose } = useDisclosure()
   const { isOpen: isStoreOpen, onOpen: onStoreOpen, onClose: onStoreClose } = useDisclosure()
-  const baseUrl = "https://cenmo-pro-fikriazain.vercel.app"
+  const baseUrl = `${process.env.NEXT_PUBLIC_BE_URL}`
   const [feedList, setFeedList] = useState([]);
   const [storeList, setStoreList] = useState([]);
   const router = useRouter();
   const {accessToken} = useContext(AuthenticationContext);
   console.log("index.js", accessToken)
   useEffect(() => {
+    if (localStorage.getItem("accessToken") == null) {
+      router.push("/login")
+    } else {
     const fetchFeed = async () => {
       try {
         const response = await getFeeds(localStorage.getItem("accessToken"));
@@ -49,6 +52,7 @@ export default function Home() {
 
     fetchFeed();
     fetchStore();
+  }
   }, []);
   const [filterList, setFilterList] = useState("")
 
@@ -74,8 +78,9 @@ export default function Home() {
 
 
   const listingTemplate = () => {
-    return (
+    return (  
       <div>
+        <title>Home</title>
         <Flex minWidth='max-content' alignItems='center' gap='2' px='5' pt='7' >
           <Heading color='black' size='md'>Store</Heading>
           <Spacer />
@@ -141,7 +146,6 @@ export default function Home() {
 ))}
 </Stack>
         </Center>
-      
         </GridItem>
         <Show above='xl'>
         <GridItem colSpan={1} >

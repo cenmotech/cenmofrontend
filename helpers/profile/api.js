@@ -1,5 +1,5 @@
 import axios from "axios";
-const baseUrl = 'https://cenmo-pro-fikriazain.vercel.app/authuser';
+const baseUrl = `${process.env.NEXT_PUBLIC_BE_URL}/authuser`;
 let accessToken = null;
 const getConfig = () => {
     return {

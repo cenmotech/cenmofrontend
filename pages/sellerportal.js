@@ -23,7 +23,7 @@ import { useRouter } from 'next/router'
 import axios from "axios";
 
 export default function Seller() {
-    const baseUrl = "https://cenmo-pro-fikriazain.vercel.app"
+    const baseUrl = `${process.env.NEXT_PUBLIC_BE_URL}`
     const router = useRouter();
     const [isExpanded, setIsExpanded] = useState(false);
     const toast = useToast();
@@ -253,6 +253,7 @@ export default function Seller() {
 
     return (
         <div size={{ base: "100px", md: "200px", lg: "300px" }}>
+            <title>Seller Portal</title>
             <Flex p="3" borderBottom='1px' borderColor='gray.200' height="100" display={{ base: "block", xl: "none" }} >
                 <Stack direction="row">
                     <Button variant='ghost' onClick={onNavOpen}>
