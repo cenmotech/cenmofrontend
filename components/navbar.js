@@ -140,7 +140,7 @@ export default function Navbar() {
                 <GridItem>
                     <Flex minWidth='max-content' alignItems='center' gap='2' pt='13'>
                         <Box p='2' pl='5'>
-                            <Heading as='b' color='black' size='lg'>Cenmo Admin</Heading>
+                            <Heading as='b' color='black' size='lg'>Cenmo</Heading>
                         </Box>
                         <Spacer />
                         <ButtonGroup gap='2' p='2' pr='5' borderRadius='30'>
@@ -154,7 +154,7 @@ export default function Navbar() {
                             <Button leftIcon={<BsBell />} justifyContent='left' onClick={() => router.push("/")} cursor="pointer" width='100%' borderRadius='30' colorScheme='blue'>Home</Button>
                         </ListItem>
                         <ListItem>
-                            <Button leftIcon={<BsChatRightText />} justifyContent='left' width='100%' borderRadius='30' colorScheme='blue'>Chats</Button>
+                            <Button leftIcon={<BsChatRightText />} justifyContent='left' onClick={() => router.push("/chats")} width='100%' borderRadius='30' colorScheme='blue'>Chats</Button>
                         </ListItem>
                         <ListItem>
                             <Button leftIcon={<BsCart2 />} justifyContent='left' onClick={() => router.push("/basket")} width='100%' borderRadius='30' colorScheme='blue'>Baskets</Button>

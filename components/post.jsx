@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Flex, Image, Button, Box, Stack, Center, Avatar, Text, Spacer, Tag, TagLabel, TagCloseButton, Menu, MenuButton, MenuItem, MenuList, Grid, GridItem, Card, CardHeader, CardBody, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, IconButton } from '@chakra-ui/react';
+import { Flex, Image, Button, Box, Stack, Center, Avatar, Text, Spacer, Tag, TagLabel, TagCloseButton, Menu, MenuButton, MenuItem, MenuList, Grid, GridItem, Card, CardHeader, CardBody, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, IconButton, CardFooter } from '@chakra-ui/react';
 import { ArrowBackIcon, ArrowForwardIcon } from '@chakra-ui/icons'
 import { getStorage, ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
 import { BsThreeDotsVertical } from 'react-icons/bs'

@@ -2,10 +2,12 @@ import { getDatabase, ref, set } from "firebase/database";
 import {Button, Flex, Box, Avatar, Text, Heading, Input, FormControl} from '@chakra-ui/react'
 import {database} from '../firebaseConfig'
 import AuthenticationContext from "../context/AuthenticationContext";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useRouter } from 'next/router'
 
 const ChatMessages = ({ Id, email}) => {
+    const [id, setID] = useState("");
+    setID(Id)
     return(
         <Flex flex='3' direction={'column'}>
                 {/* chat info */}
@@ -16,10 +18,10 @@ const ChatMessages = ({ Id, email}) => {
                 {/* chat messages */}
                 <Flex flex='1' direction={'column'} pt={4} mx={5} overflowX={"scroll"} sx={{scrollbarWidth: "none"}}>
                     <Flex p={5} bg={'blue.300'} w={'fit-content'} minWidth={"50px"} borderRadius={"lg"} m={1}>
-                        <Text>message 1</Text>
+                        <Text>{id}</Text>
                     </Flex>
                     <Flex p={5} bg={'green.300'} w={'fit-content'} minWidth={"50px"} borderRadius={"lg"} m={1} alignSelf={"flex-end"}>
-                        <Text>message 2</Text>
+                        <Text>{email}</Text>
                     </Flex>
                     
                 </Flex>
