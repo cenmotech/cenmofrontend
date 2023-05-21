@@ -47,3 +47,12 @@ export const getGroups = async () => {
         console.log(error)
     }
 }
+
+export const getAllCategoriesAdmin = async () => {
+    try{
+        const response  = await axios.get(`${baseUrl}/get-all-categories-for-admin`, getConfig());
+        return response.data;
+    }catch(error){
+        throw new Error(error.response.data.error);
+    }
+}

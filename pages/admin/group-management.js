@@ -15,7 +15,7 @@ import {
   import React, { useState } from 'react';
   import { HiViewList } from 'react-icons/hi'
   import { BiStore } from 'react-icons/bi'
-  import { getGroups } from '../../helpers/admin/api';
+  import { getGroups, getAllCategoriesAdmin } from '../../helpers/admin/api';
   import { getAllCategories } from '../../helpers/group/api';
   import { createGroup, createCategory} from '../../helpers/group/api';
 
@@ -42,7 +42,7 @@ import {
           const response = await getGroups();
           setGroupList(response.groups_list);
 
-          const response2 = await getAllCategories();
+          const response2 = await getAllCategoriesAdmin();
           setCategoriesList(response2.category_groups);
         }
         catch(error){

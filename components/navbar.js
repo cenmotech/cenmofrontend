@@ -140,7 +140,7 @@ export default function Navbar() {
                 <GridItem>
                     <Flex minWidth='max-content' alignItems='center' gap='2' pt='13'>
                         <Box p='2' pl='5'>
-                            <Heading as='b' color='black' size='lg'>Cenmo Admin</Heading>
+                            <Heading as='b' color='black' size='lg'>Cenmo</Heading>
                         </Box>
                         <Spacer />
                         <ButtonGroup gap='2' p='2' pr='5' borderRadius='30'>
