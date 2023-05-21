@@ -6,6 +6,7 @@ import AuthenticationContext from '../context/AuthenticationContext';
 import { useContext, useState, useEffect } from 'react';
 import { useRouter } from "next/router";
 import { db } from '../firebaseConfig';
+
 const SideBarChat = () => {
     const [snapshot, loading, error] = useCollection(collection(db, "chats"));
     const [user, setUser] = useState("");

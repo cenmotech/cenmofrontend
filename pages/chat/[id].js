@@ -34,13 +34,13 @@ export default function Chat() {
         </Flex>
       )
     })
-    useEffect(() =>
-    setTimeout(
-      bottomOfChat.current.scrollIntoView({
-      behavior: "smooth",
-      block: 'start',
-    }), 100)
-  , [messages])
+//     useEffect(() =>
+//     setTimeout(
+//       bottomOfChat.current.scrollIntoView({
+//       behavior: "smooth",
+//       block: 'start',
+//     }), 100)
+//   , [messages])
     
     return(
         <Flex h='100vh'>
