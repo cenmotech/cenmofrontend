@@ -673,8 +673,8 @@ export default function Group() {
                           mb={2}
                         />
                         <HStack flexWrap="wrap">
-                          {tags.map((tag) => (
-                            <Tag mb="5" key={tag} size="md" variant="subtle" colorScheme="blue">
+                          {tags.map((tag, index) => (
+                            <Tag mb="5" key={index} size="md" variant="subtle" colorScheme="blue">
                               <TagLabel>{tag}</TagLabel>
                               <TagCloseButton onClick={() => handleTagDelete(tag)} />
                             </Tag>
@@ -754,8 +754,8 @@ export default function Group() {
                                 mb={2}
                               />
                               <HStack flexWrap="wrap">
-                                {tags.map((tag) => (
-                                  <Tag key={tag} size="md" variant="subtle" colorScheme="blue">
+                                {tags.map((tag, index) => (
+                                  <Tag key={index} size="md" variant="subtle" colorScheme="blue">
                                     <TagLabel>{tag}</TagLabel>
                                     <TagCloseButton onClick={() => handleTagDelete(tag)} />
                                   </Tag>
