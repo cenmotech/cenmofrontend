@@ -8,21 +8,27 @@ export default function Bottombar({id, user}) {
 
   const sendMessage = async (e) => {
     e.preventDefault();
-    await addDoc(collection(db, `chats/${id}/messages`), {
-      text: input,
-      sender: user,
-      timestamp: serverTimestamp()
-    })
-    setInput("");
+    if (input !== '') {
+      await addDoc(collection(db, `chats/${id}/messages`), {
+        text: input,
+        sender: user,
+        timestamp: serverTimestamp()
+      })
+      setInput("");
+    }
+    
   }
 
   return (
     <FormControl
+      bg='white'
       p={3}
+      pl={6}
+      pr={6}
       onSubmit={sendMessage}
       as="form"
     >
-      <Input placeholder="Type a message..." autoComplete="off" onChange={e => setInput(e.target.value)} value={input} />
+      <Input placeholder="Type a message..." autoComplete="off" onChange={e => setInput(e.target.value)} value={input} bg='white'/>
       <Button type="submit" hidden>Submit</Button>
     </FormControl>
   )

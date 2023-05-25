@@ -1,5 +1,5 @@
 import {useRouter} from 'next/router';
-import { Flex, Box, Text } from '@chakra-ui/react';
+import { Flex, Box, Text, Divider } from '@chakra-ui/react';
 import { useCollectionData, useDocumentData } from 'react-firebase-hooks/firestore';
 import { collection, doc, orderBy, query } from "firebase/firestore"
 import { db } from '../../firebaseConfig';
@@ -51,7 +51,7 @@ export default function Chat() {
             {/* SIDEBAR */}
             <SideBarChat/>
             {/* MESSAGES */}
-            <Flex flex={3} direction="column">
+            <Flex flex={3} direction="column" pt='1' bg='white'>
                 <Topbar email={getOtherUser(chat?.users, user)} />
 
                 <Flex flex={1} direction="column" pt={4} mx={5} overflowX="scroll" sx={{scrollbarWidth: "none"}}>

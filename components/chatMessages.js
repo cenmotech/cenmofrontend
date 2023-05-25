@@ -9,7 +9,9 @@ const ChatMessages = ({ Id, email}) => {
     const [id, setID] = useState("");
     setID(Id)
     return(
+
         <Flex flex='3' direction={'column'}>
+
                 {/* chat info */}
                 <Flex align={'center'} h='81px' p={5}>
                     <Avatar marginEnd={3}></Avatar>

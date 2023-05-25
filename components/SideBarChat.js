@@ -6,6 +6,7 @@ import AuthenticationContext from '../context/AuthenticationContext';
 import { useContext, useState, useEffect } from 'react';
 import { useRouter } from "next/router";
 import { db } from '../firebaseConfig';
+import { Heading, Divider, Card } from '@chakra-ui/react'
 
 const SideBarChat = () => {
     const [snapshot, loading, error] = useCollection(collection(db, "chats"));
@@ -26,17 +27,21 @@ const SideBarChat = () => {
           chats?.filter(chat => chat.users.includes(user))
           .map(
             (chat, index) => 
-              <Flex key={index} p={3} align="center" _hover={{bg: "gray.100", cursor: "pointer"}} onClick={() => redirect(chat.id)}>
+              <Flex key={index} p={3} align="center" _hover={{bg: "gray.400", cursor: "pointer"}} onClick={() => redirect(chat.id)} borderRadius='10' bg='gray.200' mb='3'>
+                
                 <Avatar src="" marginEnd={3} />
                 <Text>{getOtherUser(chat.users, user)}</Text>
+            
+                
               </Flex>
           )
         )
     }
 
     return(
-        <Flex flex='1' direction="column" bg='blue.200'>
-                <Flex overflowX={'scroll'} direction={'column'} sx={{scrollbarWidth: "none"}} flex='1'> 
+        <Flex flex='1' direction="column" borderSize='10px' borderColor='black.500'>
+          <Heading color='black' size='lg' pt='6' pl='5' pb='3'>Chats</Heading>
+                <Flex overflowX={'scroll'} direction={'column'} sx={{scrollbarWidth: "none"}} flex='1' pl='5' pr='5'> 
                     {chatList()}
                 </Flex>
         </Flex>
