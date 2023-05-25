@@ -35,7 +35,6 @@ export default function Navbar() {
         } else {
             getUserFromApi();
         }
-
     }, [])
 
     async function getUserFromApi() {
