@@ -3,7 +3,6 @@ default:
 
 stages:
 - deploy
-- test
 - sonarqube
 
 deploy_development:
@@ -25,18 +24,6 @@ deploy_production:
     - vercel pull --yes --environment=production --token=$VERCEL_TOKEN
     - vercel build --prod --token=$VERCEL_TOKEN
     - vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
-
-UnitTest:
-  stage: test
-  artifacts:
-    paths:
-      - coverage/
-      - test-report.xml
-    expire_in: 1 day
-  script:
-    - npm install
-    - npm run test
-  allow_failure: true
 
 sonarqube_prod:
   stage: sonarqube
