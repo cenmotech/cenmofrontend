@@ -64,7 +64,7 @@ const Listing = ({ list }) => {
   }
 
   return <div>
-    <Card overflow="hidden" height="145" m="5" borderRadius='15' className='listingCard' onClick={() => router.push(`/listing/${list.goods_id}`)} cursor='pointer'>
+    <Card overflow="hidden" height="145" m='5' borderRadius='15' className='listingCard' onClick={() => router.push(`/listing/${list.goods_id}`)} cursor='pointer'>
       <CardBody p="0">
         <Stack justifyContent="space-between" direction='row' align='stretch'>
           <Box flex="1">

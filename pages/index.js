@@ -152,19 +152,19 @@ export default function Home() {
           <Navbar data-testid="navbar"/>
         </GridItem>
       </Show>
-      <GridItem colSpan={3}>
+      <GridItem colSpan={3} mt='6'>
         <Center>
-        <Stack direction='column' spacing={8} >
-
-
-{feedList.map((post, index) => (
-  <Post post={post} key={index} liked={likedPost.includes(post.post_id)}></Post>
-))}
-</Stack>
+          <Stack direction='column' spacing={3} >
+          <Heading color='black' size='md' mb='4'>Feeds</Heading>
+          {feedList.map((post, index) => (
+            <Post post={post} key={index} liked={likedPost.includes(post.post_id)}></Post>
+          ))}
+          </Stack>
         </Center>
         </GridItem>
         <Show above='xl'>
-        <GridItem colSpan={1} >
+        <GridItem colSpan={1} backgroundColor='white' borderLeft='1px' borderColor='gray.200'>
+        
         {listingTemplate()}
         {storeList.map((list, index) => (
               <>

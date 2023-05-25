@@ -666,7 +666,7 @@ export default function Group() {
                       pointerEvents='none'
                       children={<SearchIcon color='gray.300' />}
                     />
-                    <Input type='tel' placeholder='Search' borderRadius='30' onKeyDown={handleSearch} />
+                    <Input type='tel' placeholder='Search' borderRadius='10' backgroundColor='white' onKeyDown={handleSearch} />
                   </InputGroup>
                   <Button rightIcon={<GoSettings />} w="90px" m="" onClick={onFilterOpen} colorScheme='blue' >
                     Filter
@@ -793,14 +793,16 @@ export default function Group() {
                   </ModalContent>
                 </Modal>
               </div>
+              
               {postList.map((post, index) => (
                 <Post post={post} userKey={userKey} groupId={groupId} key={index} liked={likedPost.includes(post.post_id)}></Post>
               ))}
+
             </Stack>
           </Center>
         </GridItem>
         <Show above='xl'>
-          <GridItem colSpan={1} w='100%' h="100vh" position="sticky" top="0" left="0" overflowY="auto" borderLeft='1px' borderColor='gray.200'>
+          <GridItem colSpan={1} w='100%' h="100vh" position="sticky" top="0" left="0" overflowY="auto" borderLeft='1px' borderColor='gray.200' backgroundColor='white'>
             {listingTemplate()}
             {listingList.map((list, index) => (
               <>

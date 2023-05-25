@@ -240,7 +240,7 @@ export default function Navbar() {
                     </Box>
                 </GridItem>
                 <GridItem rowSpan={3} alignItems='end'>
-                    <Stack onClick={() => router.push('/accounts/profile')} cursor="pointer" direction='row' pl='5' pt='5'>
+                    <Stack onClick={() => router.push('/accounts/profile')} cursor="pointer" direction='row' pl='5' pt='12'>
                         <Avatar size='md' name={userName} />
                         <Stack direction='row' alignItems={"center"} color='black' m='5' pl='3'>
                             <p>{userName}</p>
