@@ -1,6 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getStorage } from "firebase/storage";
+import { getDatabase } from "firebase/database";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -9,6 +10,7 @@ import { getStorage } from "firebase/storage";
 const firebaseConfig = {
   apiKey: "AIzaSyARMStnBv8V3ysS_i8dYp3o0ethVgeMSEc",
   authDomain: "cenmo-firebase.firebaseapp.com",
+  // databaseURL: "https://cenmo-firebase-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "cenmo-firebase",
   storageBucket: "cenmo-firebase.appspot.com",
   messagingSenderId: "103019259848",
@@ -17,4 +19,7 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-export const storage = getStorage(app);
+const storage = getStorage(app);
+const database = getDatabase(app);
+
+export { storage, database };

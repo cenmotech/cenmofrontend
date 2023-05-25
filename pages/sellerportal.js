@@ -142,7 +142,6 @@ export default function Seller() {
         setResi(e.target.value);
     };
     const handleSubmitStatus = async () => {
-        console.log("ID", chosenTrx)
         const config = {
             headers: {
                 'Accept': 'application/json',
