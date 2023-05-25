@@ -2,15 +2,13 @@
 import {
     Grid, GridItem, Flex, Spacer, Box, Heading, ButtonGroup,
     Button, List, ListItem, InputLeftElement,
-    Input, InputGroup, SimpleGrid, Card, CardBody,
-    Stack, StackDivider, Accordion, AccordionItem,
+    Input, InputGroup, Card, CardBody,
+    Stack, Accordion, AccordionItem,
     AccordionButton, AccordionIcon, AccordionPanel,
     Avatar, Link
 } from '@chakra-ui/react'
 import { SearchIcon } from '@chakra-ui/icons'
-import { BsCart2, BsChatRightText, BsBell } from "react-icons/bs";
-import { MdAttachMoney } from "react-icons/md";
-import { BiStore } from "react-icons/bi";
+import { BsChatRightText, BsBell } from "react-icons/bs";
 import { useEffect, useState, useContext } from 'react'
 import axios from "axios";
 import AuthenticationContext from '../context/AuthenticationContext'
@@ -19,10 +17,9 @@ import { getUserInfo } from '../helpers/profile/api';
 
 export default function Navbar() {
     const [categories, setCategories] = useState([])
-    const [categoriesFilter, setCategoriesFilter] = useState(null)
     const [filter, setFilter] = useState('')
     const { logout } = useContext(AuthenticationContext);
-    const baseUrl = "http://127.0.0.1:8000"
+    const baseUrl = process.env.NEXT_PUBLIC_BE_URL
     const router = useRouter();
 
     useEffect(() => {
@@ -46,7 +43,7 @@ export default function Navbar() {
     useEffect(() => {
         const fetchCategories = async () => {
             if (filter === '') {
-                const response = await axios.get(`https://cenmo-pro-fikriazain.vercel.app/group/get_all_categories`, {
+                const response = await axios.get(`${baseUrl}/group/get_all_categories`, {
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
@@ -55,7 +52,6 @@ export default function Navbar() {
                 })
                 if (response && response.data && response.data.category_groups) {
                     setCategories(response.data.category_groups)
-                    setCategoriesFilter(response.data.category_groups)
                 }
             }
             else {
@@ -68,7 +64,6 @@ export default function Navbar() {
                 })
                 if (response && response.data && response.data.category_groups) {
                     setCategories(response.data.category_groups)
-                    setCategoriesFilter(response.data.category_groups)
                 }
             }
         }
@@ -99,7 +94,7 @@ export default function Navbar() {
 
 
     return (
-        <Box data-testid="navbar" h='100vh' display="flex" flexDirection="column">
+        <Box data-testid="navbar" h='100vh' display="flex" flexDirection="column" bg='white'>
             <Grid templateRows='repeat(13, 1fr)' gap={0} flex="1" minHeight="0">
                 <GridItem>
                     <Flex minWidth='max-content' alignItems='center' gap='2' pt='13'>
@@ -122,6 +117,9 @@ export default function Navbar() {
                         </ListItem>
                         <ListItem>
                             <Button leftIcon={<BsChatRightText />} justifyContent='left' onClick={() => router.push("/admin/group-management")} width='100%' borderRadius='30' colorScheme='blue'>Group Management</Button>
+                        </ListItem>
+                        <ListItem>
+                            <Button leftIcon={<BsChatRightText />} justifyContent='left' onClick={() => router.push("/admin/complain-management")} width='100%' borderRadius='30' colorScheme='blue'>Complain Management</Button>
                         </ListItem>
                     </List>
                 </GridItem>

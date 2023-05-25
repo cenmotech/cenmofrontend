@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Flex, Image, Button, Box } from '@chakra-ui/react';
 import { ArrowBackIcon, ArrowForwardIcon } from '@chakra-ui/icons'
-import { getStorage, ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
+import { ref, listAll, getDownloadURL } from "firebase/storage";
 import { storage } from '../firebaseConfig';
 
 const PostImage = ({ post }) => {

@@ -1,11 +1,11 @@
 /* eslint-disable import/no-anonymous-default-export */
 import axios from "axios";
-import cookie from "cookie";
+
+var isAdmin = false;
 
 export default async (req, res) => {
     let accessToken = null;
     const baseUrl = `${process.env.NEXT_PUBLIC_BE_URL}`
-
     if (req.method === 'POST') {
         const {email, password} = req.body
         const config = {
@@ -31,6 +31,7 @@ export default async (req, res) => {
               }
               const {data: user} = await axios.get(`${baseUrl}/authuser/get-user-session`, userConfig)
               res.status(200).json({user, accessToken})
+              
           }
         } catch(error){
           console.log(error)

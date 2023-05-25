@@ -1,31 +1,23 @@
 import {
-  Flex, Grid, GridItem, Box, Heading, InputGroup,
-  InputLeftElement, Input, Card, CardBody,
-  Stack, Text, NumberInput, NumberInputField,
-  NumberInputStepper, NumberIncrementStepper,
-  NumberDecrementStepper, IconButton, Button, Modal, ModalOverlay, 
+  Flex, Grid, GridItem, Box, Heading, Input, Card, 
+  CardBody, Stack, Text, Button, Modal, ModalOverlay, 
   ModalContent, ModalHeader, ModalFooter, ModalBody,
-  ModalCloseButton, useDisclosure, FormControl, FormLabel,useToast
+  ModalCloseButton, useDisclosure, FormControl, 
+  FormLabel, useToast, Image
 } from '@chakra-ui/react'
-import { SearchIcon, DeleteIcon } from '@chakra-ui/icons'
 import Navbar from '../components/navbar'
-import { Image } from '@chakra-ui/react'
-import { useEffect, useState } from 'react';
-import { getCart, updateToCart, getItemCart } from '../helpers/shopcart/api';
+import React,{ useEffect, useState } from 'react';
+import { getCart, getItemCart } from '../helpers/shopcart/api';
 import { createTransactionAndGetToken } from '../helpers/transaction/api';
 import  BasketCard  from '../components/basketCard';
-import React from 'react';
-import { getStorage, ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
+import { ref, listAll, getDownloadURL } from "firebase/storage";
 import { storage } from '../firebaseConfig';
 import {useRouter} from 'next/router'
-import { getUserProfile, addAddress, setMainAddress } from '../helpers/profile/api';
+import { addAddress } from '../helpers/profile/api';
 
 
 export default function Basket() {
-  const [quantity, setQuantity] = useState(1);
-  const pricePerItem = 237000;
   const router = useRouter();
-  const totalPrice = quantity * pricePerItem;
   const [basket, setBasket] = useState([]);
   const toast = useToast()
   const [itemId, setItemId] = useState("")
@@ -37,12 +29,19 @@ export default function Basket() {
   const [itemTotalPrice, setItemTotalPrice] = useState("");
   const [itemImageLink, setItemImageLink] = useState("");
   const [images, setImages] = useState([]);
+  const [enablePayment, setEnablePayment] = useState(false)
 
   useEffect(() => {
     getCart().then((data) => {
       setBasket(data.response)
     },)
   }, [])
+
+  useEffect(() =>  {
+    if (process.env.NEXT_PUBLIC_SHOW_PAYMENT == 1) {
+      setEnablePayment(true)
+    }
+  }, [process.env])
 
   useEffect(() => {
     setItemTotalPrice(itemPrice * itemQuant);
@@ -61,12 +60,12 @@ export default function Basket() {
   }
 
   useEffect(() => {
-    const midtransScriptUrl = 'https://app.sandbox.midtrans.com/snap/snap.js';
+    const midtransScriptUrl = `${process.env.NEXT_PUBLIC_MIDTRANS_URL}/snap/snap.js`;
 
     let scriptTag = document.createElement('script');
     scriptTag.src = midtransScriptUrl;
 
-    const myMidtransClientKey = "Mid-client-giT1yaCWRdXGL4_h";
+    const myMidtransClientKey = `${process.env.NEXT_PUBLIC_MIDTRANS_KEY}`;
     scriptTag.setAttribute('data-client-key', myMidtransClientKey);
 
     document.body.appendChild(scriptTag);
@@ -74,7 +73,7 @@ export default function Basket() {
     return () => {
       document.body.removeChild(scriptTag);
     }
-  }, []);
+  }, [process.env]);
 
   async function createTransaction() {
     try {
@@ -132,10 +131,8 @@ export default function Basket() {
 
   //For Address not set
   const initialRef = React.useRef(null)
-  const finalRef = React.useRef(null)
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [error, setError] = useState(null);
 
   const [dataNewAddress, setNewAddress] = useState({
     address_name: "",
@@ -155,7 +152,7 @@ const handleInputChange = (event) => {
     e.preventDefault()
     setIsLoading(true)
     try{
-        const response = await addAddress(localStorage.getItem('accessToken'), dataNewAddress);
+        await addAddress(localStorage.getItem('accessToken'), dataNewAddress);
         setIsSuccess(true);
         onClose();
     }
@@ -166,7 +163,6 @@ const handleInputChange = (event) => {
 };
 
   //End Address not set
-
 
   const { isOpen, onOpen, onClose } = useDisclosure()
   return (
@@ -216,8 +212,13 @@ const handleInputChange = (event) => {
                     <Text as='b'>Rp {itemTotalPrice.toLocaleString('id-ID')}</Text>
                   </Stack>
                   <br />
-                  {/* <Button float='right' onClick={showPayment} colorScheme='blue'>Buy</Button> */}
-                  <Button float='right' isDisabled colorScheme='blue'>Buy</Button>
+                  { enablePayment ? (
+                    <Button float='right' onClick={showPayment} colorScheme='blue'>Buy</Button>
+                  ) : (
+                    <Button float='right' isDisabled colorScheme='blue'>Buy</Button>
+                  )
+                  }
+                  {/* <Button float='right' isDisabled colorScheme='blue'>Buy</Button> */}
                   <Modal
                     isCentered
                     onClose={onClose}

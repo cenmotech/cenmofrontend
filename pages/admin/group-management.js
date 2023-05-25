@@ -1,29 +1,20 @@
 import {
-    Flex, Grid, GridItem, Box, Heading, InputGroup,
-    InputLeftElement, Input, Card, CardBody,
-    Stack, Text, NumberInput, NumberInputField,
-    NumberInputStepper, NumberIncrementStepper,
-    NumberDecrementStepper, IconButton, Button, Modal, ModalOverlay, 
+    Grid, GridItem, Heading, Input, Card, CardBody,
+    Stack, Text, Button, Modal, ModalOverlay, 
     ModalContent, ModalHeader, ModalFooter, ModalBody,
-    ModalCloseButton, useDisclosure, FormControl, FormLabel, Spacer, Drawer, DrawerContent, DrawerHeader, DrawerCloseButton,
-    SimpleGrid, Center,useToast, Textarea, Select, Badge, Image, BadgeProps, BadgeVariants, BadgePropsVariantLabel
+    ModalCloseButton, useDisclosure, FormControl, FormLabel,
+    SimpleGrid, useToast, Textarea, Select, Badge
   } from '@chakra-ui/react'
-  import { SearchIcon, DeleteIcon, AddIcon } from '@chakra-ui/icons'
+  import { AddIcon } from '@chakra-ui/icons'
   import Navbar from '../../components/navbar-admin'
-  import { useEffect } from 'react';
+  import React, { useEffect, useState } from 'react';
   import { useRouter } from 'next/router'
-  import React, { useState } from 'react';
-  import { HiViewList } from 'react-icons/hi'
-  import { BiStore } from 'react-icons/bi'
-  import { getGroups } from '../../helpers/admin/api';
-  import { getAllCategories } from '../../helpers/group/api';
+  import { getGroups, getAllCategoriesAdmin } from '../../helpers/admin/api';
   import { createGroup, createCategory} from '../../helpers/group/api';
 
   
   export default function Admin() {
-    const baseUrl = "http://127.0.0.1:8000"
-    const router = useRouter();
-    const [isExpanded, setIsExpanded] = useState(false);
+    useRouter();
     const { isOpen:isAddOpen, onOpen:onAddOpen,onClose: onAddClose } = useDisclosure()
 
     const { isOpen:isCateOpen, onOpen:onCateOpen,onClose:onCateClose } = useDisclosure()
@@ -34,23 +25,23 @@ import {
     //Get All Group
 
     const initialRef = React.useRef(null)
-    const finalRef = React.useRef(null)
 
     useEffect(() => {
-      const fetchGroup = async () => {
-        try{
-          const response = await getGroups();
-          setGroupList(response.groups_list);
-
-          const response2 = await getAllCategories();
-          setCategoriesList(response2.category_groups);
-        }
-        catch(error){
-          console.log(error);
-        }
-      }
+      
       fetchGroup();
-    })
+    }, [])
+    const fetchGroup = async () => {
+      try{
+        const response = await getGroups();
+        setGroupList(response.groups_list);
+
+        const response2 = await getAllCategoriesAdmin();
+        setCategoriesList(response2.category_groups);
+      }
+      catch(error){
+        console.log(error);
+      }
+    }
     //End Get All Group
 
     //Handle Form Add Group

@@ -1,26 +1,28 @@
-import Head from 'next/head'
-import Image from 'next/image'
+
+
 import styles from '../styles/Home.module.css'
-import { Input , InputGroup, InputLeftElement ,Heading,Show, Grid, GridItem, Flex, Spacer, Center, Text, Square, Box, Stack, Button, Drawer, DrawerContent, DrawerHeader, DrawerCloseButton, useDisclosure } from '@chakra-ui/react'
+import { Input , InputGroup, InputLeftElement ,Heading,Show, Grid, GridItem, Flex, Spacer, Center, Stack, Button, Drawer, DrawerContent, DrawerHeader, DrawerCloseButton, useDisclosure } from '@chakra-ui/react'
 import { BiStore } from 'react-icons/bi'
 import { HiViewList } from 'react-icons/hi'
 import Navbar from '../components/navbar'
 import Post from '../components/post'
 import Listing from '../components/listing'
-import { getFeeds, getStore, searchListingByName, getListingOnGroup  } from '../helpers/group/api';
+import { getFeeds, getStore, searchListingByName, likeByUser  } from '../helpers/group/api';
 import { useEffect, useState, useContext } from 'react'
 import { SearchIcon } from '@chakra-ui/icons'
 import { useRouter } from 'next/router'
+
+import AuthenticationContext from '../context/AuthenticationContext'
 
 //change this to home page using our navbar from components
 export default function Home() {
   const { isOpen: isNavOpen, onOpen: onNavOpen, onClose: onNavClose } = useDisclosure()
   const { isOpen: isStoreOpen, onOpen: onStoreOpen, onClose: onStoreClose } = useDisclosure()
-  const baseUrl = `${process.env.NEXT_PUBLIC_BE_URL}`
   const [feedList, setFeedList] = useState([]);
   const [storeList, setStoreList] = useState([]);
   const router = useRouter();
-
+  const {accessToken} = useContext(AuthenticationContext);
+  
   useEffect(() => {
     if (localStorage.getItem("accessToken") == null) {
       router.push("/login")
@@ -73,6 +75,22 @@ export default function Home() {
     }
   }
 
+  const [likedPost, setlikedPost] = useState([]);
+  let likedPush = []
+
+  useEffect(() => {
+    const postLiked = async () => {
+        
+      const result = await likeByUser(localStorage.getItem("accessToken"));
+
+      for (let i in result['response']) {
+        likedPush.push(result.response[i].like_post_id)
+      }
+      setlikedPost(likedPush)
+    };
+
+    postLiked();
+  }, []);
 
   const listingTemplate = () => {
     return (  
@@ -133,20 +151,19 @@ export default function Home() {
           <Navbar data-testid="navbar"/>
         </GridItem>
       </Show>
-      <GridItem colSpan={3}>
+      <GridItem colSpan={3} mt='6'>
         <Center>
-        <Stack direction='column' spacing={8} >
-
-
-{feedList.map((post, index) => (
-  <Post post={post} key={index}></Post>
-))}
-</Stack>
+          <Stack direction='column' spacing={3} >
+          <Heading color='black' size='md' mb='4'>Feeds</Heading>
+          {feedList.map((post, index) => (
+            <Post post={post} key={index} liked={likedPost.includes(post.post_id)}></Post>
+          ))}
+          </Stack>
         </Center>
-      
         </GridItem>
         <Show above='xl'>
-        <GridItem colSpan={1} >
+        <GridItem colSpan={1} backgroundColor='white' borderLeft='1px' borderColor='gray.200'>
+        
         {listingTemplate()}
         {storeList.map((list, index) => (
               <>
