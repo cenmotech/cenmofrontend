@@ -303,8 +303,7 @@ export const editListing = async (Token, Body) => {
     }
 }
 
-export const like = async (Token, postId) => {
-    accessToken = Token;
+export const like = async (postId, body) => {
     try{
         await axios.post(`${baseUrl}/like/${postId}`, body, getConfig()).then(res => {
             return res.data;
@@ -324,8 +323,7 @@ export const likeByUser = async (Token) => {
     }
 }
 
-export const comment = async (Token, postId) => {
-    accessToken = Token;
+export const comment = async (postId, body) => {
     try{
         await axios.post(`${baseUrl}/comment/${postId}`, body, getConfig()).then(res => {
             return res.data;

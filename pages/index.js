@@ -7,7 +7,7 @@ import { HiViewList } from 'react-icons/hi'
 import Navbar from '../components/navbar'
 import Post from '../components/post'
 import Listing from '../components/listing'
-import { getFeeds, getStore, searchListingByName, getListingOnGroup  } from '../helpers/group/api';
+import { getFeeds, getStore, searchListingByName, getListingOnGroup, likeByUser  } from '../helpers/group/api';
 import { useEffect, useState, useContext } from 'react'
 import { SearchIcon } from '@chakra-ui/icons'
 import { useRouter } from 'next/router'
@@ -76,6 +76,22 @@ export default function Home() {
     }
   }
 
+  const [likedPost, setlikedPost] = useState([]);
+  let likedPush = []
+
+  useEffect(() => {
+    const postLiked = async () => {
+        
+      const result = await likeByUser(localStorage.getItem("accessToken"));
+
+      for (let i in result['response']) {
+        likedPush.push(result.response[i].like_post_id)
+      }
+      setlikedPost(likedPush)
+    };
+
+    postLiked();
+  }, []);
 
   const listingTemplate = () => {
     return (  
@@ -142,7 +158,7 @@ export default function Home() {
 
 
 {feedList.map((post, index) => (
-  <Post post={post} key={index}></Post>
+  <Post post={post} key={index} liked={likedPost.includes(post.post_id)}></Post>
 ))}
 </Stack>
         </Center>
