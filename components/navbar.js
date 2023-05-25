@@ -154,7 +154,7 @@ export default function Navbar() {
                             <Button leftIcon={<BsBell />} justifyContent='left' onClick={() => router.push("/")} cursor="pointer" width='100%' borderRadius='30' colorScheme='blue'>Home</Button>
                         </ListItem>
                         <ListItem>
-                            <Button leftIcon={<BsChatRightText />} justifyContent='left' width='100%' borderRadius='30' colorScheme='blue'>Chats</Button>
+                            <Button leftIcon={<BsChatRightText />} justifyContent='left' onClick={() => router.push("/chats")} width='100%' borderRadius='30' colorScheme='blue'>Chats</Button>
                         </ListItem>
                         <ListItem>
                             <Button leftIcon={<BsCart2 />} justifyContent='left' onClick={() => router.push("/basket")} width='100%' borderRadius='30' colorScheme='blue'>Baskets</Button>

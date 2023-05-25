@@ -9,7 +9,7 @@ stages:
 deploy_development:
   stage: deploy
   only:
-    - staging
+    - staging-vercel
   script:
     - npm install --location=global vercel
     - vercel pull --yes --environment=development --token=$VERCEL_TOKEN

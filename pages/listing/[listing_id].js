@@ -11,12 +11,17 @@ import { ArrowBackIcon, ArrowForwardIcon } from '@chakra-ui/icons'
 import MultiImage from "../../components/multiImage";
 import Listing from "../../components/listing";
 import { updateToCart } from '../../helpers/shopcart/api';
-
+import { collection, addDoc } from "@firebase/firestore";
+import { db } from "../../firebaseConfig";
+import { useCollection } from 'react-firebase-hooks/firestore';
 
 export default function Product() {
     const [listingId, setListingId] = useState(0);
+    const [sellerEmail, setSellerEmail] = useState("");
+    const [userEmail, setUserEmail] = useState("");
     const router = useRouter();
     useEffect(() => {
+        setUserEmail(sessionStorage.getItem('userEmail'))
         if (!router.isReady) return;
         setListingId(router.query.listing_id)
     }, [router.isReady, router.query.listing_id]);
@@ -43,6 +48,7 @@ export default function Product() {
         try {
             const response = await getListingbyId(listingId);
             setListing(response.response);
+            setSellerEmail(response.response.goods_seller__email);
             return response.response
         } catch (error) {
             console.error(error);
@@ -108,7 +114,24 @@ export default function Product() {
         e.preventDefault()
         cartHandler('add', id)
     }
+    const redirect = (id) => {
+        router.push(`/chat/${id}`);
+    }
+    const chatExists = email => chats?.find(chat => (chat.users.includes(userEmail) && chat.users.includes(email)))
 
+    const [snapshot, loading, error] = useCollection(collection(db, "chats"));
+    const chats = snapshot?.docs.map(doc => ({id: doc.id, ...doc.data()}));
+    
+    const handleChat = async () => {
+        if (!chatExists(sellerEmail)) {
+            const docRef = await addDoc(collection(db, "chats"), {users: [userEmail, sellerEmail] })
+            redirect(docRef.id)
+          }else{
+            const getID = chats?.filter(chat => (chat.users.includes(userEmail) && chat.users.includes(sellerEmail)))
+            redirect(getID[0].id)
+
+          }
+    }
     return (
         <>
             <title>Product</title>
@@ -127,7 +150,7 @@ export default function Product() {
                                     <Text fontSize='xl' as='b'>Rp {(listing.goods_price)}</Text>
                                     <Stack direction='row' pt='3'>
                                         <Button onClick={e => cartHandler2(e, listing.goods_id)} colorScheme='teal'>Add to Basket</Button>
-                                        <Button ml='5' colorScheme='blue'>Chat</Button>
+                                        <Button ml='5' colorScheme='blue' onClick={handleChat}>Chat</Button>
                                     </Stack>
                                     <Text fontSize='lg' as='b' pt='5'>Product Description</Text>
                                     <Text fontSize='lg'>{listing.goods_description}</Text>

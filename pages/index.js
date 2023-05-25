@@ -12,6 +12,8 @@ import { useEffect, useState, useContext } from 'react'
 import { SearchIcon } from '@chakra-ui/icons'
 import { useRouter } from 'next/router'
 
+import AuthenticationContext from '../context/AuthenticationContext'
+
 //change this to home page using our navbar from components
 export default function Home() {
   const { isOpen: isNavOpen, onOpen: onNavOpen, onClose: onNavClose } = useDisclosure()
@@ -20,7 +22,8 @@ export default function Home() {
   const [feedList, setFeedList] = useState([]);
   const [storeList, setStoreList] = useState([]);
   const router = useRouter();
-
+  const {accessToken} = useContext(AuthenticationContext);
+  console.log("index.js", accessToken)
   useEffect(() => {
     if (localStorage.getItem("accessToken") == null) {
       router.push("/login")
