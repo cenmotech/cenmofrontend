@@ -13,7 +13,7 @@ import { SearchIcon } from '@chakra-ui/icons'
 import { BsCart2, BsChatRightText, BsBell } from "react-icons/bs";
 import { MdAttachMoney } from "react-icons/md";
 import { BiStore } from "react-icons/bi";
-import { useEffect, useState, useContext, React } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import axios from "axios";
 import AuthenticationContext from '../context/AuthenticationContext'
 import { useRouter } from 'next/router'
@@ -62,7 +62,6 @@ export default function Navbar() {
                     })
                     if (response && response.data && response.data.category_groups) {
                         setCategories(response.data.category_groups)
-                        setCategoriesFilter(response.data.category_groups)
                     }
                 }
                 else {
@@ -75,7 +74,6 @@ export default function Navbar() {
                     })
                     if (response && response.data && response.data.category_groups) {
                         setCategories(response.data.category_groups)
-                        setCategoriesFilter(response.data.category_groups)
                     }
                 }
             }

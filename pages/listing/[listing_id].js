@@ -2,7 +2,7 @@ import {
     Drawer, useToast, Grid, GridItem, Heading, Box, Image, Text, Stack, Divider, Button, Avatar, Flex, Center, Container
 } from "@chakra-ui/react";
 import Navbar from '../../components/navbar'
-import { React, useState, useContext, useRef, useEffect } from 'react';
+import React, { useState, useContext, useRef, useEffect } from 'react';
 import { useRouter } from 'next/router'
 import { getStorage, ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
 import { storage } from '../../firebaseConfig';

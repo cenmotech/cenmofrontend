@@ -52,7 +52,6 @@ export default function Navbar() {
                 })
                 if (response && response.data && response.data.category_groups) {
                     setCategories(response.data.category_groups)
-                    setCategoriesFilter(response.data.category_groups)
                 }
             }
             else {
@@ -65,7 +64,6 @@ export default function Navbar() {
                 })
                 if (response && response.data && response.data.category_groups) {
                     setCategories(response.data.category_groups)
-                    setCategoriesFilter(response.data.category_groups)
                 }
             }
         }

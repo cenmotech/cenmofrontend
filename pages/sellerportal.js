@@ -1,15 +1,15 @@
 import {
     Grid, GridItem, Box, Heading, InputGroup,
     InputLeftElement, Input, Card, CardBody,
-    Stack, Text, Icon, Button, Divider, Select, ButtonGroup,
+    Stack, Text, Icon, Button, Divider, Select,
     Modal, ModalOverlay, ModalContent,
-    ModalHeader, ModalCloseButton, ModalBody, Lorem,
-    ModalFooter, FormControl, FormLabel, Link,
+    ModalHeader, ModalCloseButton, ModalBody,
+    ModalFooter, FormControl, FormLabel,
     NumberInput, NumberInputField, NumberInputStepper,
-    NumberIncrementStepper, NumberDecrementStepper, Editable,
-    EditablePreview, EditableTextarea, Flex, Show, Center, useToast, Spacer, Drawer, DrawerContent, DrawerHeader, DrawerCloseButton
+    NumberIncrementStepper, NumberDecrementStepper,
+    Flex, Show, Center, useToast, Spacer, Drawer, DrawerContent
 } from "@chakra-ui/react"
-import { SearchIcon, DeleteIcon, ChevronRightIcon } from '@chakra-ui/icons'
+import { SearchIcon, ChevronRightIcon } from '@chakra-ui/icons'
 import { HiViewList } from 'react-icons/hi'
 import { BiStore } from 'react-icons/bi'
 import { Image, useDisclosure } from '@chakra-ui/react'

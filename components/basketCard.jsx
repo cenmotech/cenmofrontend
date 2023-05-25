@@ -2,10 +2,10 @@ import {
     Card, CardBody,
     Stack, Text, NumberInput, NumberInputField,
     NumberInputStepper, NumberIncrementStepper,
-    NumberDecrementStepper, IconButton, Spacer
+    NumberDecrementStepper, IconButton, Spacer, 
+    Image
 } from '@chakra-ui/react'
 import { DeleteIcon } from '@chakra-ui/icons'
-import { Image } from '@chakra-ui/react'
 import { useEffect, useState } from 'react';
 import { updateToCart } from '../helpers/shopcart/api';
 import { ref, listAll, getDownloadURL } from "firebase/storage";

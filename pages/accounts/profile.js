@@ -1,24 +1,18 @@
 import {
-    Flex, Text, Box, Image, Heading, Editable,
-    EditableInput, EditableTextarea, EditablePreview,
-    Input, useEditableControls, IconButton, EditIcon,
-    ButtonGroup, Spacer, Button, Grid, GridItem,
-    Stack, FormControl, FormLabel, Badge, Divider,
-    Link, FormErrorMessage, useToast, Center, Avatar,
-    Menu, MenuButton, MenuList, MenuItem, MenuItemOption, MenuGroup,
-    MenuOptionGroup, MenuDivider, Modal, ModalOverlay, InputRightElement,
+    Text, Box, Heading, Input, Spacer, Button, Grid, 
+    GridItem, Stack, FormControl, FormLabel, Badge,
+    Link, FormErrorMessage, useToast, Avatar, Menu, 
+    MenuButton, MenuList, MenuItem, Modal, ModalOverlay, InputRightElement,
     ModalContent, ModalHeader, ModalFooter, ModalBody, Select, InputGroup,
-    ModalCloseButton, useDisclosure, Card, CardHeader, CardBody, CardFooter, StackDivider,
-    NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper,
+    ModalCloseButton, useDisclosure, Card, CardBody, StackDivider,
 } from '@chakra-ui/react'
-import { CheckIcon, CloseIcon, ChevronDownIcon } from '@chakra-ui/icons'
-import { useEffect, useState, useContext } from 'react'
+import { ChevronDownIcon } from '@chakra-ui/icons'
+import React, { useEffect, useState} from 'react'
 import Navbar from '../../components/navbar'
 import axios from "axios";
 import { getUserProfile, addAddress, setMainAddress } from '../../helpers/profile/api';
 import { getBankList, getUserBankAccount, validateBank, addBankAccount, withdrawToBank, getWithdrawalHistory } from '../../helpers/transaction/api';
 import { useRouter } from 'next/router'
-import React from 'react';
 import moment from "moment"
 
 export default function Profile() {
@@ -26,28 +20,18 @@ export default function Profile() {
     const [name, setUserName] = useState("");
     const [nameError, setNameError] = useState("");
     const [email, setUserEmail] = useState("");
-    const [emailError, setEmailError] = useState("");
     const [phone, setUserPhone] = useState("");
     const [phoneError, setPhoneError] = useState("");
     const [address, setUserAddress] = useState("");
-    const [addressError, setAddressError] = useState("");
     const [city, setUserCity] = useState("");
-    const [cityError, setCityError] = useState("");
     const [province, setUserProvince] = useState("");
-    const [provinceError, setProvinceError] = useState("");
     const [postalCode, setUserPostalCode] = useState("");
-    const [postalCodeError, setPostalCodeError] = useState("");
     const [street, setUserStreet] = useState("");
     const [addressList, setAddressList] = useState([]);
     const [balance, setUserBalance] = useState(0);
     const toast = useToast()
     const baseUrl = `${process.env.NEXT_PUBLIC_BE_URL}`
-
     const [addressId, setAddressId] = useState("");
-
-    const [isLoading, setIsLoading] = useState(false);
-    const [isSuccess, setIsSuccess] = useState(false);
-    const [error, setError] = useState(null);
 
     useEffect(() => {
         setUserProfile()
@@ -199,7 +183,7 @@ export default function Profile() {
             });
         } else {
             try {
-                const response = await withdrawToBank(withdrawalBank, withdrawalAmount);
+                await withdrawToBank(withdrawalBank, withdrawalAmount);
                 router.reload()
             } catch (error) {
                 console.error(error);
@@ -250,7 +234,7 @@ export default function Profile() {
         }
         try {
             //Async function to send data to backend
-            const { data } = await axios.post(`${baseUrl}/authuser/edit-profile`, body, config)
+            await axios.post(`${baseUrl}/authuser/edit-profile`, body, config)
             await router.reload()
         } catch (error) {
             console.log(error)
@@ -273,10 +257,8 @@ export default function Profile() {
 
     const handleNewAddress = async (e) => {
         e.preventDefault()
-        setIsLoading(true)
         try {
-            const response = await addAddress(localStorage.getItem('accessToken'), dataNewAddress);
-            setIsSuccess(true);
+            await addAddress(localStorage.getItem('accessToken'), dataNewAddress);
         }
         catch (error) {
             console.log(error)
@@ -287,7 +269,7 @@ export default function Profile() {
     const handleMainAddress = async (e) => {
         e.preventDefault()
         try {
-            const response = await setMainAddress(localStorage.getItem('accessToken'), addressId)
+            await setMainAddress(localStorage.getItem('accessToken'), addressId)
             await router.reload()
         }
         catch (error) {

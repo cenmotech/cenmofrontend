@@ -1,16 +1,21 @@
-import { useState, useEffect } from 'react'
-import { Flex,Icon, Image, Button, Box, Stack, Center, Input, Avatar, Text, Textarea, Spacer, Tag, TagLabel, TagCloseButton, Menu, MenuButton, MenuItem, MenuList, Grid, GridItem, Card, CardHeader, CardFooter, CardBody, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, IconButton, InputRightElement, FormControl, FormLabel, InputGroup  } from '@chakra-ui/react';
+import React,{ useState, useEffect } from 'react'
+import { Flex,Icon, Image, Button, Box, Stack, 
+        Input, Avatar, Text, Spacer, Tag, 
+        TagLabel, Menu, MenuButton, 
+        MenuItem, MenuList, Card, CardHeader, 
+        CardFooter, CardBody, Modal, ModalOverlay, ModalContent, 
+        ModalHeader, ModalCloseButton, ModalBody, 
+        IconButton, InputRightElement, 
+        InputGroup  
+    } from '@chakra-ui/react';
 import { ArrowBackIcon, ArrowForwardIcon } from '@chakra-ui/icons'
-import { getStorage, ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
+import { ref, listAll, getDownloadURL } from "firebase/storage";
 import { BsThreeDotsVertical, BsSend } from 'react-icons/bs'
 import { storage } from '../firebaseConfig';
 import { deletePost, like, getComment, comment } from '../helpers/group/api';
 import { useRouter } from 'next/router'
 import moment from "moment"
 import { FaHeart, FaComment } from 'react-icons/fa';
-import React from 'react';
-import axios from "axios";
-
 
 const Post = ({ post, userKey = "", groupId = 0, liked}) => {
     const [images, setImages] = useState([])
@@ -64,7 +69,7 @@ const Post = ({ post, userKey = "", groupId = 0, liked}) => {
                 setLikes(likes+1);
             }
             setIsLiked(!isLiked);
-            const response = await like(post.post_id);
+            await like(post.post_id);
             
           } catch (error) {
             console.error(error);

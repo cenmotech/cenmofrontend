@@ -1,12 +1,11 @@
 import {
   Grid, GridItem, Box, Heading, Card, CardBody,
-  Stack, Text, Icon, Button, Badge,
-  useToast, Spacer, useDisclosure
+  Stack, Text, Button, Badge,
+  useToast, Spacer
 } from "@chakra-ui/react"
 import Navbar from '../../components/navbar-admin'
-import { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router'
-import React, { useState } from 'react';
 import { getComplain, updateComplainStatus } from '../../helpers/transaction/api';
 
 
@@ -46,7 +45,6 @@ export default function Admin() {
     const body = {
       "id": complain.complain_id,
     }
-    //   changeStatusSuggestions(body);
     setComplainId(complain.complain_id);
     setComplainTransId(complain.transaction_id);
     setComplainStatus(complain.complain_status);
@@ -59,21 +57,19 @@ export default function Admin() {
   }
 
   const handleComplainStatus = async (complain_id) => {
-    console.log("ID", complain_id)
     const config = {
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-      }
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+        }
     }
-
     const requestBody = {
       "complain_id": complain_id
     }
     try {
       //Async function to send data to backend
-      const response = await updateComplainStatus(requestBody)
+      await updateComplainStatus(requestBody)
       await router.reload()
     } catch (error) {
       console.log(error)

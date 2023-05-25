@@ -1,29 +1,21 @@
 import {
-    Flex, Grid, GridItem, Box, Heading, InputGroup,
-    InputLeftElement, Input, Card, CardBody,
-    Stack, Text, NumberInput, NumberInputField,
-    NumberInputStepper, NumberIncrementStepper,
-    NumberDecrementStepper, IconButton, Button, Modal, ModalOverlay, 
+    Grid, GridItem, Heading, Input, Card, CardBody,
+    Stack, Text, Button, Modal, ModalOverlay, 
     ModalContent, ModalHeader, ModalFooter, ModalBody,
-    ModalCloseButton, useDisclosure, FormControl, FormLabel, Spacer, Drawer, DrawerContent, DrawerHeader, DrawerCloseButton,
-    SimpleGrid, Center,useToast, Textarea, Select, Badge, Image, BadgeProps, BadgeVariants, BadgePropsVariantLabel
+    ModalCloseButton, useDisclosure, FormControl, FormLabel,
+    SimpleGrid, useToast, Textarea, Select, Badge
   } from '@chakra-ui/react'
-  import { SearchIcon, DeleteIcon, AddIcon } from '@chakra-ui/icons'
+  import { AddIcon } from '@chakra-ui/icons'
   import Navbar from '../../components/navbar-admin'
-  import { useEffect } from 'react';
+  import React, { useEffect, useState } from 'react';
   import { useRouter } from 'next/router'
-  import React, { useState } from 'react';
-  import { HiViewList } from 'react-icons/hi'
-  import { BiStore } from 'react-icons/bi'
   import { getGroups, getAllCategoriesAdmin } from '../../helpers/admin/api';
-  import { getAllCategories } from '../../helpers/group/api';
-  import { createGroup, createCategory} from '../../helpers/group/api';
+  import { createGroup, createCategory, getAllCategories} from '../../helpers/group/api';
 
   
   export default function Admin() {
     const baseUrl = `${process.env.NEXT_PUBLIC_BE_URL}`
     const router = useRouter();
-    const [isExpanded, setIsExpanded] = useState(false);
     const { isOpen:isAddOpen, onOpen:onAddOpen,onClose: onAddClose } = useDisclosure()
 
     const { isOpen:isCateOpen, onOpen:onCateOpen,onClose:onCateClose } = useDisclosure()
@@ -34,7 +26,6 @@ import {
     //Get All Group
 
     const initialRef = React.useRef(null)
-    const finalRef = React.useRef(null)
 
     useEffect(() => {
       

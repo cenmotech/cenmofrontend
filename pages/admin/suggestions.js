@@ -1,38 +1,20 @@
 import {
   Grid, GridItem, Box, Heading, InputGroup,
   InputLeftElement, Input, Card, CardBody,
-  Stack, Text, Icon, Button, Divider, Select, ButtonGroup,Badge,
-  Modal, ModalOverlay, ModalContent,
-  ModalHeader, ModalCloseButton, ModalBody, Lorem,
-  ModalFooter, FormControl, FormLabel, Link,
-  NumberInput, NumberInputField, NumberInputStepper,
-  NumberIncrementStepper, NumberDecrementStepper, Editable,
-  EditablePreview, EditableTextarea, Flex, Show, Center, useToast, Spacer, Drawer, DrawerContent, DrawerHeader, DrawerCloseButton
+  Stack, Text, Badge, Spacer, useDisclosure
   
 } from "@chakra-ui/react"
-  import { SearchIcon, DeleteIcon, ChevronRightIcon } from '@chakra-ui/icons'
-  import { Image, useDisclosure } from '@chakra-ui/react'
+  import { SearchIcon } from '@chakra-ui/icons'
   import Navbar from '../../components/navbar-admin'
-  import { useEffect } from 'react';
+  import React, { useEffect, useState } from 'react';
   import { useRouter } from 'next/router'
   import ListImage from "../../components/listImage";
-  import React, { useState } from 'react';
-  import { HiViewList } from 'react-icons/hi'
-  import { BiStore } from 'react-icons/bi'
   import { getSuggestions, changeStatusSuggestions } from "../../helpers/admin/api";
-import { set } from "react-hook-form";
+
   
   
   export default function Admin() {
-    const router = useRouter();
-    const [isExpanded, setIsExpanded] = useState(false);
-    const { isOpen, onOpen, onClose } = useDisclosure()
-    const { isOpen: isDetailOpen, onOpen: onDetailOpen, onClose: onDetailClose } = useDisclosure()
-    const { isOpen: isNavOpen, onOpen: onNavOpen, onClose: onNavClose } = useDisclosure()
-    const { isOpen: isAcceptOpen, onOpen: onAcceptOpen, onClose: onCloseAccept } = useDisclosure()
     const [suggestionList, setSuggestionList] = useState([]);
-
-
     const [suggestionId, setSuggestionId] = useState("");
     const [suggestionName, setSuggestionName] = useState("");
     const [suggestionDescription, setSuggestionDescription] = useState("");

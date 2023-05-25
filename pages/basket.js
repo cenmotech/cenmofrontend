@@ -1,31 +1,23 @@
 import {
-  Flex, Grid, GridItem, Box, Heading, InputGroup,
-  InputLeftElement, Input, Card, CardBody,
-  Stack, Text, NumberInput, NumberInputField,
-  NumberInputStepper, NumberIncrementStepper,
-  NumberDecrementStepper, IconButton, Button, Modal, ModalOverlay, 
+  Flex, Grid, GridItem, Box, Heading, Input, Card, 
+  CardBody, Stack, Text, Button, Modal, ModalOverlay, 
   ModalContent, ModalHeader, ModalFooter, ModalBody,
-  ModalCloseButton, useDisclosure, FormControl, FormLabel,useToast
+  ModalCloseButton, useDisclosure, FormControl, 
+  FormLabel, useToast, Image
 } from '@chakra-ui/react'
-import { SearchIcon, DeleteIcon } from '@chakra-ui/icons'
 import Navbar from '../components/navbar'
-import { Image } from '@chakra-ui/react'
-import { useEffect, useState } from 'react';
-import { getCart, updateToCart, getItemCart } from '../helpers/shopcart/api';
+import React,{ useEffect, useState } from 'react';
+import { getCart, getItemCart } from '../helpers/shopcart/api';
 import { createTransactionAndGetToken } from '../helpers/transaction/api';
 import  BasketCard  from '../components/basketCard';
-import React from 'react';
-import { getStorage, ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
+import { ref, listAll, getDownloadURL } from "firebase/storage";
 import { storage } from '../firebaseConfig';
 import {useRouter} from 'next/router'
-import { getUserProfile, addAddress, setMainAddress } from '../helpers/profile/api';
+import { addAddress } from '../helpers/profile/api';
 
 
 export default function Basket() {
-  const [quantity, setQuantity] = useState(1);
-  const pricePerItem = 237000;
   const router = useRouter();
-  const totalPrice = quantity * pricePerItem;
   const [basket, setBasket] = useState([]);
   const toast = useToast()
   const [itemId, setItemId] = useState("")
