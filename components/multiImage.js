@@ -3,7 +3,7 @@ import { Flex, Image, Button, Box} from '@chakra-ui/react';
 import { ArrowBackIcon, ArrowForwardIcon } from '@chakra-ui/icons'
 import { ref, listAll, getDownloadURL } from "firebase/storage";
 import { storage } from '../firebaseConfig';
-const MultiImage = ({ image_url }) => {
+const MultiImage = ({ image_url, size='300px', mar='5' }) => {
     const [images, setImages] = useState([])
     const [currentIndex, setCurrentIndex] = useState(0);
     const handleClickPrev = () => {
@@ -36,7 +36,7 @@ const MultiImage = ({ image_url }) => {
 
     return <div>
         <Flex>
-            <Box m="5" position="relative" height="300px" width="300px">
+            <Box m={mar} position="relative" height={size} width={size}>
                 {images.length > 1 && (
                     <Button
                         bg="transparent"
