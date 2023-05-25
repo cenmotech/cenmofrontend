@@ -10,12 +10,12 @@ import {
   import React, { useEffect, useState } from 'react';
   import { useRouter } from 'next/router'
   import { getGroups, getAllCategoriesAdmin } from '../../helpers/admin/api';
-  import { createGroup, createCategory, getAllCategories} from '../../helpers/group/api';
+  import { createGroup, createCategory} from '../../helpers/group/api';
 
   
   export default function Admin() {
-    const baseUrl = `${process.env.NEXT_PUBLIC_BE_URL}`
-    const router = useRouter();
+    `${process.env.NEXT_PUBLIC_BE_URL}`
+    useRouter();
     const { isOpen:isAddOpen, onOpen:onAddOpen,onClose: onAddClose } = useDisclosure()
 
     const { isOpen:isCateOpen, onOpen:onCateOpen,onClose:onCateClose } = useDisclosure()

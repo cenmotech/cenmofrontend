@@ -1,13 +1,13 @@
-import Head from 'next/head'
-import Image from 'next/image'
+
+
 import styles from '../styles/Home.module.css'
-import { Input , InputGroup, InputLeftElement ,Heading,Show, Grid, GridItem, Flex, Spacer, Center, Text, Square, Box, Stack, Button, Drawer, DrawerContent, DrawerHeader, DrawerCloseButton, useDisclosure } from '@chakra-ui/react'
+import { Input , InputGroup, InputLeftElement ,Heading,Show, Grid, GridItem, Flex, Spacer, Center, Stack, Button, Drawer, DrawerContent, DrawerHeader, DrawerCloseButton, useDisclosure } from '@chakra-ui/react'
 import { BiStore } from 'react-icons/bi'
 import { HiViewList } from 'react-icons/hi'
 import Navbar from '../components/navbar'
 import Post from '../components/post'
 import Listing from '../components/listing'
-import { getFeeds, getStore, searchListingByName, getListingOnGroup, likeByUser  } from '../helpers/group/api';
+import { getFeeds, getStore, searchListingByName, likeByUser  } from '../helpers/group/api';
 import { useEffect, useState, useContext } from 'react'
 import { SearchIcon } from '@chakra-ui/icons'
 import { useRouter } from 'next/router'
@@ -18,12 +18,11 @@ import AuthenticationContext from '../context/AuthenticationContext'
 export default function Home() {
   const { isOpen: isNavOpen, onOpen: onNavOpen, onClose: onNavClose } = useDisclosure()
   const { isOpen: isStoreOpen, onOpen: onStoreOpen, onClose: onStoreClose } = useDisclosure()
-  const baseUrl = `${process.env.NEXT_PUBLIC_BE_URL}`
   const [feedList, setFeedList] = useState([]);
   const [storeList, setStoreList] = useState([]);
   const router = useRouter();
   const {accessToken} = useContext(AuthenticationContext);
-  console.log("index.js", accessToken)
+  
   useEffect(() => {
     if (localStorage.getItem("accessToken") == null) {
       router.push("/login")

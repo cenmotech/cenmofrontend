@@ -1,5 +1,5 @@
 import {useRouter} from 'next/router';
-import { Flex, Box, Text, Divider } from '@chakra-ui/react';
+import { Flex, Box, Text } from '@chakra-ui/react';
 import { useCollectionData, useDocumentData } from 'react-firebase-hooks/firestore';
 import { collection, doc, orderBy, query } from "firebase/firestore"
 import { db } from '../../firebaseConfig';

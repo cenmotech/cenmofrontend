@@ -1,36 +1,29 @@
-import Head from 'next/head'
 import styles from '../../styles/Home.module.css'
 import { useRouter } from 'next/router'
-import { ReactNode, useState, useContext, useRef, useEffect } from 'react'
-import { set, useController } from "react-hook-form";
-import AuthenticationContext from '../../context/AuthenticationContext'
+import { useState, useRef, useEffect } from 'react'
 import Navbar from '../../components/navbar'
 import {
-  Show, Drawer, DrawerHeader, DrawerContent, DrawerCloseButton, Hide, useToast, Textarea, Progress, Menu, MenuButton,
-  MenuItem, MenuList, Image, InputLeftAddon, FormErrorMessage, Grid, Select, GridItem, Input, FormControl, FormLabel,
+  Show, Drawer, DrawerHeader, DrawerContent, DrawerCloseButton, useToast, Textarea, Progress,
+  Image, InputLeftAddon, Grid, Select, GridItem, Input, FormControl, FormLabel,
   InputGroup, InputLeftElement, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter,
-  ButtonGroup, Button, Flex, Card, CardHeader, Box, Heading, Avatar, Stack, Text, Center, CardBody, IconButton, CardFooter,
-  Divider, Spacer, AspectRatio, position, useDisclosure, NumberInput, NumberInputField, FormHelperText, NumberIncrementStepper,
-  NumberDecrementStepper, NumberInputStepper, Tag, TagLabel, TagCloseButton, HStack, Radio, RadioGroup
+  Button, Flex, Card, Box, Heading, Avatar, Stack, Text, Center, CardBody, IconButton,
+  Spacer, position, useDisclosure, NumberInput, NumberInputField, NumberIncrementStepper,
+  NumberDecrementStepper, NumberInputStepper, Tag, TagLabel, TagCloseButton, HStack, RadioGroup
 } from '@chakra-ui/react'
-import { BsThreeDotsVertical, GrLinkPrevious, BsCardImage, BsList } from 'react-icons/bs'
+import { BsCardImage } from 'react-icons/bs'
 import { GoSettings } from 'react-icons/go'
 import { BiStore } from 'react-icons/bi'
 import { HiViewList } from 'react-icons/hi'
-import { SearchIcon, BellIcon, AddIcon, ArrowBackIcon, ArrowForwardIcon } from '@chakra-ui/icons'
-import { isMember, getPostOnGroup, getListingOnGroup, searchPostByDesc, seeGroup, joinGroup, createListing, createPost, searchPostOnGroup, searchListingOnGroup, deletePost,like, likeByUser } from '../../helpers/group/api'
+import { SearchIcon, AddIcon} from '@chakra-ui/icons'
+import { isMember, getPostOnGroup, getListingOnGroup, seeGroup, joinGroup, createListing, createPost, searchPostOnGroup, searchListingOnGroup, likeByUser } from '../../helpers/group/api'
 import '@splidejs/react-splide/css';
-import moment from "moment"
-import { useClickable } from "@chakra-ui/clickable"
 import axios from "axios";
 import { getUserInfo } from '../../helpers/profile/api';
-import { getStorage, ref, uploadBytes } from "firebase/storage";
+import { ref, uploadBytes } from "firebase/storage";
 import { storage } from '../../firebaseConfig';
 import { v4 } from 'uuid';
-import { grid } from '@chakra-ui/styled-system';
 import Post from '../../components/post';
 import Listing from '../../components/listing';
-import { setTag } from '@sentry/nextjs';
 
 
 export default function Group() {
@@ -94,7 +87,6 @@ export default function Group() {
   const [postList, setPostList] = useState([])
   const [listingList, setListingList] = useState([])
   const [groupMethod, setGroupMethod] = useState({})
-  const [fullDesc, setFullDesc] = useState("")
   const [filter, setFilter] = useState("")
   const [filterList, setFilterList] = useState("")
 
@@ -162,12 +154,10 @@ export default function Group() {
     }
   }
 
-  let originalDescription = "";
   async function seeGroupFromApi() {
     try {
       const response = await seeGroup(localStorage.getItem('accessToken'), groupId);
       setGroupMethod(response.response)
-      setFullDesc(response.response.group_desc);
       const description = response.response.group_desc;
       var words = description.split(" ");
       if (words.length > 30) {
@@ -197,7 +187,7 @@ export default function Group() {
     return Promise.all(promises).then(() => {
       return `images/${groupId}/${user}/${type}/${identifier}`
     });
-  };
+  }
 
   const handleFileSelect = (event) => {
     const files = event.target.files;
@@ -277,7 +267,7 @@ export default function Group() {
         isClosable: true,
       })
     }
-  };
+  }
 
   function uploadListingInfo(image) {
     const region = `${city.name},${province.name}`
@@ -288,11 +278,11 @@ export default function Group() {
 
   async function postCreateListing(data) {
     try {
-      const response = await createListing(localStorage.getItem("accessToken"), data)
+      await createListing(localStorage.getItem("accessToken"), data)
     } catch (error) {
       console.error(error);
     }
-  };
+  }
 
   // Handle Post
   const [postDesc, setPostDesc] = useState("");
@@ -312,11 +302,6 @@ export default function Group() {
       }
       uploadPostInfo(image).then(() => { router.reload() })
     }
-  };
-
-  function sleep(ms) {
-    console.log("sleep")
-    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   function uploadPostInfo(image) {
@@ -324,32 +309,31 @@ export default function Group() {
     const desc = postDesc;
     const data = { desc, image, group, tags };
     return postCreatePost(data)
-  };
+  }
 
   async function postCreatePost(data) {
     try {
-      const response = await createPost(localStorage.getItem("accessToken"), data)
-      return response
+      return await createPost(localStorage.getItem("accessToken"), data)
     } catch (error) {
       console.error(error);
     }
-  };
+  }
 
   const toast = useToast()
   async function join() {
     const id = groupId;
     const data = { id };
     groupJoined(data).then(() => { router.reload() })
-  };
+  }
 
   async function groupJoined(data) {
     console.log("groupJoined")
     try {
-      const response = await joinGroup(localStorage.getItem("accessToken"), data)
+      await joinGroup(localStorage.getItem("accessToken"), data)
     } catch (error) {
       console.error(error);
     }
-  };
+  }
   const handleSearch = (e) => {
     if (e.key === 'Enter') {
       setFilter(e.target.value)

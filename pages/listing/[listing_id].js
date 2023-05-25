@@ -1,18 +1,16 @@
 import {
-    Drawer, useToast, Grid, GridItem, Heading, Box, Image, Text, Stack, Divider, Button, Avatar, Flex, Center, Container
+    useToast, Grid, GridItem, Heading, Box, Text, Stack, Divider, Button, Avatar, Center
 } from "@chakra-ui/react";
 import Navbar from '../../components/navbar'
-import React, { useState, useContext, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router'
-import { getStorage, ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
-import { storage } from '../../firebaseConfig';
+import { ref, listAll, getDownloadURL } from "firebase/storage";
+import { storage, db } from '../../firebaseConfig';
 import { getListingbyId, getAllListingFromSeller } from '../../helpers/group/api';
-import { ArrowBackIcon, ArrowForwardIcon } from '@chakra-ui/icons'
 import MultiImage from "../../components/multiImage";
 import Listing from "../../components/listing";
 import { updateToCart } from '../../helpers/shopcart/api';
 import { collection, addDoc } from "@firebase/firestore";
-import { db } from "../../firebaseConfig";
 import { useCollection } from 'react-firebase-hooks/firestore';
 
 export default function Product() {
@@ -65,13 +63,6 @@ export default function Product() {
     }
 
     const [images, setImages] = useState([])
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const handleClickPrev = () => {
-        setCurrentIndex((prev) => prev === 0 ? images.length - 1 : prev - 1);
-    };
-    const handleClickNext = () => {
-        setCurrentIndex((prev) => prev === images.length - 1 ? 0 : prev + 1);
-    };
 
     async function getPhotoOnListing(url) {
         if (url != "") {
@@ -119,7 +110,7 @@ export default function Product() {
     }
     const chatExists = email => chats?.find(chat => (chat.users.includes(userEmail) && chat.users.includes(email)))
 
-    const [snapshot, loading, error] = useCollection(collection(db, "chats"));
+    const [snapshot] = useCollection(collection(db, "chats"));
     const chats = snapshot?.docs.map(doc => ({id: doc.id, ...doc.data()}));
     
     const handleChat = async () => {

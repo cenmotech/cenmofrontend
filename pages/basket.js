@@ -124,10 +124,8 @@ export default function Basket() {
 
   //For Address not set
   const initialRef = React.useRef(null)
-  const finalRef = React.useRef(null)
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [error, setError] = useState(null);
 
   const [dataNewAddress, setNewAddress] = useState({
     address_name: "",
@@ -147,7 +145,7 @@ const handleInputChange = (event) => {
     e.preventDefault()
     setIsLoading(true)
     try{
-        const response = await addAddress(localStorage.getItem('accessToken'), dataNewAddress);
+        await addAddress(localStorage.getItem('accessToken'), dataNewAddress);
         setIsSuccess(true);
         onClose();
     }

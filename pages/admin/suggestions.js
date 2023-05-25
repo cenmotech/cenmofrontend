@@ -1,13 +1,12 @@
 import {
   Grid, GridItem, Box, Heading, InputGroup,
   InputLeftElement, Input, Card, CardBody,
-  Stack, Text, Badge, Spacer, useDisclosure
+  Stack, Text, Badge, Spacer
   
 } from "@chakra-ui/react"
   import { SearchIcon } from '@chakra-ui/icons'
   import Navbar from '../../components/navbar-admin'
   import React, { useEffect, useState } from 'react';
-  import { useRouter } from 'next/router'
   import ListImage from "../../components/listImage";
   import { getSuggestions, changeStatusSuggestions } from "../../helpers/admin/api";
 

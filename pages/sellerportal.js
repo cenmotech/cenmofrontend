@@ -38,15 +38,7 @@ export default function Seller() {
         />
     )
 
-    const OverlayTwo = () => (
-        <ModalOverlay
-            bg='blackAlpha.300'
-            backdropFilter='blur(10px) hue-rotate(90deg)'
-        />
-    )
-
     const { isOpen, onOpen, onClose } = useDisclosure()
-    const { isOpen: isDetailOpen, onOpen: onDetailOpen, onClose: onDetailClose } = useDisclosure()
     const { isOpen: isNavOpen, onOpen: onNavOpen, onClose: onNavClose } = useDisclosure()
     const { isOpen: isAcceptOpen, onOpen: onAcceptOpen, onClose: onCloseAccept } = useDisclosure()
     const [overlay, setOverlay] = React.useState(<OverlayOne />)
@@ -170,8 +162,8 @@ export default function Seller() {
         }
         try {
             //Async function to send data to backend
-            const { data } = await axios.post(`${baseUrl}/group/edit_listing`, body, config)
-            await router.reload()
+            await axios.post(`${baseUrl}/group/edit_listing`, body, config)
+            router.reload()
         } catch (error) {
             console.log(error)
         }
@@ -243,200 +235,6 @@ export default function Seller() {
     return (
         <div size={{ base: "100px", md: "200px", lg: "300px" }}>
             <title>Seller Portal</title>
-            <Flex p="3" borderBottom='1px' borderColor='gray.200' height="100" display={{ base: "block", xl: "none" }} >
-                <Stack direction="row">
-                    <Button variant='ghost' onClick={onNavOpen}>
-                        <HiViewList />
-                    </Button>
-                    <Spacer />
-                    <Button variant='ghost' onClick={onDetailOpen} >
-                        <BiStore />
-                    </Button>
-                </Stack>
-            </Flex>
-            <Drawer isOpen={isNavOpen} placement="left" onClose={onNavClose} >
-                <DrawerContent>
-                    <Navbar />
-                </DrawerContent>
-            </Drawer>
-            {/* <Drawer isOpen={isDetailOpen} placement="right" size="sm" onClose={onDetailClose}>
-                <DrawerContent overflow='scroll'>
-                    <DrawerHeader>
-                        <GridItem colSpan={2} borderLeft='1px' borderColor='gray.200'>
-                            <Box pl='5' pr='10'>
-                                <Heading pt='7' pb='5' color='black' size='md'>Detail Product</Heading>
-                                <Stack direction='row' pb='7'>
-                                    <Image boxSize='150px' src='https://bit.ly/dan-abramov' alt='Dan Abramov' borderRadius='10' />
-                                    <Stack direction='column' pl='5'>
-                                        <Text fontSize="xl">{itemName}</Text>
-                                        <Text fontSize="xl" as='b'>Rp {itemPrice}</Text>
-                                        <Stack direction='row'>
-                                            <Text fontSize="md" as='b'>Seller |</Text>
-                                            <Text fontSize="md">{sellerName}</Text>
-                                        </Stack>
-                                        <Button onClick={() => {
-                                            onOpen()
-                                        }} colorScheme='blue'
-                                        > Edit
-                                        </Button>
-                                        <Modal isCentered isOpen={isOpen} onClose={onClose}>
-                                            <ModalOverlay />
-                                            <ModalContent>
-                                                <ModalHeader>Edit Product</ModalHeader>
-                                                <ModalCloseButton />
-                                                <ModalBody>
-                                                    <Stack direction='row'>
-                                                        
-                                                        <FormControl pl='5'>
-                                                            <FormLabel>Name Product</FormLabel>
-                                                            <Input type='name_product' onChange={handleListNameChange} />
-                                                        </FormControl>
-                                                    </Stack>
-                                                    <FormControl mt='3'>
-                                                        <FormLabel>Price</FormLabel>
-                                                        <NumberInput >
-                                                            <NumberInputField onChange={handlePriceChange} placeholder={itemPrice} />
-                                                            <NumberInputStepper>
-                                                                <NumberIncrementStepper />
-                                                                <NumberDecrementStepper />
-                                                            </NumberInputStepper>
-                                                        </NumberInput>
-                                                    </FormControl>
-                                                    <FormControl mt='3'>
-                                                        <FormLabel>Description</FormLabel>
-                                                        <Input type='name_product' onChange={handleDescChange} placeholder={itemDesc} />
-                                                    </FormControl>
-                                                </ModalBody>
-                                                <ModalFooter>
-                                                    <Button colorScheme='blue' mr={3} onClick={e => {
-                                                        toast({
-                                                            title: 'Listing Updated',
-                                                            description: "Make sure you fill the right data",
-                                                            status: 'success',
-                                                            duration: 9000,
-                                                            isClosable: true,
-                                                        });
-                                                        handleSubmit(e);
-                                                    }}>
-                                                        Save
-                                                    </Button>
-                                                    <Button variant='ghost' onClick={onClose}>Cancel</Button>
-                                                </ModalFooter>
-                                            </ModalContent>
-                                        </Modal>
-                                    </Stack>
-                                </Stack>
-                                <Text fontSize="lg" as='b' mt='10'>Product Description</Text>
-                                <Box maxW="100%">
-                                    <Text pb='0' fontSize='md' textAlign="justify" noOfLines={isExpanded ? 0 : 4}>
-                                        {itemDesc}
-                                    </Text>
-                                    {isExpanded ? (
-                                        <Button mt='3' onClick={() => setIsExpanded(false)}>Close</Button>
-                                    ) : (
-                                        <Button mt='3' onClick={() => setIsExpanded(true)}>More</Button>
-                                    )}
-                                </Box>
-                                <Divider pt='5' mb='3' />
-                                <Stack direction='row' justifyContent='space-between'>
-                                    <Text fontSize="lg" as='b'>Your Buyer</Text>
-                                    <Select variant='filled' width='fit-content'>
-                                        <option value='All'>All</option>
-                                        <option value='Pending'>Pending</option>
-                                        <option value='Verifying'>Verifying</option>
-                                        <option value='Processing'>Processing</option>
-                                        <option value='Completed'>Completed</option>
-                                        <option value='Rejected'>Rejected</option>
-                                    </Select>
-                                </Stack> */}
-                                {/* <Card w={{ base: "400px", md: "550px", lg: "700px" }} h={"100%"} mt="5" borderRadius='15' >
-                                    <Stack direction='column' spacing={8}>
-                                        {buyerListByGoodsId.map((buyer, index) => (
-                                            <Card w={{ base: "100%", md: "550px", lg: "100%", mx: "10px" }} borderRadius='15' mt='5' buyer={buyer} key={index} cursor="pointer" onClick={() => descChange(buyer)} >
-                                                <CardBody >
-                                                    <Stack direction={{ base: 'column', md: 'row' }} alignItems={{ base: 'flex-start', md: 'start' }} >
-                                                        <Image boxSize={{ base: '50px', md: '50px' }} src='https://bit.ly/dan-abramov' alt='Dan Abramov' borderRadius='10' />
-                                                        <Stack direction='row'>
-                                                            <Stack spacing={0} direction='column' pl={{ base: '0', md: '3' }} pr={{ base: '0', md: '5' }}>
-                                                                <Stack direction='row' pb={{ base: '0', md: '9' }}>
-                                                                    <Text fontSize="md" as='b'>{buyer.buyer_name}</Text>
-                                                                </Stack>
-                                                                <Text fontSize="md" pb={{ base: '0', md: '1' }}>Status</Text >
-                                                                {selectedFilter === 'All' || buyer.progress === selectedFilter} {
-                                                                    <Text key={buyer.progress}>{buyer.progress}</Text>
-                                                                }
-                                                            </Stack>
-                                                            <Center>
-                                                                <Stack direction='column' pr={{ base: '0', md: '10' }} align="center" justify="center" >
-                                                                    {buyer.progress === "Verifying" && (
-                                                                        <div>
-                                                                            <Button onClick={(buyer, index) => {
-                                                                                onAcceptOpen()
-                                                                            }} colorScheme='green'>Accept</Button>
-                                                                            <Button colorScheme='red' >Reject</Button>
-                                                                        </div>
-                                                                    )}
-                                                                    <Modal isCentered isOpen={isAcceptOpen} onClose={onCloseAccept}>
-
-                                                                        <ModalContent>
-                                                                            <ModalHeader>Pengisian Resi</ModalHeader>
-                                                                            <ModalCloseButton />
-                                                                            <ModalBody>
-                                                                                <Stack direction='row'>
-                                                                                    <FormControl pl='5'>
-                                                                                        <FormLabel>Nomor Resi</FormLabel>
-                                                                                        <Input type='resi' onChange={handleResi} />
-                                                                                    </FormControl>
-                                                                                </Stack>
-                                                                            </ModalBody>
-                                                                            <ModalFooter>
-                                                                                <Button colorScheme='blue' mr={3} onClick={e => {
-                                                                                    toast({
-                                                                                        title: 'Listing Updated',
-                                                                                        description: "Make sure you fill the right data",
-                                                                                        status: 'success',
-                                                                                        duration: 9000,
-                                                                                        isClosable: true,
-                                                                                    });
-                                                                                    handleSubmitStatus(e, buyer.transactionId);
-                                                                                }}>
-                                                                                    Save
-                                                                                </Button>
-                                                                                <Button variant='ghost' onClick={onClose}>Cancel</Button>
-                                                                            </ModalFooter>
-                                                                        </ModalContent>
-                                                                    </Modal>
-
-                                                                </Stack>
-                                                            </Center>
-
-                                                            <Stack direction='column' pr={{ base: '0', md: '10' }} alignItems={"center"}>
-                                                                <Stack>
-                                                                    <Text fontSize="md" as='b'>{buyer.goodsName}</Text>
-                                                                </Stack>
-                                                                <Stack>
-                                                                    <Text fontSize="md" as='b'>Rp {buyer.totalPrice}</Text>
-                                                                </Stack>
-                                                                <Stack>
-                                                                    <Text fontSize="small" as='b'>{buyer.transactionId}</Text>
-                                                                </Stack>
-                                                                <Button colorScheme='orange'>Chat</Button>
-                                                            </Stack>
-                                                        </Stack>
-
-                                                    </Stack>
-
-                                                </CardBody>
-                                            </Card>
-                                        ))}
-                                    </Stack>
-                                </Card> */}
-                            {/* </Box>
-                        </GridItem>
-                        <DrawerCloseButton />
-                    </DrawerHeader>
-                </DrawerContent>
-            </Drawer> */}
             <Grid templateColumns={{ base: 'repeat(3, 1fr)', xl: 'repeat(5, 1fr)' }} gap={0} >
                 <Show above='xl' >
                     <GridItem colSpan={1} w='100%' h="100vh" position="sticky" top="0" left="0" overflow="hidden" borderRight='1px' borderColor='gray.200' >
