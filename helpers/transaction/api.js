@@ -122,3 +122,86 @@ export const createComplain = async (body) => {
     console.log("ini error ", error)
   }
 }
+
+export const getComplain = async () => {
+  try{
+      const response  = await axios.get(`${baseUrl}/get-complains`, getConfig());
+      console.log(response)
+      return response.data.response;
+  }catch(error){
+    console.log("ini error ", error)
+  }
+}
+
+export const updateComplainStatus = async (body) => {
+  try{
+      const response  = await axios.post(`${baseUrl}/complain-status`, body, getConfig());
+      return response.data;
+  }catch(error){
+    console.log("ini error ", error)
+  }
+}
+
+export const getBankList = async () => {
+  try{
+    const response = await axios.get(`${baseUrl}/get-bank-list`, getConfig());
+    return response.data;
+  }catch (error) {
+    console.log(error)
+  }
+}
+
+export const validateBank = async (bank_name, bank_no) => {
+  try{
+    const response  = await axios.get(`${baseUrl}/validate-bank?bank_name=${bank_name}&bank_no=${bank_no}`, getConfig());
+    return response;
+  }catch(error){
+    console.log(error)
+  }
+}
+
+export const addBankAccount = async (data) => {
+  try{
+    const body = {
+      "validation_id": data.id,
+      "bank_name": data.bank_name,
+      "account_no": data.account_no,
+      "account_name": data.account_name
+    }
+    const response  = await axios.post(`${baseUrl}/add-bank-to-user`, body, getConfig());
+    return response;
+  }catch(error){
+    console.log(error)
+  }
+}
+
+export const getUserBankAccount = async () => {
+  try{
+    const response  = await axios.get(`${baseUrl}/get-user-bank`, getConfig());
+    return response.data;
+  }catch(error){
+    console.log(error)
+  }
+}
+
+export const withdrawToBank = async (bank_id, amount) => {
+  try{
+    const body = {
+      bank_id,
+      amount
+    }
+    const response  = await axios.post(`${baseUrl}/withdraw`, body, getConfig());
+    return response;
+  }catch(error){
+    console.log(error)
+  }
+}
+
+export const getWithdrawalHistory = async () => {
+  try{
+    const response  = await axios.get(`${baseUrl}/get-user-withdrawal`, getConfig());
+    return response.data;
+  }catch(error){
+    console.log(error)
+  }
+}

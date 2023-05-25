@@ -1,4 +1,4 @@
-import { getStorage, ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
+import { ref, listAll, getDownloadURL } from "firebase/storage";
 import { storage } from '../firebaseConfig';
 import { useEffect, useState } from 'react';
 import { Image } from '@chakra-ui/react'

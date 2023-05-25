@@ -2,8 +2,8 @@
 import {
     Grid, GridItem, Flex, Spacer, Box, Heading, ButtonGroup,
     Button, List, ListItem, InputLeftElement,
-    Input, InputGroup, SimpleGrid, Card, CardBody,
-    Stack, StackDivider, Accordion, AccordionItem,
+    Input, InputGroup, Card, CardBody,
+    Stack, Accordion, AccordionItem,
     AccordionButton, AccordionIcon, AccordionPanel,
     Avatar, Link, Modal, ModalOverlay, 
     ModalContent, ModalHeader, ModalFooter, ModalBody,
@@ -12,19 +12,17 @@ import {
 import { SearchIcon } from '@chakra-ui/icons'
 import { BsCart2, BsChatRightText, BsBell } from "react-icons/bs";
 import { MdAttachMoney } from "react-icons/md";
-import { BiBody, BiStore } from "react-icons/bi";
-import { useEffect, useState, useContext } from 'react'
+import { BiStore } from "react-icons/bi";
+import React, { useEffect, useState, useContext } from 'react'
 import axios from "axios";
 import AuthenticationContext from '../context/AuthenticationContext'
 import { useRouter } from 'next/router'
 import { getUserInfo } from '../helpers/profile/api';
-import React from 'react';
 import { sendSuggestions } from '../helpers/admin/api';
 
 
 export default function Navbar() {
     const [categories, setCategories] = useState([])
-    const [categoriesFilter, setCategoriesFilter] = useState(null)
     const [filter, setFilter] = useState('')
     const { logout } = useContext(AuthenticationContext);
     const baseUrl = process.env.NEXT_PUBLIC_BE_URL
@@ -37,7 +35,6 @@ export default function Navbar() {
         } else {
             getUserFromApi();
         }
-
     }, [])
 
     async function getUserFromApi() {
@@ -64,7 +61,6 @@ export default function Navbar() {
                     })
                     if (response && response.data && response.data.category_groups) {
                         setCategories(response.data.category_groups)
-                        setCategoriesFilter(response.data.category_groups)
                     }
                 }
                 else {
@@ -77,7 +73,6 @@ export default function Navbar() {
                     })
                     if (response && response.data && response.data.category_groups) {
                         setCategories(response.data.category_groups)
-                        setCategoriesFilter(response.data.category_groups)
                     }
                 }
             }
@@ -112,10 +107,6 @@ export default function Navbar() {
     }, [])
 
     const initialRef = React.useRef(null)
-    const finalRef = React.useRef(null)
-    const [isLoading, setIsLoading] = useState(false);
-    const [isSuccess, setIsSuccess] = useState(false);
-    const [error, setError] = useState(null);
 
     const handleRequestForm = async (e) => {
         e.preventDefault()
@@ -124,23 +115,23 @@ export default function Navbar() {
             const body={
                 "suggestion":e.target.request_user.value
             }
-            const response = await sendSuggestions(body);
-            setIsSuccess(true);
+            await sendSuggestions(body);
+
             onClose();
         }
         catch (error) {
-            console.log(error)
+
         }
     };
 
     const { isOpen, onOpen, onClose } = useDisclosure()
     return (
-        <Box data-testid="navbar" h='100vh' display="flex" flexDirection="column">
+        <Box data-testid="navbar" h='100vh' display="flex" flexDirection="column" bg='white'>
             <Grid templateRows='repeat(13, 1fr)' gap={0} flex="1" minHeight="0">
                 <GridItem>
                     <Flex minWidth='max-content' alignItems='center' gap='2' pt='13'>
                         <Box p='2' pl='5'>
-                            <Heading as='b' color='black' size='lg'>Cenmo Admin</Heading>
+                            <Heading as='b' color='black' size='lg'>Cenmo</Heading>
                         </Box>
                         <Spacer />
                         <ButtonGroup gap='2' p='2' pr='5' borderRadius='30'>
@@ -154,7 +145,7 @@ export default function Navbar() {
                             <Button leftIcon={<BsBell />} justifyContent='left' onClick={() => router.push("/")} cursor="pointer" width='100%' borderRadius='30' colorScheme='blue'>Home</Button>
                         </ListItem>
                         <ListItem>
-                            <Button leftIcon={<BsChatRightText />} justifyContent='left' width='100%' borderRadius='30' colorScheme='blue'>Chats</Button>
+                            <Button leftIcon={<BsChatRightText />} justifyContent='left' onClick={() => router.push("/chats")} width='100%' borderRadius='30' colorScheme='blue'>Chats</Button>
                         </ListItem>
                         <ListItem>
                             <Button leftIcon={<BsCart2 />} justifyContent='left' onClick={() => router.push("/basket")} width='100%' borderRadius='30' colorScheme='blue'>Baskets</Button>
@@ -240,7 +231,7 @@ export default function Navbar() {
                     </Box>
                 </GridItem>
                 <GridItem rowSpan={3} alignItems='end'>
-                    <Stack onClick={() => router.push('/accounts/profile')} cursor="pointer" direction='row' pl='5' pt='5'>
+                    <Stack onClick={() => router.push('/accounts/profile')} cursor="pointer" direction='row' pl='5' pt='12'>
                         <Avatar size='md' name={userName} />
                         <Stack direction='row' alignItems={"center"} color='black' m='5' pl='3'>
                             <p>{userName}</p>

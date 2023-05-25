@@ -71,6 +71,15 @@ export const getPostbyLoggedUser = async (Token) => {
     }
 }
 
+export const getListingbyId = async (id) => {
+    try{
+        const response  = await axios.get(`${baseUrl}/get_listing_by_id/${id}`, getConfig());
+        return response.data;
+    }catch(error){
+        throw new Error(error.response.data.error);
+    }
+}
+
 export const getListingbyLoggedUser = async (Token) => {
     accessToken = Token;
     try{
@@ -81,11 +90,20 @@ export const getListingbyLoggedUser = async (Token) => {
     }
 }
 
-export const getPostOnGroup = async (Token,groupId) => {
+export const getPostOnGroup = async (Token,groupId, tags="") => {
     accessToken = Token;
     try{
-        const response  = await axios.get(`${baseUrl}/get_post_on_group/${groupId}`, getConfig());
-        return response.data;
+        if (tags === ""){
+            const response  = await axios.get(`${baseUrl}/get_post_on_group/${groupId}`, getConfig());
+            return response.data;
+        } else {    
+            // console.log(tags)
+            tags = tags.split(",")
+            const encodedTags = tags.map(tag => encodeURIComponent(tag));
+            const queryString = `tags=${encodedTags.join(",")}`;
+            const response  = await axios.get(`${baseUrl}/get_post_on_group/${groupId}?${queryString}`, getConfig());
+            return response.data;
+        }
     }catch(error){
         throw new Error(error.response.data.error);
     }
@@ -95,6 +113,15 @@ export const getListingBySeller = async (Token, sellerEmail) => {
     accessToken = Token;
     try{
         const response  = await axios.get(`${baseUrl}/get_listing_by_seller`, getConfig());
+        return response.data;
+    }catch(error){
+        throw new Error(error.response.data.error);
+    }
+}
+
+export const getAllListingFromSeller = async (sellerEmail, currentListing) => {
+    try{
+        const response  = await axios.get(`${baseUrl}/get-all-listing-from-seller/${sellerEmail}/${currentListing}`, getConfig());
         return response.data;
     }catch(error){
         throw new Error(error.response.data.error);
@@ -145,8 +172,18 @@ export const searchPostByDesc = async (Token, urlbody) => {
 export const searchPostOnGroup = async (Token,groupId, urlbody) => {
     accessToken = Token;
     try{
-        const response  = await axios.get(`${baseUrl}/search_post_on_group/${groupId}/${urlbody}/`, getConfig());
+        const response  = await axios.get(`${baseUrl}/search_post_on_group/${groupId}/${urlbody}`, getConfig());
         return response.data;
+        // if (tags === ""){
+        //     const response  = await axios.get(`${baseUrl}/search_post_on_group/${groupId}/${urlbody}`, getConfig());
+        //     return response.data;
+        // } else {
+        //     tags = tags.split(",")
+        //     const encodedTags = tags.map(tag => encodeURIComponent(tag));
+        //     const queryString = `tags=${encodedTags.join(",")}`;
+        //     const response  = await axios.get(`${baseUrl}/search_post_on_group/${groupId}/${urlbody}?${queryString}`, getConfig());
+        //     return response.data;
+        // }
     }catch(error){
         throw new Error(error.response.data.error);
     }
@@ -262,6 +299,46 @@ export const editListing = async (Token, Body) => {
         const response  = await axios.post(`${baseUrl}/edit_listing`, Body, getConfig());
         return response.data;
     } catch(error){
+        throw new Error(error.response.data.error);
+    }
+}
+
+export const like = async (postId, body) => {
+    try{
+        await axios.post(`${baseUrl}/like/${postId}`, body, getConfig()).then(res => {
+            return res.data;
+        })
+    }catch(error){
+        throw new Error(error.response.data.error);
+    }
+}
+
+export const likeByUser = async (Token) => {
+    accessToken = Token;
+    try{
+        const response  = await axios.get(`${baseUrl}/liked_by_user`, getConfig());
+        return response.data;
+    }catch(error){
+        throw new Error(error.response.data.error);
+    }
+}
+
+export const comment = async (postId, body) => {
+    try{
+        await axios.post(`${baseUrl}/comment/${postId}`, body, getConfig()).then(res => {
+            return res.data;
+        })
+    }catch(error){
+        throw new Error(error.response.data.error);
+    }
+}
+
+export const getComment = async (Token, postId) => {
+    accessToken = Token;
+    try{
+        const response  = await axios.get(`${baseUrl}/get_comment/${postId}`, getConfig());
+        return response.data;
+    }catch(error){
         throw new Error(error.response.data.error);
     }
 }

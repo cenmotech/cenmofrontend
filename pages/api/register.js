@@ -2,7 +2,6 @@
 import axios from 'axios'
 
 export default async (req, res) => {
-  let accessToken = null;
   const baseUrl = `${process.env.NEXT_PUBLIC_BE_URL}`
 
   if (req.method === 'POST') {
