@@ -1,25 +1,27 @@
-import { Grid, GridItem, Box, Heading, InputGroup,
+import {
+    Grid, GridItem, Box, Heading, InputGroup,
     InputLeftElement, Input, Card, CardBody,
-    Stack, Badge,Text,Slider,SliderTrack,SliderFilledTrack,SliderThumb, SliderMark,NumberInput, NumberInputField,
-    NumberInputStepper, NumberIncrementStepper,
-    NumberDecrementStepper, IconButton, Button, Spacer, Modal,
+    Stack, Badge, Text, Slider, SliderTrack, SliderFilledTrack, SliderThumb, SliderMark,
+    Button, Spacer, Modal,
     ModalOverlay,
     ModalContent,
     ModalHeader,
     ModalFooter,
     ModalBody,
-    ModalCloseButton, 
+    ModalCloseButton,
     useDisclosure,
-    Textarea} from '@chakra-ui/react'
-import { SearchIcon, DeleteIcon } from '@chakra-ui/icons'
+    Textarea,
+    useToast
+} from '@chakra-ui/react'
+import { SearchIcon } from '@chakra-ui/icons'
 import Navbar from '../components/navbar'
 import ListImage from '../components/listImage';
-import { Image,Divider } from '@chakra-ui/react'
+import { Image, Divider } from '@chakra-ui/react'
 import { useEffect, useState } from 'react';
 import React from 'react';
 import { SlBasket } from 'react-icons/sl';
-import {AiOutlineClose} from 'react-icons/ai';
-import { getUserTransaction,getUserPendingTransaction,getUserVerifyingTransaction,getUserProcessingTransaction,getUserCompletedTransaction,getUserCancelledTransaction, cancelTransaction, updateTransaction, createComplain } from '../helpers/transaction/api';
+import { AiOutlineClose } from 'react-icons/ai';
+import { getUserTransaction, getUserPendingTransaction, getUserVerifyingTransaction, getUserProcessingTransaction, getUserCompletedTransaction, getUserCancelledTransaction, cancelTransaction, updateTransaction, createComplain, getComplain } from '../helpers/transaction/api';
 
 
 export default function Transaction() {
@@ -36,7 +38,11 @@ export default function Transaction() {
     const [itemDate, setItemDate] = useState("");
     const [itemImage, setItemImage] = useState("");
     const [sliderValue, setSliderValue] = useState(0);
-    const [snapToken , setSnapToken] = useState("");
+    const [snapToken, setSnapToken] = useState("");
+    const [complainId, setComplainId] = useState("");
+    const [complainStatus, setComplainStatus] = useState("");
+    const [thisFilteredData, setFilteredData] = useState("");
+    const toast = useToast()
 
     const descChange = (item) => {
         setItemId(item.transaction_id)
@@ -50,57 +56,58 @@ export default function Transaction() {
         setItemDate(item.date)
         setItemImage(item.goods__goods_image_link)
         setSnapToken(item.snap_token)
+        complain(item.transaction_id)
     }
 
     useEffect(() => {
         if (itemProgress === "Verifying") {
-          setSliderValue(33);
+            setSliderValue(33);
         } else if (itemProgress === "Processing") {
             setSliderValue(66);
         } else if (itemProgress === "Pending") {
-          setSliderValue(0);
+            setSliderValue(0);
         } else {
-          setSliderValue(99);
+            setSliderValue(99);
         }
     }, [itemProgress]);
 
     useEffect(() => {
         getUserTransaction().then((data) => {
-          setTransaction(data.response);
+            setTransaction(data.response);
         });
     }, []);
 
-    const listAll = () =>{
+    const listAll = () => {
         getUserTransaction().then((data) => {
             setTransaction(data.response);
         });
     }
 
-    const listPending = () =>{
+    const listPending = () => {
         getUserPendingTransaction().then((data) => {
             setTransaction(data.response);
         });
     }
 
-    const listVerifying = () =>{
+    const listVerifying = () => {
         getUserVerifyingTransaction().then((data) => {
             setTransaction(data.response);
         });
     }
 
-    const listProcessing = () =>{
+    const listProcessing = () => {
         getUserProcessingTransaction().then((data) => {
             setTransaction(data.response);
         });
     }
 
-    const listCompleted = () =>{
+    const listCompleted = () => {
         getUserCompletedTransaction().then((data) => {
             setTransaction(data.response);
         });
     }
 
-    const listCancelled = () =>{
+    const listCancelled = () => {
         getUserCancelledTransaction().then((data) => {
             setTransaction(data.response);
         });
@@ -119,57 +126,78 @@ export default function Transaction() {
 
     useEffect(() => {
         const midtransScriptUrl = 'https://app.sandbox.midtrans.com/snap/snap.js';
-    
+
         let scriptTag = document.createElement('script');
         scriptTag.src = midtransScriptUrl;
-    
+
         const myMidtransClientKey = "Mid-client-giT1yaCWRdXGL4_h";
         scriptTag.setAttribute('data-client-key', myMidtransClientKey);
-    
+
         document.body.appendChild(scriptTag);
-    
+
         return () => {
-          document.body.removeChild(scriptTag);
+            document.body.removeChild(scriptTag);
         }
-      }, []);
-    
+    }, []);
+
     const showPayment = () => {
         window.snap.pay(snapToken, {
-        onSuccess: function (result) {
-            console.log(result);
-        },
-        onPending: function (result) {
-            console.log(result);
-        },
-        onError: function (result) {
-            console.log(result);
-        }
-        }); 
+            onSuccess: function (result) {
+                console.log(result);
+            },
+            onPending: function (result) {
+                console.log(result);
+            },
+            onError: function (result) {
+                console.log(result);
+            }
+        });
     }
     //COMPLAIN MODAL LOGIC
     const { isOpen, onOpen, onClose } = useDisclosure()
     const complainOrder = async () => {
-        if(complainText === ""){
+        if (complain_text === "") {
             alert("Please fill the complain form")
-        }else{
+        } else {
             let transactionId = itemId;
-            console.log({complainText, transactionId})
-            createComplain({complainText, transactionId}).then((data) => {
+            console.log({ transactionId, complain_text })
+            createComplain({ transactionId, complain_text }).then((data) => {
                 console.log(data);
                 onClose();
+                window.location.reload();
             })
         }
     };
+    const [hasComplained, setHasComplained] = useState(false);
+    const complain = (itemId) => {
+        getComplain().then((data) => {
+            const filteredData = data.filter(complain => complain.transaction_id.includes(itemId))
+            if (filteredData.length !== 0) {
+                setHasComplained(true);
+                setFilteredData(filteredData)
+                const complainIdArray = filteredData.map(complain => complain.complain_id);
+                const complainStatusArray = filteredData.map(complain => complain.complain_status);
+                console.log("ini data status", complainStatusArray);
+                setComplainId(complainIdArray);
+                setComplainStatus(complainStatusArray);
+                console.log("item id", itemId)
+                console.log("ini data", filteredData)
+                console.log("ini response", data.response)
+            }
+        });
+    }
+
+
 
     const OverlayTwo = () => (
         <ModalOverlay
-          bg='none'
-          backdropFilter='auto'
-          backdropBlur='2px'
+            bg='none'
+            backdropFilter='auto'
+            backdropBlur='2px'
         />
-      )
-    const [overlay, setOverlay] = useState(<OverlayTwo/>)
-    const [complainText, setComplaintext] = useState("")
+    )
+    const [overlay, setOverlay] = useState(<OverlayTwo />)
+    const [complain_text, setComplaintext] = useState("")
     return (
 
         <div size={{ base: "100px", md: "200px", lg: "300px" }}>
@@ -178,17 +206,17 @@ export default function Transaction() {
                 <GridItem colSpan={1} w='100%' h="100vh" position="sticky" top="0" left="0" overflow="hidden" borderRight='1px' borderColor='gray.200'>
                     <Navbar />
                 </GridItem>
-                <GridItem colSpan={{base: 2, md: 2, lg: 2}} w={{base: '100%', md: '100%', lg: '100%'}}>
-                    <Heading pl={{base: '3', md: '5'}} pt={{base: '5', md: '7'}} color='black' size='md'>Transaction</Heading>
-                    <Box pr={{base: '3', md: '5'}} pl={{base: '3', md: '5'}}>
-                        <InputGroup pr={{base: '3', md: '5'}} pt={{base: '3', md: '5'}}>
+                <GridItem colSpan={{ base: 2, md: 2, lg: 2 }} w={{ base: '100%', md: '100%', lg: '100%' }}>
+                    <Heading pl={{ base: '3', md: '5' }} pt={{ base: '5', md: '7' }} color='black' size='md'>Transaction</Heading>
+                    <Box pr={{ base: '3', md: '5' }} pl={{ base: '3', md: '5' }}>
+                        <InputGroup pr={{ base: '3', md: '5' }} pt={{ base: '3', md: '5' }}>
                             <InputLeftElement
-                                pl={{base: '2', md: '2'}}
-                                pt={{base: '3', md: '10'}}
+                                pl={{ base: '2', md: '2' }}
+                                pt={{ base: '3', md: '10' }}
                                 pointerEvents='none'
                                 children={<SearchIcon color='gray.300' />}
                             />
-                            <Input pl={{base: '10', md: '10'}} type='tel' placeholder='Search' borderRadius='30' />
+                            <Input pl={{ base: '10', md: '10' }} type='tel' placeholder='Search' borderRadius='30' />
                         </InputGroup>
                         <Stack direction='row' mt='5' spacing={4} align='center'>
                             <Button variant='outline' onClick={() => listAll()}>
@@ -210,17 +238,17 @@ export default function Transaction() {
                                 Cancelled
                             </Button>
                         </Stack>
-                        {transaction.map((item,index) => (
-                            <Card w={{base: "100%", md: "550px", lg: "95%"}} borderRadius='15' mt='5' pr={{base: '3', md: '5'}} key= {index} cursor='pointer' onClick={() => descChange(item)}>
+                        {transaction.map((item, index) => (
+                            <Card w={{ base: "100%", md: "550px", lg: "95%" }} borderRadius='15' mt='5' pr={{ base: '3', md: '5' }} key={index} cursor='pointer' onClick={() => descChange(item)}>
                                 <CardBody>
-                                    <Stack direction={{base: 'column', md: 'row'}} alignItems={{base: 'flex-start', md: 'center'}}>
-                                        <ListImage boxsize={"70"} url={item.goods__goods_image_link}/>
-                                        <Stack spacing={0} direction='column' pl={{base: '0', md: '3'}}>
+                                    <Stack direction={{ base: 'column', md: 'row' }} alignItems={{ base: 'flex-start', md: 'center' }}>
+                                        <ListImage boxsize={"70"} url={item.goods__goods_image_link} />
+                                        <Stack spacing={0} direction='column' pl={{ base: '0', md: '3' }}>
                                             <Stack direction='row'>
-                                            <Text fontSize="sm">{item.goods__goods_name}</Text>
+                                                <Text fontSize="sm">{item.goods__goods_name}</Text>
                                             </Stack>
                                             <Text fontSize="md" as='b'>Rp {item.total_price}</Text>
-                                            <Text fontSize="md">{item.goods__seller_name}</Text>    
+                                            <Text fontSize="md">{item.goods__seller_name}</Text>
                                         </Stack>
                                         <Spacer></Spacer>
                                         <Badge variant='solid' colorScheme={item.progress === 'Pending' ? 'orange' : item.progress === 'Completed' ? 'green' : item.progress === 'Cancelled' ? 'red' : 'gray'} fontSize='0.8em'>
@@ -230,16 +258,16 @@ export default function Transaction() {
                                 </CardBody>
                             </Card>
                         ))}
-                        
+
                     </Box>
                 </GridItem>
                 {itemId !== '' && (
 
                     <GridItem colSpan={2} borderLeft='1px' borderColor='gray.200'>
                         <Box pl='5' pr='10'>
-                            <Heading pt='7' pb='5' color= 'black' size='md'>Transaction Details</Heading>
+                            <Heading pt='7' pb='5' color='black' size='md'>Transaction Details</Heading>
                             <Stack direction='row' pb='7'>
-                                <ListImage boxsize={"150"} url={itemImage}/>
+                                <ListImage boxsize={"150"} url={itemImage} />
                                 <Stack direction='column' pl='5'>
                                     <Text fontSize="xl">{itemName}</Text>
                                     <Text fontSize="xl" as='b'>Rp {itemPrice}</Text>
@@ -250,34 +278,43 @@ export default function Transaction() {
                                     <Stack direction='row'>
                                         <Button colorScheme='blue'>Chat Seller</Button>
                                         {itemProgress === 'Pending' && <Button colorScheme='red' onClick={() => cancelOrder()}>Cancel Order</Button>}
-                                        {(itemProgress === 'Cancelled' || itemProgress === 'Pending' || itemProgress === 'Verifying') && <Button colorScheme='orange' onClick={() => {onOpen(); setComplaintext("")}}>Complain Order</Button>}
+                                        {(itemProgress === 'Cancelled' || itemProgress === 'Pending' || itemProgress === 'Verifying') && <Button colorScheme='orange' onClick={() => { onOpen(); setComplaintext("") }}>Complain Order</Button>}
                                         <Modal onClose={onClose} isOpen={isOpen} isCentered>
                                             {overlay}
                                             <ModalOverlay />
                                             <ModalContent>
-                                            <ModalHeader>Complain Order</ModalHeader>
-                                            <ModalCloseButton />
-                                            <ModalBody>
-                                                <Stack direction='column'>
-                                                    <Text fontSize='md'>Please describe your problem</Text>
-                                                    <Textarea
-                                                    placeholder='...'
-                                                    size='sm'
-                                                    resize='vertical'
-                                                    onChange={(e) => setComplaintext(e.target.value)}
-                                                    isInvalid={complainText === '' ? true : false}
-                                                    />
-                                                </Stack>
-                                            </ModalBody>
-                                            <ModalFooter>
-                                                <Button colorScheme='orange' isDisabled={complainText === '' ? true : false} onClick={() => complainOrder()}>Complain Order</Button>
-                                                <Button onClick={onClose}>Close</Button>
-                                            </ModalFooter>
+                                                <ModalHeader>Complain Order</ModalHeader>
+                                                <ModalCloseButton />
+                                                <ModalBody>
+                                                    <Stack direction='column'>
+                                                        <Text fontSize='md'>Please describe your problem</Text>
+                                                        <Textarea
+                                                            placeholder='...'
+                                                            size='sm'
+                                                            resize='vertical'
+                                                            onChange={(e) => setComplaintext(e.target.value)}
+                                                            isInvalid={complain_text === '' ? true : false}
+                                                        />
+                                                    </Stack>
+                                                </ModalBody>
+                                                <ModalFooter>
+                                                    <Button colorScheme='orange' isDisabled={complain_text === '' ? true : false} onClick={() => {
+                                                        complainOrder();
+                                                        toast({
+                                                            title: 'Success',
+                                                            description: "Created complain successfully",
+                                                            status: 'success',
+                                                            duration: 9000,
+                                                            isClosable: true,
+                                                        });
+                                                    }}>Complain Order</Button>
+                                                    <Button onClick={onClose}>Close</Button>
+                                                </ModalFooter>
                                             </ModalContent>
                                         </Modal>
                                         {itemProgress === 'Processing' && <Button colorScheme='green' onClick={() => finishTransaction()}>Finished Order</Button>}
                                     </Stack>
-                                </Stack>                
+                                </Stack>
                             </Stack>
                             <Box mx='7'>
 
@@ -303,9 +340,29 @@ export default function Transaction() {
                                     </SliderThumb>
                                 </Slider>
                             </Box>
-                            <Text fontSize="lg" as='b' mt='10'>Product Detail</Text>
-                            <Text pb='7' fontSize='md'>{itemDesc}</Text>
-                            <Text as='b'>Shopping Summary</Text>
+                            <Text fontSize="lg" as='b' mt='7'>Product Detail</Text>
+                            <Text pb="5" fontSize='md'>{itemDesc}</Text>
+
+                            {hasComplained === true && (
+                                <Stack direction='column' pb="5">
+                                    <Text fontSize="lg" as='b'>Complain Status</Text>
+                                    <Stack direction="column">
+                                        {thisFilteredData.map((dt, index) => (
+                                            <Stack direction='row' key={index}>
+                                                <Text fontSize="l">Complain ID: </Text>
+                                                <Text pb='2' fontSize="l">{dt.complain_id}</Text>
+                                                <Text> | </Text>
+                                                <Text fontSize="l">Status: </Text>
+                                                <Badge variant='solid' colorScheme={dt.complain_status === 'Pending' ? 'orange' : dt.complain_status === 'Processing' ? 'blue' : 'green'} fontSize='0.8em'>
+                                                    {dt.complain_status}
+                                                </Badge>
+                                            </Stack>
+                                        ))}
+                                    </Stack>
+
+                                </Stack>
+                            )}
+                            <Text as='b' mt='7'>Shopping Summary</Text>
                             <Card mt='3'>
                                 <CardBody>
                                     <Stack direction='row' justifyContent="space-between" >
@@ -337,7 +394,7 @@ export default function Transaction() {
                                     <Stack>
                                         {itemProgress === 'Pending' && <Button colorScheme='blue' onClick={() => showPayment()} mt='5' >Pay</Button>}
                                     </Stack>
-                                    
+
                                 </CardBody>
                             </Card>
                         </Box>

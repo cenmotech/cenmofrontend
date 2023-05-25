@@ -123,6 +123,25 @@ export const createComplain = async (body) => {
   }
 }
 
+export const getComplain = async () => {
+  try{
+      const response  = await axios.get(`${baseUrl}/get-complains`, getConfig());
+      console.log(response)
+      return response.data.response;
+  }catch(error){
+    console.log("ini error ", error)
+  }
+}
+
+export const updateComplainStatus = async (body) => {
+  try{
+      const response  = await axios.post(`${baseUrl}/complain-status`, body, getConfig());
+      return response.data;
+  }catch(error){
+    console.log("ini error ", error)
+  }
+}
+
 export const getBankList = async () => {
   try{
     const response = await axios.get(`${baseUrl}/get-bank-list`, getConfig());

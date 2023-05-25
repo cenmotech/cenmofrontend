@@ -123,6 +123,9 @@ export default function Navbar() {
                         <ListItem>
                             <Button leftIcon={<BsChatRightText />} justifyContent='left' onClick={() => router.push("/admin/group-management")} width='100%' borderRadius='30' colorScheme='blue'>Group Management</Button>
                         </ListItem>
+                        <ListItem>
+                            <Button leftIcon={<BsChatRightText />} justifyContent='left' onClick={() => router.push("/admin/complain-management")} width='100%' borderRadius='30' colorScheme='blue'>Complain Management</Button>
+                        </ListItem>
                     </List>
                 </GridItem>
                 <GridItem rowSpan={9} overflowY="auto">

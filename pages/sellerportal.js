@@ -112,18 +112,7 @@ export default function Seller() {
 
         fetchBuyer();
     }, []);
-    useEffect(() => {
-        const fetchBuyerByGoodsId = async () => {
-            try {
-                const response = await getBuyerByGoodsId(localStorage.getItem("accessToken"), itemId);
-                setBuyerListByGoodsId(response.transactions);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-
-        fetchBuyerByGoodsId();
-    }, [itemId]);
+    
 
     const handleListNameChange = (e) => {
         setItemName(e.target.value);
