@@ -2,15 +2,13 @@
 import {
     Grid, GridItem, Flex, Spacer, Box, Heading, ButtonGroup,
     Button, List, ListItem, InputLeftElement,
-    Input, InputGroup, SimpleGrid, Card, CardBody,
-    Stack, StackDivider, Accordion, AccordionItem,
+    Input, InputGroup, Card, CardBody,
+    Stack, Accordion, AccordionItem,
     AccordionButton, AccordionIcon, AccordionPanel,
     Avatar, Link
 } from '@chakra-ui/react'
 import { SearchIcon } from '@chakra-ui/icons'
-import { BsCart2, BsChatRightText, BsBell } from "react-icons/bs";
-import { MdAttachMoney } from "react-icons/md";
-import { BiStore } from "react-icons/bi";
+import { BsChatRightText, BsBell } from "react-icons/bs";
 import { useEffect, useState, useContext } from 'react'
 import axios from "axios";
 import AuthenticationContext from '../context/AuthenticationContext'
@@ -19,7 +17,6 @@ import { getUserInfo } from '../helpers/profile/api';
 
 export default function Navbar() {
     const [categories, setCategories] = useState([])
-    const [categoriesFilter, setCategoriesFilter] = useState(null)
     const [filter, setFilter] = useState('')
     const { logout } = useContext(AuthenticationContext);
     const baseUrl = process.env.NEXT_PUBLIC_BE_URL

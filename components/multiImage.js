@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react'
-import { Flex, useToast, Image, Button, Box, Stack, Center, Avatar, Text, Grid, GridItem, Card, CardBody, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Spacer } from '@chakra-ui/react';
+import { Flex, Image, Button, Box} from '@chakra-ui/react';
 import { ArrowBackIcon, ArrowForwardIcon } from '@chakra-ui/icons'
-import { MdLocationPin } from 'react-icons/md'
-import { getStorage, ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
+import { ref, listAll, getDownloadURL } from "firebase/storage";
 import { storage } from '../firebaseConfig';
-import { useDisclosure } from "@chakra-ui/react"
 const MultiImage = ({ image_url }) => {
     const [images, setImages] = useState([])
     const [currentIndex, setCurrentIndex] = useState(0);

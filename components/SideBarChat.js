@@ -1,15 +1,14 @@
 import { useCollection } from 'react-firebase-hooks/firestore';
-import { collection, addDoc } from "@firebase/firestore";
-import { Flex, Avatar, Text } from '@chakra-ui/react';
+import { collection } from "@firebase/firestore";
+import { Flex, Avatar, Text, Heading } from '@chakra-ui/react';
 import getOtherUser from '../util/getOtherUser';
 import AuthenticationContext from '../context/AuthenticationContext';
 import { useContext, useState, useEffect } from 'react';
 import { useRouter } from "next/router";
 import { db } from '../firebaseConfig';
-import { Heading, Divider, Card } from '@chakra-ui/react'
 
 const SideBarChat = () => {
-    const [snapshot, loading, error] = useCollection(collection(db, "chats"));
+    const [snapshot] = useCollection(collection(db, "chats"));
     const [user, setUser] = useState("");
     const chats = snapshot?.docs.map(doc => ({id: doc.id, ...doc.data()}));
     const router = useRouter();

@@ -2,8 +2,8 @@
 import {
     Grid, GridItem, Flex, Spacer, Box, Heading, ButtonGroup,
     Button, List, ListItem, InputLeftElement,
-    Input, InputGroup, SimpleGrid, Card, CardBody,
-    Stack, StackDivider, Accordion, AccordionItem,
+    Input, InputGroup, Card, CardBody,
+    Stack, Accordion, AccordionItem,
     AccordionButton, AccordionIcon, AccordionPanel,
     Avatar, Link, Modal, ModalOverlay, 
     ModalContent, ModalHeader, ModalFooter, ModalBody,
@@ -12,19 +12,17 @@ import {
 import { SearchIcon } from '@chakra-ui/icons'
 import { BsCart2, BsChatRightText, BsBell } from "react-icons/bs";
 import { MdAttachMoney } from "react-icons/md";
-import { BiBody, BiStore } from "react-icons/bi";
-import { useEffect, useState, useContext } from 'react'
+import { BiStore } from "react-icons/bi";
+import { useEffect, useState, useContext, React } from 'react'
 import axios from "axios";
 import AuthenticationContext from '../context/AuthenticationContext'
 import { useRouter } from 'next/router'
 import { getUserInfo } from '../helpers/profile/api';
-import React from 'react';
 import { sendSuggestions } from '../helpers/admin/api';
 
 
 export default function Navbar() {
     const [categories, setCategories] = useState([])
-    const [categoriesFilter, setCategoriesFilter] = useState(null)
     const [filter, setFilter] = useState('')
     const { logout } = useContext(AuthenticationContext);
     const baseUrl = process.env.NEXT_PUBLIC_BE_URL
@@ -112,10 +110,6 @@ export default function Navbar() {
     }, [])
 
     const initialRef = React.useRef(null)
-    const finalRef = React.useRef(null)
-    const [isLoading, setIsLoading] = useState(false);
-    const [isSuccess, setIsSuccess] = useState(false);
-    const [error, setError] = useState(null);
 
     const handleRequestForm = async (e) => {
         e.preventDefault()
@@ -124,12 +118,12 @@ export default function Navbar() {
             const body={
                 "suggestion":e.target.request_user.value
             }
-            const response = await sendSuggestions(body);
-            setIsSuccess(true);
+            await sendSuggestions(body);
+
             onClose();
         }
         catch (error) {
-            console.log(error)
+
         }
     };
 

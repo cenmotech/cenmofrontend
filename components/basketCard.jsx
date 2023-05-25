@@ -1,19 +1,15 @@
 import {
-    Flex, Grid, GridItem, Box, Heading, InputGroup,
-    InputLeftElement, Input, Card, CardBody,
+    Card, CardBody,
     Stack, Text, NumberInput, NumberInputField,
     NumberInputStepper, NumberIncrementStepper,
-    NumberDecrementStepper, IconButton, Button, Spacer
+    NumberDecrementStepper, IconButton, Spacer
 } from '@chakra-ui/react'
-import { SearchIcon, DeleteIcon } from '@chakra-ui/icons'
-import Navbar from '../components/navbar'
+import { DeleteIcon } from '@chakra-ui/icons'
 import { Image } from '@chakra-ui/react'
 import { useEffect, useState } from 'react';
-import { getCart, updateToCart } from '../helpers/shopcart/api';
-import { createTransactionAndGetToken } from '../helpers/transaction/api';
-import { getStorage, ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
+import { updateToCart } from '../helpers/shopcart/api';
+import { ref, listAll, getDownloadURL } from "firebase/storage";
 import { storage } from '../firebaseConfig';
-import React from 'react';
 
 const BasketCard = ({ item }) => {
     const [jumlah, setJumlah] = useState(item.quantity)
@@ -34,8 +30,8 @@ const BasketCard = ({ item }) => {
             const imageRef = ref(storage, url);
             const imageList = []
             const response = await listAll(imageRef)
-            response.items.forEach((item) => {
-                imageList.push(getDownloadURL(item))
+            response.items.forEach((items) => {
+                imageList.push(getDownloadURL(items))
             });
             return Promise.all(imageList)
         }
