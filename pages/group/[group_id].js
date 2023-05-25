@@ -18,7 +18,7 @@ import { GoSettings } from 'react-icons/go'
 import { BiStore } from 'react-icons/bi'
 import { HiViewList } from 'react-icons/hi'
 import { SearchIcon, BellIcon, AddIcon, ArrowBackIcon, ArrowForwardIcon } from '@chakra-ui/icons'
-import { isMember, getPostOnGroup, getListingOnGroup, searchPostByDesc, seeGroup, joinGroup, createListing, createPost, searchPostOnGroup, searchListingOnGroup, deletePost } from '../../helpers/group/api'
+import { isMember, getPostOnGroup, getListingOnGroup, searchPostByDesc, seeGroup, joinGroup, createListing, createPost, searchPostOnGroup, searchListingOnGroup, deletePost,like, likeByUser } from '../../helpers/group/api'
 import '@splidejs/react-splide/css';
 import moment from "moment"
 import { useClickable } from "@chakra-ui/clickable"
@@ -435,6 +435,23 @@ export default function Group() {
     }
   }
 
+  const [likedPost, setlikedPost] = useState([]);
+  let likedPush = []
+
+  useEffect(() => {
+    const postLiked = async () => {
+        
+      const result = await likeByUser(localStorage.getItem("accessToken"));
+
+      for (let i in result['response']) {
+        likedPush.push(result.response[i].like_post_id)
+      }
+      setlikedPost(likedPush)
+    };
+
+    postLiked();
+  }, []);
+
   const listingTemplate = () => {
     return (
       <div>
@@ -777,7 +794,7 @@ export default function Group() {
                 </Modal>
               </div>
               {postList.map((post, index) => (
-                <Post post={post} userKey={userKey} groupId={groupId} key={index}></Post>
+                <Post post={post} userKey={userKey} groupId={groupId} key={index} liked={likedPost.includes(post.post_id)}></Post>
               ))}
             </Stack>
           </Center>
