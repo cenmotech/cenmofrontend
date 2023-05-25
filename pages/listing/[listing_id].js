@@ -114,7 +114,9 @@ export default function Product() {
     const chats = snapshot?.docs.map(doc => ({id: doc.id, ...doc.data()}));
     
     const handleChat = async () => {
-        if (!chatExists(sellerEmail)) {
+        if(sellerEmail==userEmail){
+
+        }else if (!chatExists(sellerEmail)) {
             const docRef = await addDoc(collection(db, "chats"), {users: [userEmail, sellerEmail] })
             redirect(docRef.id)
           }else{

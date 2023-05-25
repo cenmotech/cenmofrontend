@@ -14,7 +14,6 @@ import {
 
   
   export default function Admin() {
-    `${process.env.NEXT_PUBLIC_BE_URL}`
     useRouter();
     const { isOpen:isAddOpen, onOpen:onAddOpen,onClose: onAddClose } = useDisclosure()
 

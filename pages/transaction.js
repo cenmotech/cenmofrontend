@@ -123,12 +123,12 @@ export default function Transaction() {
 
 
     useEffect(() => {
-        const midtransScriptUrl = 'https://app.sandbox.midtrans.com/snap/snap.js';
+        const midtransScriptUrl = `${process.env.NEXT_PUBLIC_MIDTRANS_URL}/snap/snap.js`;
 
         let scriptTag = document.createElement('script');
         scriptTag.src = midtransScriptUrl;
 
-        const myMidtransClientKey = "Mid-client-giT1yaCWRdXGL4_h";
+        const myMidtransClientKey = `${process.env.NEXT_PUBLIC_MIDTRANS_KEY}`;
         scriptTag.setAttribute('data-client-key', myMidtransClientKey);
 
         document.body.appendChild(scriptTag);
@@ -136,7 +136,7 @@ export default function Transaction() {
         return () => {
             document.body.removeChild(scriptTag);
         }
-    }, []);
+    }, [process.env]);
 
     const showPayment = () => {
         window.snap.pay(snapToken, {

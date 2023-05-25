@@ -29,12 +29,19 @@ export default function Basket() {
   const [itemTotalPrice, setItemTotalPrice] = useState("");
   const [itemImageLink, setItemImageLink] = useState("");
   const [images, setImages] = useState([]);
+  const [enablePayment, setEnablePayment] = useState(false)
 
   useEffect(() => {
     getCart().then((data) => {
       setBasket(data.response)
     },)
   }, [])
+
+  useEffect(() =>  {
+    if (process.env.NEXT_PUBLIC_SHOW_PAYMENT == 1) {
+      setEnablePayment(true)
+    }
+  }, [process.env])
 
   useEffect(() => {
     setItemTotalPrice(itemPrice * itemQuant);
@@ -53,12 +60,12 @@ export default function Basket() {
   }
 
   useEffect(() => {
-    const midtransScriptUrl = 'https://app.sandbox.midtrans.com/snap/snap.js';
+    const midtransScriptUrl = `${process.env.NEXT_PUBLIC_MIDTRANS_URL}/snap/snap.js`;
 
     let scriptTag = document.createElement('script');
     scriptTag.src = midtransScriptUrl;
 
-    const myMidtransClientKey = "Mid-client-giT1yaCWRdXGL4_h";
+    const myMidtransClientKey = `${process.env.NEXT_PUBLIC_MIDTRANS_KEY}`;
     scriptTag.setAttribute('data-client-key', myMidtransClientKey);
 
     document.body.appendChild(scriptTag);
@@ -66,7 +73,7 @@ export default function Basket() {
     return () => {
       document.body.removeChild(scriptTag);
     }
-  }, []);
+  }, [process.env]);
 
   async function createTransaction() {
     try {
@@ -205,7 +212,12 @@ const handleInputChange = (event) => {
                     <Text as='b'>Rp {itemTotalPrice.toLocaleString('id-ID')}</Text>
                   </Stack>
                   <br />
-                  <Button float='right' onClick={showPayment} colorScheme='blue'>Buy</Button>
+                  { enablePayment ? (
+                    <Button float='right' onClick={showPayment} colorScheme='blue'>Buy</Button>
+                  ) : (
+                    <Button float='right' isDisabled colorScheme='blue'>Buy</Button>
+                  )
+                  }
                   {/* <Button float='right' isDisabled colorScheme='blue'>Buy</Button> */}
                   <Modal
                     isCentered
