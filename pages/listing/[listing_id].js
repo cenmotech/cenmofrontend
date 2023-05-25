@@ -160,22 +160,28 @@ export default function Product() {
                         </Box>
                     </Center>
                 </GridItem>
-                <GridItem colSpan={1} >
-                    <Stack direction='column' pt='14'>
-                        <Stack direction='row'>
-                            <Avatar size='md' name='Ryan Florence' src='https://bit.ly/ryan-florence' />
-                            <Stack direction='column'>
-                                <Text as='b'>{listing.goods_seller__name}</Text>
-                                <Text >{listing.goods_region}</Text>
+                <GridItem colSpan={1} backgroundColor='white'>
+                    <Stack direction='column' pt='7'>
+                        <Stack ml='5' mr='5'>
+                        <Text as='b' fontSize='xl' mb='5'>Seller</Text>
+                            <Stack direction='row'>
+                                <Avatar size='md' name='Ryan Florence' src='https://bit.ly/ryan-florence' />
+                                <Stack direction='column'>
+                                    <Text as='b'>{listing.goods_seller__name}</Text>
+                                    <Text >{listing.goods_region}</Text>
+                                </Stack>
                             </Stack>
+                            <br></br>
+                            <Divider />
+                            <br></br>
+                            <Text as='b'>Product Recommendations from Seller</Text>
                         </Stack>
-                        <br></br>
-                        <Divider />
-                        <br></br>
-                        <Text as='b'>Product Recommendations from Seller</Text>
-                        {otherListing.map((list, index) => (
-                            <Listing list={list} key={index} />
-                        ))}
+                        <GridItem colSpan={1} w='100%' h="100vh" position="sticky" top="0" left="0" overflowY="auto">
+                            {otherListing.map((list, index) => (
+                                <Listing list={list} key={index} />
+                            ))}
+                        </GridItem>
+                        
                     </Stack>
                 </GridItem>
             </Grid>

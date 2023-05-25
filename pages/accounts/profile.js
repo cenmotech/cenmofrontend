@@ -311,7 +311,7 @@ export default function Profile() {
                             <Avatar size='2xl' name={name} />
                             <FormControl id="firstName" pl='5'>
                                 <FormLabel>Full Name</FormLabel>
-                                <Input focusBorderColor="brand.blue" onChange={handleNameChange} type="text" placeholder="Full Name" value={name} />
+                                <Input focusBorderColor="brand.blue" onChange={handleNameChange} type="text" placeholder="Full Name" value={name} backgroundColor='white'/>
                                 <Stack direction='row' mt='3'>
                                     <Badge mt='1' fontSize='0.8em' colorScheme='red'>
                                         Not Verified
@@ -326,11 +326,11 @@ export default function Profile() {
 
                         <FormControl id="Email" pl='5' pt='5'>
                             <FormLabel>Email</FormLabel>
-                            <Input focusBorderColor="brand.blue" type="text" isDisabled={true} value={email} />
+                            <Input focusBorderColor="brand.blue" type="text" isDisabled={true} value={email} backgroundColor='white'/>
                         </FormControl>
                         <FormControl id="no_hp" pl='5' pt='5'>
                             <FormLabel>No. HP</FormLabel>
-                            <Input focusBorderColor="brand.blue" onChange={handlePhoneChange} type='number' value={phone} />
+                            <Input focusBorderColor="brand.blue" onChange={handlePhoneChange} type='number' value={phone} backgroundColor='white'/>
                             <FormErrorMessage>{phoneError}</FormErrorMessage>
                         </FormControl>
                         <Button ml='5' mt='5' colorScheme='blue' onClick={e => {
@@ -346,7 +346,7 @@ export default function Profile() {
                         <Stack direction='row' pl='5' pt='9'>
                             <Text pr='5' pt='1' as='b' fontSize='xl'>Alamat</Text>
                             <Menu>
-                                <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
+                                <MenuButton as={Button} rightIcon={<ChevronDownIcon/>}>
                                     {address}
                                 </MenuButton>
                                 <MenuList>
@@ -383,12 +383,12 @@ export default function Profile() {
                                         <form onSubmit={handleNewAddress}>
                                             <FormControl>
                                                 <FormLabel>Label address</FormLabel>
-                                                <Input ref={initialRef} type='text' name="address_name" value={dataNewAddress.address_name} onChange={handleInputChange} placeholder='Input your label' />
+                                                <Input ref={initialRef} type='text' name="address_name" value={dataNewAddress.address_name} onChange={handleInputChange} placeholder='Input your label'/>
                                             </FormControl>
 
                                             <FormControl mt={4}>
                                                 <FormLabel>Jalan</FormLabel>
-                                                <Input type='text' name="street" value={dataNewAddress.street} onChange={handleInputChange} placeholder='Input your street' />
+                                                <Input type='text' name="street" value={dataNewAddress.street} onChange={handleInputChange} placeholder='Input your street' backgroundColor='white'/>
                                             </FormControl>
 
                                             <FormControl mt={4}>
@@ -429,22 +429,22 @@ export default function Profile() {
                         <Stack direction='row'>
                             <FormControl id="jalan" pl='5' pt='5' pb='5'>
                                 <FormLabel>Jalan</FormLabel>
-                                <Input focusBorderColor="brand.blue" type="text" placeholder="Jl. Kemayoran Baru Blok 5D" value={street} />
+                                <Input focusBorderColor="brand.blue" type="text" placeholder="Jl. Kemayoran Baru Blok 5D" value={street} backgroundColor='white'/>
                             </FormControl>
                             <FormControl id="provinsi" pl='5' pt='5' pb='5'>
                                 <FormLabel>Provinsi</FormLabel>
-                                <Input focusBorderColor="brand.blue" type="text" placeholder="Jawa Barat" value={province} />
+                                <Input focusBorderColor="brand.blue" type="text" placeholder="Jawa Barat" value={province} backgroundColor='white'/>
                             </FormControl>
                         </Stack>
 
                         <Stack direction='row'>
                             <FormControl id="kota_kabupaten" pl='5' pt='5' pb='5'>
                                 <FormLabel>Kota/Kabupaten</FormLabel>
-                                <Input focusBorderColor="brand.blue" type="text" placeholder="DKI Jakarta" value={city} />
+                                <Input focusBorderColor="brand.blue" type="text" placeholder="DKI Jakarta" value={city} backgroundColor='white'/>
                             </FormControl>
                             <FormControl id="kode_pos" pl='5' pt='5' pb='5'>
                                 <FormLabel>Kode Pos</FormLabel>
-                                <Input focusBorderColor="brand.blue" type="text" placeholder="16810" value={postalCode} />
+                                <Input focusBorderColor="brand.blue" type="text" placeholder="16810" value={postalCode} backgroundColor='white'/>
                             </FormControl>
                         </Stack>
 

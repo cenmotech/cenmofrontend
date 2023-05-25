@@ -122,7 +122,7 @@ const Post = ({ post, userKey = "", groupId = 0, liked}) => {
                     <Avatar size='md' name={post.post_user__name} />
                     <Stack spacing={0} direction='column'>
                         <Text fontSize="xl">{post.post_user__name}</Text>
-                        <Text fontSize="sm" mt="0">Posted on {moment(post.post_date).format("MMMM Do YYYY, h:mm:ss a")}</Text>
+                        <Text fontSize="xs" mt="0">Posted on {moment(post.post_date).format("MMMM Do YYYY, h:mm:ss a")}</Text>
                     </Stack>
                     <Spacer />
                     {post.post_user_id === userKey &&
@@ -145,13 +145,13 @@ const Post = ({ post, userKey = "", groupId = 0, liked}) => {
                 {post.tags[0] !== null && (
                     <>
                         {post.tags.map((tag, index) => (
-                            <Tag key={index} size="md" mr="2" variant="subtle" colorScheme="blue">
+                            <Tag key={index} size="sm" mr="2" variant="subtle" colorScheme="blue">
                                 <TagLabel>{tag}</TagLabel>
                             </Tag>
                         ))}
                     </>
                 )}
-                <Text mb="5" fontSize='xl'>{post.post_desc}</Text>
+                <Text mt="3" fontSize='lg'>{post.post_desc}</Text>
                 {post.post_image_link !== "" &&
                     <Flex alignItems="center">
                         {images.length > 1 && (

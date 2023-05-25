@@ -444,17 +444,17 @@ export default function Seller() {
                     </GridItem>
                 </Show>
                 <GridItem colSpan={2}>
-                    <Center >
-                        <Stack direction='column' spacing={4}>
-                            <Heading pl={{ base: '3', md: '5' }} pt={{ base: '5', md: '7' }} color='black' size='md'>Seller Portal</Heading>
-                            <InputGroup pr={{ base: '3', md: '5' }} pt={{ base: '3', md: '5' }} >
+                    
+                        <Stack direction='column' spacing={1} ml='5' mr='5'>
+                            <Heading pt='7' color='black' size='md'>Seller Portal</Heading>
+                            <InputGroup pr={{ base: '3', md: '5' }} pt={{ base: '3', md: '5' }}>
                                 <InputLeftElement
                                     pl={{ base: '2', md: '2' }}
                                     pt={{ base: '3', md: '10' }}
                                     pointerEvents='none'
-                                    children={<SearchIcon color='gray.300' />}
+                                    children={<SearchIcon color='gray.300'/>}
                                 />
-                                <Input pl={{ base: '10', md: '10' }} type='tel' placeholder='Search your products' borderRadius='30' onKeyDown={handleSearchListing} />
+                                <Input pl={{ base: '10', md: '10' }} type='tel' placeholder='Search your products' borderRadius='30' onKeyDown={handleSearchListing} backgroundColor='white' />
                             </InputGroup>
                             <Stack direction='column' spacing={8}>
                                 {storeList.map((list, index) => (
@@ -487,7 +487,7 @@ export default function Seller() {
                                 ))}
                             </Stack>
                         </Stack>
-                    </Center>
+                    
 
 
 
@@ -564,15 +564,15 @@ export default function Seller() {
                                     {itemDesc}
                                 </Text>
                                 {isExpanded ? (
-                                    <Button mt='3' onClick={() => setIsExpanded(false)}>Close</Button>
+                                    <Button mt='3' backgroundColor='blue.100' onClick={() => setIsExpanded(false)}>Close</Button>
                                 ) : (
-                                    <Button mt='3' onClick={() => setIsExpanded(true)}>More</Button>
+                                    <Button mt='3' backgroundColor='blue.100' onClick={() => setIsExpanded(true)}>More</Button>
                                 )}
                             </Box>
                             <Divider pt='5' mb='3' />
                             <Stack direction='row' justifyContent='space-between'>
                                 <Text fontSize="lg" as='b'>Your Buyer</Text>
-                                <Select variant="filled" width="fit-content" onChange={handleFilterChange}>
+                                <Select variant="filled" width="fit-content" backgroundColor='blue.100' onChange={handleFilterChange}>
                                     <option value='All'>All</option>
                                     <option value='Pending'>Pending</option>
                                     <option value='Verifying'>Verifying</option>
