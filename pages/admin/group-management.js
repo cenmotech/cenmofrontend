@@ -37,20 +37,21 @@ import {
     const finalRef = React.useRef(null)
 
     useEffect(() => {
-      const fetchGroup = async () => {
-        try{
-          const response = await getGroups();
-          setGroupList(response.groups_list);
-
-          const response2 = await getAllCategoriesAdmin();
-          setCategoriesList(response2.category_groups);
-        }
-        catch(error){
-          console.log(error);
-        }
-      }
+      
       fetchGroup();
-    })
+    }, [])
+    const fetchGroup = async () => {
+      try{
+        const response = await getGroups();
+        setGroupList(response.groups_list);
+
+        const response2 = await getAllCategoriesAdmin();
+        setCategoriesList(response2.category_groups);
+      }
+      catch(error){
+        console.log(error);
+      }
+    }
     //End Get All Group
 
     //Handle Form Add Group
